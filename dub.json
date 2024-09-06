@@ -1,0 +1,15 @@
+{
+	"authors": [
+		"Carter",
+		"Ricky Bobby"
+	],
+	"copyright": "XD",
+	"dependencies": {},
+	"description": "",
+	"libs": [
+		"user32"
+	],
+	"license": "Apache 2.0",
+	"name": "XD",
+	"targetType": "dynamicLibrary"
+}
