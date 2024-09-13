@@ -24,15 +24,30 @@ Address npcAction = 0x117550;
 ///
 __gshared Address npcTrampoline;
 
-template fn(T...)
+struct Fn(T...)
 {
-    alias FnProto = extern (Windows) void function(T);
+    T args_;
+    Address loc_;
 
-    void call(Address loc, T args)
+    this(Address loc, T args)
     {
-        FnProto func = cast(FnProto) loc;
-        func(args);
+        args_ = args;
+        loc_ = loc;
     }
+
+    void call()
+    {
+        alias FnProto = extern (Windows) void function(T);
+        FnProto func = cast(FnProto) loc_;
+        func(args_);
+    }
+}
+
+Fn!(Args) fnCall(Args...)(Address loc, Args args)
+{
+    auto fn = typeof(return)(loc, args);
+    fn.call();
+    return fn;
 }
 
 void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
@@ -40,7 +55,7 @@ void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
     writeln("Shared client ptr: ", sp);
     writeln("Client Prot: ", clientProt);
 
-    fn!(HookedArgPtr, HookedArgPtr).call(npcTrampoline, clientProt, sp);
+    fnCall(npcTrampoline, clientProt, sp);
 }
 
 void setup()

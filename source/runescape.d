@@ -1,6 +1,6 @@
-module jagex;
+module runescape;
 
-class Jagex
+class RuneScape
 {
     private byte clientState;
     private string rsn;
@@ -15,13 +15,13 @@ class Jagex
         return this.clientState;
     }
 
-    public Jagex setClientState(byte state)
+    public RuneScape setClientState(byte state)
     {
         this.clientState = state;
         return this;
     }
 
-    public Jagex setRunescapeName(string name)
+    public RuneScape setRunescapeName(string name)
     {
         this.rsn = name;
         return this;

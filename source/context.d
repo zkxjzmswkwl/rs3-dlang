@@ -1,17 +1,17 @@
 module context;
 
-import jagex;
+import runescape;
 import util.types;
 
 class Context
 {
     static Context instance = null;
 
-    private Jagex jagex;
+    private RuneScape runeScape;
 
     private this()
     {
-        this.jagex = new Jagex();
+        this.runeScape = new RuneScape();
     }
 
     public static Context getInstance()
@@ -21,8 +21,8 @@ class Context
         return instance;
     }
 
-    public Jagex getJagex()
+    public RuneScape getRuneScape()
     {
-        return this.jagex;
+        return this.runeScape;
     }
 }
