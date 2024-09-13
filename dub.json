@@ -4,8 +4,9 @@
 		"Ricky Bobby"
 	],
 	"copyright": "XD",
-	"dependencies": {},
-	"description": "",
+	"dependencies": {
+		"capstone-d": "~>2.1.1"
+	},
 	"libs": [
 		"user32"
 	],

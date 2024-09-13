@@ -1,6 +1,7 @@
 module context;
 
 import jagex;
+import util.types;
 
 class Context
 {

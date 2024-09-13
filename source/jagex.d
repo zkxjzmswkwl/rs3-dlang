@@ -1,23 +1,28 @@
 module jagex;
 
-class Jagex {
+class Jagex
+{
     private byte clientState;
     private string rsn;
 
-    public string getRunescapeName() {
+    public string getRunescapeName()
+    {
         return this.rsn;
     }
 
-    public byte getClientState() {
+    public byte getClientState()
+    {
         return this.clientState;
     }
 
-    public Jagex setClientState(byte state) {
+    public Jagex setClientState(byte state)
+    {
         this.clientState = state;
         return this;
     }
 
-    public Jagex setRunescapeName(string name) {
+    public Jagex setRunescapeName(string name)
+    {
         this.rsn = name;
         return this;
     }
