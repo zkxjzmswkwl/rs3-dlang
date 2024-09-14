@@ -58,7 +58,7 @@ T getDisplacement(T)(X86Instruction* inst, ubyte offset)
     return disp;
 }
 
-void relocateInstruction(Capstone* cs, X86Instruction* inst, void* destination)
+void relocateInstruction(Capstone cs, X86Instruction* inst, void* destination)
 {
     const X86Detail detail = inst.detail;
     if (detail is null)
@@ -88,4 +88,30 @@ void relocateInstruction(Capstone* cs, X86Instruction* inst, void* destination)
     default:
         break;
     }
+}
+
+struct Fn(T...)
+{
+    T args_;
+    Address loc_;
+
+    this(Address loc, T args)
+    {
+        args_ = args;
+        loc_ = loc;
+    }
+
+    extern (Windows) void call()
+    {
+        alias FnProto = extern (Windows) void function(T);
+        FnProto func = cast(FnProto) loc_;
+        func(args_);
+    }
+}
+
+Fn!(Args) fnCall(Args...)(Address loc, Args args)
+{
+    auto fn = typeof(return)(loc, args);
+    fn.call();
+    return fn;
 }

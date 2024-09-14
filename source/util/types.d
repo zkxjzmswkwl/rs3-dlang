@@ -4,6 +4,7 @@ import std.conv;
 import std.format;
 import std.string;
 import core.stdc.string;
+import core.stdc.stdlib : malloc;
 
 alias Address = ulong;
 alias HookedArgPtr = ulong*;
@@ -40,6 +41,25 @@ struct JagString
         RawLayout raw;
     }
 
+    JagString opAssign(string val)
+    {
+        this.set(toStringz(val));
+        return this;
+    }
+
+    private void set(immutable(char)* val)
+    {
+        if (isHeap())
+        {
+            heap.data = cast(char*) val;
+        }
+        else
+        {
+            auto sz = fromStringz(val).length;
+            memcpy(raw.data.ptr, val, sz);
+        }
+    }
+
     @property bool empty() const
     {
         if (isHeap())
@@ -72,10 +92,4 @@ struct JagString
     {
         return read().length;
     }
-
-    @disable string opAssign(const string);
-
-    @disable this(string);
-
-    @disable string opAssign(string);
 }

@@ -30,9 +30,10 @@ class Instructions
 
 class Hook
 {
-    // For debugging/logging.
+    ///
+    /// For debugging/logging.
+    ///
     private string name;
-
     ///
     /// Where we're placing the jmp.
     ///
@@ -44,12 +45,12 @@ class Hook
     /// 
     /// Capstone pointer
     ///
-    private Capstone* cs;
+    private Capstone cs;
 
-    this(Address location, Capstone* cs, string name)
+    this(Address location, string name)
     {
-        this.location = location;
-        this.cs = cs;
+        this.location = cast(ulong) GetModuleHandle("rs2client.exe") + location;
+        this.cs = create(Arch.x86, ModeFlags(Mode.bit64));
         this.name = name;
     }
 
@@ -74,7 +75,6 @@ class Hook
         in which we 64-bit absolute jmp to the body of our hook.
 
         The relay function looks like this, roughly:
-
             mov    rcx,[rcx+08]                    ; Stolen bytes
             mov    r8,rdx                          ; Stolen bytes
             mov    r10,rs2client.exe+117555    
@@ -86,11 +86,11 @@ class Hook
             jmp    DeOpressoLiber.dll+16BA0
             jmp    DeOpressoLiber.dll+16FDBC
             jmp    DeOpressoLiber.dll+15F874
+            ...etc
         
         It's just a big table filled with jmps to locations in our module.
         */
         int32_t relativeAddress = cast(int32_t)(cast(uintptr_t) relayFuncMemory - (cast(uintptr_t) location + 5));
-        // Write the relative address into the instruction
         memcpy(&jmpIsns32[1], &relativeAddress, 4);
         memcpy(cast(void*) location, &jmpIsns32[0], 5);
 
