@@ -2,6 +2,7 @@ module kronos.hook;
 
 import std.stdio;
 import std.conv : to;
+import core.stdc.stdint;
 import core.sys.windows.windows;
 import std.algorithm.comparison;
 import core.stdc.string;
@@ -52,7 +53,7 @@ class Hook
         this.name = name;
     }
 
-    public void place(void* ourFunction, void** trampolinePtr)
+    extern (Windows) public void place(void* ourFunction, void** trampolinePtr)
     {
         DWORD previousProtection;
         // take da condom off
@@ -63,11 +64,33 @@ class Hook
         *trampolinePtr = relayPage;
 
         void* relayFuncMemory = cast(char*) relayPage + trampolineSize;
+        writefln("%016X", relayFuncMemory);
         this.writeJmp(relayFuncMemory, ourFunction);
 
         ubyte[] jmpIsns32 = [0xE9, 0x0, 0x0, 0x0, 0x0];
-        // this math is fucked but im too drunk to fix it 
-        uint relativeAddress = cast(uint)(cast(uint) relayPage - cast(uint)(location + jmpIsns32.sizeof)) + 31;
+        /*
+        Since we only have space for a 32-bit relative jmp (0xE9), we need to calculate the relative address
+        from the start of the hooked function (this.location) to the point in the relay function
+        in which we 64-bit absolute jmp to the body of our hook.
+
+        The relay function looks like this, roughly:
+
+            mov    rcx,[rcx+08]                    ; Stolen bytes
+            mov    r8,rdx                          ; Stolen bytes
+            mov    r10,rs2client.exe+117555    
+            jmp    r10                             ; jmp back to just after our 32-bit jmp in the original func location.
+            mov    r10,DeOppressoLiber.dll+13A2    
+            jmp    r10                             ; jmp to the point in our jmp table where we jmp to the body of our hook. (see below)
+
+        The jmp table looks like this:
+            jmp    DeOpressoLiber.dll+16BA0
+            jmp    DeOpressoLiber.dll+16FDBC
+            jmp    DeOpressoLiber.dll+15F874
+        
+        It's just a big table filled with jmps to locations in our module.
+        */
+        int32_t relativeAddress = cast(int32_t)(cast(uintptr_t) relayFuncMemory - (cast(uintptr_t) location + 5));
+        // Write the relative address into the instruction
         memcpy(&jmpIsns32[1], &relativeAddress, 4);
         memcpy(cast(void*) location, &jmpIsns32[0], 5);
 
@@ -113,7 +136,7 @@ class Hook
 
         // absTableMem should be type `ubyte*` but D says no.
         // This might blow up.
-        return cast(uint)(cast(ubyte*) absTableMem - cast(ubyte*) trampDest);
+        return cast(uint)(cast(void*) absTableMem - trampDest);
     }
 
     private void rewriteCallInstruction(X86Instruction* ins, ubyte* instrPtr, ubyte* absTableEntry)
@@ -172,7 +195,7 @@ class Hook
         for (uint i = 0; i < count; ++i)
         {
             auto inst = disasmIsns[i];
-            byteCount += inst.bytes().length;
+            byteCount += inst.bytes.length;
             stolenIsnCount++;
             if (byteCount >= 5)
                 break;
@@ -180,7 +203,7 @@ class Hook
 
         writeNops(func, byteCount);
         writeln("Wrote nops @ " ~ to!string(func) ~ " for " ~ to!string(byteCount) ~ " bytes");
-        // DebugBreak();
+        this.cs.detail = false;
 
         return new Instructions(cast(X86Instruction*) disasmIsns, stolenIsnCount, byteCount);
     }
@@ -205,12 +228,13 @@ class Hook
         ];
 
         memcpy(&callAsmBytes[2], &targetAddr, targetAddr.sizeof);
-        memcpy(dstMem, callAsmBytes.ptr, callAsmBytes.sizeof);
+        memcpy(dstMem, &callAsmBytes[0], callAsmBytes.sizeof);
         dstMem += callAsmBytes.sizeof;
 
         // Might be fucked, the second cast to ubyte seems off.
         ubyte[2] jmpBytes = [
-            cast(ubyte) 0xEB, cast(ubyte)(jumpBackMem - (absTableMem + 2))
+            cast(ubyte) 0xEB,
+            cast(ubyte)(jumpBackMem - (absTableMem +  /*jmpBytes.sizeof*/ 2))
         ];
         memcpy(dstMem, cast(void*) jmpBytes, jmpBytes.sizeof);
 
@@ -226,7 +250,7 @@ class Hook
 
         ulong ulJmpLoc = cast(ulong) jmpLoc;
         memcpy(&jmpIsns[2], &ulJmpLoc, ulJmpLoc.sizeof);
-        memcpy(jmpMem, jmpIsns.ptr, jmpIsns.sizeof);
+        memcpy(jmpMem, &jmpIsns[0], jmpIsns.sizeof);
     }
 
     private void* writeRelayPage()

@@ -1,5 +1,6 @@
 import core.sys.windows.dll;
 
+import std.format;
 import std.stdio;
 import std.concurrency;
 import core.runtime;
@@ -16,13 +17,17 @@ import context;
 import capstone;
 
 Address MODULE_BASE = 0;
+
+/// We'll move these later. cba atm.
 Address npcAction = 0x117550;
+Address addChat   = 0xCD640;
 
 ///
 /// Must be __gshared or shared.
 /// If not, we won't be able to call from the game thread, which means we'd always crash in the hook.
 ///
 __gshared Address npcTrampoline;
+__gshared Address chatTrampoline;
 
 struct Fn(T...)
 {
@@ -35,7 +40,7 @@ struct Fn(T...)
         loc_ = loc;
     }
 
-    void call()
+    extern (Windows) void call()
     {
         alias FnProto = extern (Windows) void function(T);
         FnProto func = cast(FnProto) loc_;
@@ -50,12 +55,29 @@ Fn!(Args) fnCall(Args...)(Address loc, Args args)
     return fn;
 }
 
-void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
+extern(Windows) void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
 {
     writeln("Shared client ptr: ", sp);
     writeln("Client Prot: ", clientProt);
 
-    fnCall(npcTrampoline, clientProt, sp);
+    fnCall(npcTrampoline, sp, clientProt);
+}
+
+extern(Windows) void hookAddChat(
+	void* thisptr,
+	int messageGroup,
+	int a3,
+	JagString* author,
+	void* a5,
+	void* a6,
+	JagString* message,
+	void* a8,
+	void* a9,
+	int a10
+)
+{
+    if (message.read() != "Ability not ready yet.")
+        fnCall(chatTrampoline, thisptr, messageGroup, a3, author, a5, a6, message, a8, a9, a10);
 }
 
 void setup()
@@ -82,10 +104,15 @@ uintptr_t run(HMODULE hModule)
     setup();
 
     Capstone cs = create(Arch.x86, ModeFlags(Mode.bit64));
-    Hook hook = new Hook(MODULE_BASE + npcAction, &cs, "npc1");
-    hook.place(&hookNpc1, cast(void**)&npcTrampoline);
+
+    Hook npcActionHook = new Hook(MODULE_BASE + npcAction, &cs, "npc1");
+    npcActionHook.place(&hookNpc1, cast(void**)&npcTrampoline);
+
+    Hook addChatHook = new Hook(MODULE_BASE + addChat, &cs, "addChat");
+    addChatHook.place(&hookAddChat, cast(void**)&chatTrampoline);
 
     writeln("npcTrampoline: ", npcTrampoline);
+    writeln("chatTrampoline: ", chatTrampoline);
 
     for (;;)
     {

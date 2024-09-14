@@ -11,6 +11,6 @@
 		"user32"
 	],
 	"license": "Apache 2.0",
-	"name": "XD",
+	"name": "DeOppressoLiber",
 	"targetType": "dynamicLibrary"
 }
