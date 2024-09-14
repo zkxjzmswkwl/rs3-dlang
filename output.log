@@ -1,0 +1,63 @@
+             kronos.hook INFO  2024-09-14T07:35:08.377 Hook(npcAction1) at 00007FF639F27550
+             kronos.hook INFO  2024-09-14T07:35:08.377 Hook(addChat) at 00007FF639EDD640
+             kronos.hook INFO  2024-09-14T07:35:08.377 Hook(updateStat) at 00007FF63A080310
+          jagex.jaghooks INFO  2024-09-14T07:35:08.377 npcTrampoline: 00007FF639E00000
+          jagex.jaghooks INFO  2024-09-14T07:35:08.377 chatTrampoline: 00007FF639DF0000
+          jagex.jaghooks INFO  2024-09-14T07:35:08.377 updateStatTrampoline: 00007FF639DE0000
+            jagex.client INFO  2024-09-14T07:35:08.377 Client ptr: 000001E406101B10
+            jagex.client INFO  2024-09-14T07:35:08.377 Mouse hook unhooked.
+            jagex.client INFO  2024-09-14T07:35:08.377 Instantiating client objects.
+....clientobjs.clientobj INFO  2024-09-14T07:35:08.377 jagex.clientobjs.localplayer.LocalPlayer: 000001E400143E90
+....clientobjs.clientobj INFO  2024-09-14T07:35:08.377 jagex.clientobjs.inventory.Inventory: 000001E44006EA70
+....clientobjs.clientobj INFO  2024-09-14T07:35:08.377 jagex.clientobjs.skills.Skills: 000001E426BCD330
+                     app INFO  2024-09-14T07:35:08.377 Logged in as RedactedXD
+                     app INFO  2024-09-14T07:35:08.377 This account (RedactedXD) is not currently a member.
+             jagex.hooks INFO  2024-09-14T07:35:17.468 : You swing your hatchet at the tree.
+             jagex.hooks INFO  2024-09-14T07:35:24.068 : You get some logs.
+             jagex.hooks INFO  2024-09-14T07:35:24.068 skillPtr (000001E42B5556D0) : newSkillTotalExp (4667)
+            jagex.client INFO  2024-09-14T07:35:24.068 Exfil::skillArrayBase set (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:35:24.068 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:35:24.068 Received exp for skill id (8)
+                     app INFO  2024-09-14T07:35:29.063 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.142 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.293 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.494 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.746 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.797 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+                     app INFO  2024-09-14T07:35:40.847 Woodcutting XP: 4667, Current Level: 20, Boosted Level: 20
+             jagex.hooks INFO  2024-09-14T07:36:39.085 : <col=00FFFF>Grand Exchange: Finished selling 25 x Oak logs
+             jagex.hooks INFO  2024-09-14T07:36:40.286 : You swing your hatchet at the tree.
+             jagex.hooks INFO  2024-09-14T07:36:42.706 Mountebank: Dispute
+             jagex.hooks INFO  2024-09-14T07:36:46.889 : You get some logs.
+             jagex.hooks INFO  2024-09-14T07:36:46.889 skillPtr (000001E42B5556D0) : newSkillTotalExp (4692)
+             jagex.hooks INFO  2024-09-14T07:36:46.889 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:36:46.889 Received exp for skill id (8)
+             jagex.hooks INFO  2024-09-14T07:36:52.894 : You attempt to light the logs.
+             jagex.hooks INFO  2024-09-14T07:36:55.288 : The fire catches and the logs begin to burn.
+             jagex.hooks INFO  2024-09-14T07:36:55.288 skillPtr (000001E42B555718) : newSkillTotalExp (40)
+             jagex.hooks INFO  2024-09-14T07:36:55.288 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:36:55.288 Received exp for skill id (11)
+             jagex.hooks INFO  2024-09-14T07:36:58.889 : You attempt to light the logs.
+             jagex.hooks INFO  2024-09-14T07:37:03.687 : The fire catches and the logs begin to burn.
+             jagex.hooks INFO  2024-09-14T07:37:03.687 skillPtr (000001E42B555718) : newSkillTotalExp (80)
+             jagex.hooks INFO  2024-09-14T07:37:03.687 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:37:03.687 Received exp for skill id (11)
+             jagex.hooks INFO  2024-09-14T07:37:10.887 : The fire catches and the logs begin to burn.
+             jagex.hooks INFO  2024-09-14T07:37:10.887 : You've just advanced a Firemaking level! You have reached level 2.
+             jagex.hooks INFO  2024-09-14T07:37:10.889 skillPtr (000001E42B555718) : newSkillTotalExp (120)
+             jagex.hooks INFO  2024-09-14T07:37:10.889 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:37:10.889 Received exp for skill id (11)
+             jagex.hooks INFO  2024-09-14T07:37:15.688 : The fire catches and the logs begin to burn.
+             jagex.hooks INFO  2024-09-14T07:37:15.688 skillPtr (000001E42B555718) : newSkillTotalExp (160)
+             jagex.hooks INFO  2024-09-14T07:37:15.688 arrayBase (000001E42B555610)
+             jagex.hooks INFO  2024-09-14T07:37:15.688 Received exp for skill id (11)
+             jagex.hooks INFO  2024-09-14T07:37:21.208 Client shared ptr: 00007FF63A96EF70
+             jagex.hooks INFO  2024-09-14T07:37:21.208 Client Prot: 000001E426BEEAA0
+             jagex.hooks INFO  2024-09-14T07:37:21.369 Client shared ptr: 00007FF63A96EF70
+             jagex.hooks INFO  2024-09-14T07:37:21.370 Client Prot: 000001E426BEEAA0
+             jagex.hooks INFO  2024-09-14T07:37:38.109 Client shared ptr: 00007FF63A96EF70
+             jagex.hooks INFO  2024-09-14T07:37:38.109 Client Prot: 000001E426BEEAA0
+             jagex.hooks INFO  2024-09-14T07:38:37.307 RedactedXD: Edaters
+             jagex.hooks INFO  2024-09-14T07:38:43.306 Cancelled: Hi
+             jagex.hooks INFO  2024-09-14T07:38:48.106 anne amatzon: Hi
+             jagex.hooks INFO  2024-09-14T07:39:58.895 Cancelled: Another pirate hmm

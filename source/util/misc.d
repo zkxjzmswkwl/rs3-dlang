@@ -115,3 +115,18 @@ Fn!(Args) fnCall(Args...)(Address loc, Args args)
     fn.call();
     return fn;
 }
+
+auto maxAddr = 0x7FFFFFFF0000uL;
+auto minAddr = 0x100000uL;
+
+@nogc T read(T)(Address address)
+{
+    if (address < maxAddr && address > minAddr && address % 4uL == 0uL)
+    {
+        try
+            return *cast(T*) address;
+        catch (Exception e)
+            return T.init;
+    }
+    return T.init;
+}

@@ -11,25 +11,30 @@ import core.sys.windows.winnt;
 import core.stdc.stdint : uintptr_t;
 import core.memory;
 
+import colorize;
+///
+/// Logging
+///
+import slf4d;
+
 import util.types;
 import context;
+import jagex.item;
 import jagex.jaghooks;
+import jagex.client;
+import jagex.constants;
+import jagex.clientobjs.localplayer;
+import jagex.clientobjs.inventory;
 
 void setup()
 {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout.getFP);
-
-    // Without this, hitting a breakpoint will cause your mouse to feel as though it's polling at 1hz.
-    HHOOK mouseHook = *cast(HHOOK*)(cast(uintptr_t) GetModuleHandle(NULL) + 0xD7CFE8);
-    UnhookWindowsHookEx(mouseHook);
+    // TODO: Make this configurable.
+    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
 }
 
 void cleanup(HMODULE hModule)
 {
-    FreeConsole();
     fclose(stdout.getFP);
-    FreeLibraryAndExitThread(hModule, 0);
 }
 
 uintptr_t run(HMODULE hModule)
@@ -39,13 +44,44 @@ uintptr_t run(HMODULE hModule)
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
 
+    Client jagClient = new Client();
+    LocalPlayer localPlayer = jagClient.getLocalPlayer();
+    Inventory inventory = jagClient.getInventory();
+
+    infoF!"Logged in as %s"(localPlayer.getName());
+    if (localPlayer.isMember()) {
+        infoF!"This account (%s) is currently a member."(localPlayer.getName());
+    } else {
+        infoF!"This account (%s) is not currently a member."(localPlayer.getName());
+    }
+
     for (;;)
     {
         Thread.sleep(dur!"msecs"(50));
         if (GetAsyncKeyState(VK_F1) & 1)
         {
-            writeln("Ejecting");
+            info("Ejecting");
             break;
+        }
+
+        // Testing etc.
+        // TODO: Remove
+        if (GetAsyncKeyState(VK_RIGHT) & 1)
+        {
+            auto itemStacks = inventory.getItems();
+            ItemStack first = itemStacks[0];
+            first.getItem().resolve();
+
+            foreach (stack; itemStacks)
+            {
+                infoF!"Item: %s, Amount: %d"(stack.getItem().getId(), stack.getAmount());
+            }
+        }
+
+        if (GetAsyncKeyState(VK_LEFT) & 1)
+        {
+            SkillExpTable woodcutting = Exfil.get().getSkillExpTable(Skill.WOODCUTTING);
+            infoF!"Woodcutting XP: %d, Current Level: %d, Boosted Level: %d"(woodcutting.xp, woodcutting.currentLevel, woodcutting.boostedLevel);
         }
     }
 

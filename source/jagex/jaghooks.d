@@ -15,6 +15,7 @@ class JagexHooks
 {
     private Hook npcActionOne;
     private Hook addChatMessage;
+    private Hook updateStat;
 
     this()
     {
@@ -23,12 +24,21 @@ class JagexHooks
 
         this.npcActionOne = new Hook(0x117550, "npcAction1");
         this.addChatMessage = new Hook(0xCD640, "addChat");
+        this.updateStat = new Hook(0x270310, "updateStat");
     }
 
     public JagexHooks placeAll()
     {
+        import slf4d;
+
         this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
         this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
+        this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
+
+        infoF!"npcTrampoline: %016X"(npcTrampoline);
+        infoF!"chatTrampoline: %016X"(chatTrampoline);
+        infoF!"updateStatTrampoline: %016X"(updateStatTrampoline);
+
         return this;
     }
 

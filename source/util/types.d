@@ -1,6 +1,6 @@
 module util.types;
 
-import std.conv;
+import std.conv : to;
 import std.format;
 import std.string;
 import core.stdc.string;
@@ -9,9 +9,9 @@ import core.stdc.stdlib : malloc;
 alias Address = ulong;
 alias HookedArgPtr = ulong*;
 
-template offset(uint offset)
+template offset(uint off)
 {
-    mixin("char[" ~ to!string(offset) ~ "] padding_" ~ to!string(offset) ~ ";");
+    mixin("char[" ~ to!string(off) ~ "] padding_" ~ to!string(off) ~ ";");
 }
 
 struct JagString
@@ -92,4 +92,11 @@ struct JagString
     {
         return read().length;
     }
+}
+
+enum ClientState : int
+{
+    LOGIN = 10,
+    LOBBY = 20,
+    IN_GAME = 30,
 }

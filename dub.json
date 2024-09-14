@@ -5,7 +5,10 @@
 	],
 	"copyright": "XD",
 	"dependencies": {
-		"capstone-d": "~>2.1.1"
+		"capstone-d": "~>2.1.1",
+		"colorize": "~>1.0.5",
+		"dackson": "~>0.2.1",
+		"slf4d": "~>3.0.1"
 	},
 	"libs": [
 		"user32"

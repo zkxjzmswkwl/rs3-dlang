@@ -9,10 +9,12 @@ import core.stdc.string;
 import util.types;
 import util.misc;
 
+
 ///
 /// https://code.dlang.org/packages/capstone-d
 ///
 import capstone;
+import slf4d;
 
 class Instructions
 {
@@ -65,7 +67,6 @@ class Hook
         *trampolinePtr = relayPage;
 
         void* relayFuncMemory = cast(char*) relayPage + trampolineSize;
-        writefln("%016X", relayFuncMemory);
         this.writeJmp(relayFuncMemory, ourFunction);
 
         ubyte[] jmpIsns32 = [0xE9, 0x0, 0x0, 0x0, 0x0];
@@ -96,6 +97,8 @@ class Hook
 
         // put da condom back on
         VirtualProtect(cast(void*) location, 1024, previousProtection, null);
+
+        infoF!"Hook(%s) at %016X"(this.name, location);
     }
 
     private uint buildTrampoline(void* func, void* trampDest)
@@ -132,7 +135,7 @@ class Hook
         }
 
         writeJmp(jumpBackMem, cast(ubyte*) func + 5);
-        writeln("Trampoline jumpBackMem: " ~ to!string(jumpBackMem));
+        // writeln("Trampoline jumpBackMem: " ~ to!string(jumpBackMem));
 
         // absTableMem should be type `ubyte*` but D says no.
         // This might blow up.
@@ -188,7 +191,7 @@ class Hook
         size_t count;
         auto disasmIsns = this.cs.disasm(readBytes(func, 14), cast(ulong) func, 14);
         count = disasmIsns.length;
-        writeln("Count of disasmIsns: " ~ to!string(count));
+        // writeln("Count of disasmIsns: " ~ to!string(count));
 
         uint byteCount = 0;
         uint stolenIsnCount = 0;
@@ -202,7 +205,7 @@ class Hook
         }
 
         writeNops(func, byteCount);
-        writeln("Wrote nops @ " ~ to!string(func) ~ " for " ~ to!string(byteCount) ~ " bytes");
+        // writeln("Wrote nops @ " ~ to!string(func) ~ " for " ~ to!string(byteCount) ~ " bytes");
         this.cs.detail = false;
 
         return new Instructions(cast(X86Instruction*) disasmIsns, stolenIsnCount, byteCount);
