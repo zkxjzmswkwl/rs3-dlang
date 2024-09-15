@@ -8,6 +8,11 @@ In all seriousness, this project came to exist almost entirely because there is 
 
 Everything else is kind of auxiliary.
 
+# Will this get me banned?
+It is currently, as of writing (_engine revision 937-1)_ **__not possible for Jagex to programmatically detect this software__** as the engine contains no way of doing so. I suppose decades of relying on Java's reflection has taken its toll.
+
+I check each revision. If this changes I will update here.
+
 # What's the status?
 Very early development. We'll see how the jaggy aggro goes.
 
