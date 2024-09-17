@@ -5,7 +5,6 @@ import std.string : toStringz;
 import core.sys.windows.windows;
 
 import slf4d;
-import colorize;
 
 import util.misc;
 import util.types;
@@ -54,8 +53,6 @@ void hookAddChat(
 extern(Windows)
 void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
 {
-    infoF!"skillPtr (%016X) : newSkillTotalExp (%d)"(skillPtr, newSkillTotalExp);
-
     auto skillId = **skillPtr;
     auto curArrayOffset = skillId * 0x18;
     auto arrayBase = cast(ulong)(skillPtr) - curArrayOffset;
@@ -64,9 +61,6 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
     {
         Exfil.get().setSkillArrayBase(arrayBase);
     }
-
-    infoF!"arrayBase (%016X)"(arrayBase);
-    infoF!"Received exp for skill id (%d)"(**skillPtr);
 
     fnCall(updateStatTrampoline, skillPtr, newSkillTotalExp);
 }

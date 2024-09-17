@@ -41,6 +41,7 @@ class Client
     private void instantiateClientObjects()
     {
         info("Instantiating client objects.");
+
         this.localPlayer = new LocalPlayer(this.clientPtr);
         this.inventory = new Inventory(this.clientPtr);
         this.skills = new Skills(this.clientPtr);

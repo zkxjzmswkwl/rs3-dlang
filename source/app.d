@@ -2,6 +2,7 @@ import core.sys.windows.dll;
 
 import std.format;
 import std.stdio;
+import std.string;
 import std.concurrency;
 import core.runtime;
 import core.sys.windows.windows;
@@ -11,10 +12,6 @@ import core.sys.windows.winnt;
 import core.stdc.stdint : uintptr_t;
 import core.memory;
 
-import colorize;
-///
-/// Logging
-///
 import slf4d;
 
 import util.types;
@@ -25,24 +22,28 @@ import jagex.client;
 import jagex.constants;
 import jagex.clientobjs.localplayer;
 import jagex.clientobjs.inventory;
+import tracker.tracker;
+import comms.pipes;
 
-void setup()
-{
-    // TODO: Make this configurable.
-    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
-}
-
-void cleanup(HMODULE hModule)
-{
-    fclose(stdout.getFP);
-}
 
 uintptr_t run(HMODULE hModule)
 {
-    setup();
+
+    // Maybe `stdoutLog` needs to be an lvalue so it can be kept alive?
+    // Edit: No fucking clue why this doesn't work. No exceptions thrown, no crash.
+    // Just no logging to that file. At a loss. Moving on.
+    // auto stdoutLog = toStringz(Context.get().getWorkingDir() ~ "output.log");
+    // freopen(stdoutLog, "w", stdout.getFP);
+
+    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
 
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
+
+    if (Context.get().isDebugMode())
+    {
+        info("Debug mode enabled.");
+    }
 
     Client jagClient = new Client();
     LocalPlayer localPlayer = jagClient.getLocalPlayer();
@@ -68,24 +69,20 @@ uintptr_t run(HMODULE hModule)
         // TODO: Remove
         if (GetAsyncKeyState(VK_RIGHT) & 1)
         {
-            auto itemStacks = inventory.getItems();
-            ItemStack first = itemStacks[0];
-            first.getItem().resolve();
-
-            foreach (stack; itemStacks)
-            {
-                infoF!"Item: %s, Amount: %d"(stack.getItem().getId(), stack.getAmount());
-            }
+            NamedPipe commsTest = new NamedPipe("BigOlDongs");
+            commsTest.start();
         }
 
         if (GetAsyncKeyState(VK_LEFT) & 1)
         {
-            SkillExpTable woodcutting = Exfil.get().getSkillExpTable(Skill.WOODCUTTING);
-            infoF!"Woodcutting XP: %d, Current Level: %d, Boosted Level: %d"(woodcutting.xp, woodcutting.currentLevel, woodcutting.boostedLevel);
+            Tracker tracker = new Tracker(Skill.FISHING);
+            auto trackerThread = new Thread({ tracker.run(); }).start();
+            info("Tracker thread started.");
+            Thread.sleep(dur!"msecs"(1000));
         }
     }
 
-    cleanup(hModule);
+    fclose(stdout.getFP);
     return 0;
 }
 

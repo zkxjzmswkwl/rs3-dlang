@@ -34,3 +34,21 @@ enum Skill
     ARCHAEOLOGY = 27,
     NECROMANCY = 28,
 }
+
+// // Skill colors
+// enum SkillColor
+// {
+//     // TODO: Automate this cba
+//     ATTACK = Color(152, 20, 20, 255),
+//     DEFENCE = Color(20, 126, 152, 255),
+//     WOODCUTTING = Color(126, 79, 53, 255),
+//     FISHING = Color(62, 112, 185, 255),
+
+//     SEPARATOR = Color(30, 30, 30, 255)
+// }
+
+// enum KColor
+// {
+//     TRACKER_BG = Color(30, 30, 30, 255),
+//     TRACKER_FG = Color(247, 247, 247, 255)
+// }

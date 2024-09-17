@@ -1,5 +1,13 @@
 module context;
 
+import core.stdc.stdlib;
+import std.conv;
+import std.array;
+import std.file;
+import std.algorithm.searching;
+
+import slf4d;
+
 import runescape;
 import util.types;
 
@@ -9,10 +17,26 @@ class Context
 
     private RuneScape runeScape;
     private bool debugMode = true;
+    private string workingDirectory;
+    private string windowsUser;
 
     private this()
     {
         this.runeScape = new RuneScape();
+
+        // Comically bad
+        this.windowsUser = getenv("USERPROFILE").to!string().replace("\\", "/").split("Users/")[1];
+        info("Windows user: " ~ this.windowsUser);
+        this.workingDirectory = "C:/Users/"~this.windowsUser~"/Documents/de-oppresso-liber/";
+        if (exists(this.workingDirectory))
+        {
+            info("Working directory exists.");
+        }
+        else
+        {
+            info("Working directory does not exist. Creating.");
+            mkdir(this.workingDirectory);
+        }
     }
 
     public static Context get()
@@ -30,5 +54,10 @@ class Context
     public bool isDebugMode()
     {
         return this.debugMode;
+    }
+
+    public string getWorkingDir()
+    {
+        return this.workingDirectory;
     }
 }

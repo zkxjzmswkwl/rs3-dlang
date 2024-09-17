@@ -9,7 +9,9 @@ In all seriousness, this project came to exist almost entirely because there is 
 Everything else is kind of auxiliary.
 
 # Will this get me banned?
-It is currently, as of writing (_engine revision 937-1)_ **__not possible for Jagex to programmatically detect this software__** as the engine contains no way of doing so. I suppose decades of relying on Java's reflection has taken its toll.
+It is currently, as of writing (_engine revision 937-1)_, **__not possible for Jagex to programmatically detect this software__** as the engine contains no way of doing so. I suppose decades of relying on Java's reflection has taken its toll.
+
+This software invokes no action on behalf of the user. That is to say, in simpler terms _"we dont do nothin"_. Meaning there is nothing for server-side behavior analysis to, well, analyze. We simply read data and build features atop of that data, similar to Alt1. Just without the shackles.
 
 I check each revision. If this changes I will update here.
 
