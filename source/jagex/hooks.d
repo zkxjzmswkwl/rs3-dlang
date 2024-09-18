@@ -6,6 +6,7 @@ import core.sys.windows.windows;
 
 import slf4d;
 
+import context;
 import util.misc;
 import util.types;
 import jagex.client;
@@ -57,9 +58,19 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
     auto curArrayOffset = skillId * 0x18;
     auto arrayBase = cast(ulong)(skillPtr) - curArrayOffset;
 
-    if (Exfil.get().getSkillArrayBase() == 0x0)
+    if (Exfil.get().skillArrayBaseLoc == 0x0)
     {
         Exfil.get().setSkillArrayBase(arrayBase);
+    }
+
+    // We exfiltrate the memory location pointing to an array of skills/their xp from this hook.
+    // We wait until that data has been exfiltrated before we can track anything.
+    // Overuse of Singletons is an unfortunate side effect of the game thread calling the shots.
+    Context.get().instantiateTrackerManager();
+    if (!Context.get().tManager.isTrackerActive!uint(skillId))
+    {
+        infoF!"Starting tracker thread for skill: %d"(skillId);
+        Context.get().tManager.startTracker(skillId);
     }
 
     fnCall(updateStatTrampoline, skillPtr, newSkillTotalExp);

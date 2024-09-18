@@ -106,7 +106,7 @@ class Exfil
     // Exfil
     private Address skillArrayBase = 0x0;
 
-    public Address getSkillArrayBase()
+    @property public Address skillArrayBaseLoc()
     {
         return this.skillArrayBase;
     }

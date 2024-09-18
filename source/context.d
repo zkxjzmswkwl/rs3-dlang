@@ -10,12 +10,16 @@ import slf4d;
 
 import runescape;
 import util.types;
+import tracker.trackermanager;
+
+__gshared Context instance = null;
 
 class Context
 {
-    static Context instance = null;
 
     private RuneScape runeScape;
+    __gshared private TrackerManager trackerManager;
+
     private bool debugMode = true;
     private string workingDirectory;
     private string windowsUser;
@@ -23,6 +27,7 @@ class Context
     private this()
     {
         this.runeScape = new RuneScape();
+        this.trackerManager = null;
 
         // Comically bad
         this.windowsUser = getenv("USERPROFILE").to!string().replace("\\", "/").split("Users/")[1];
@@ -49,6 +54,17 @@ class Context
     public RuneScape getRuneScape()
     {
         return this.runeScape;
+    }
+
+    @property TrackerManager* tManager()
+    {
+        return &this.trackerManager;
+    }
+
+    public void instantiateTrackerManager()
+    {
+        if (this.trackerManager is null)
+            this.trackerManager = new TrackerManager();
     }
 
     public bool isDebugMode()

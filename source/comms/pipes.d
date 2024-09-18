@@ -4,10 +4,17 @@ import core.sys.windows.windows;
 import core.sys.windows.windef;
 import std.stdio;
 import std.string;
+import std.algorithm : canFind;
 import std.conv : to;
 import core.thread;
 
 import slf4d;
+
+import context;
+import jagex.client;
+import jagex.constants;
+import tracker.tracker;
+import tracker.trackermanager;
 
 class NamedPipe : Thread
 {
@@ -32,16 +39,41 @@ private:
         while (hasClient)
         {
             auto inBuff = this.read();
+            info("[/] recv: "~inBuff);
+
             if (inBuff == "DISC")
             {
-                info("DISC\t");
                 this.hasClient = false;
                 this.initialize();
                 this.acceptClients();
                 continue;
             }
-            info("[/] recv: "~inBuff);
-            this.write("Hell Fire Rage Cocks");
+
+            // TODO: Some sort of command handler
+            // This is tmp testing.
+            if (!canFind(inBuff, "TRACKER::"))
+                continue;
+
+            auto command = inBuff.split("::")[1];
+            if (command == "UPDATE")
+            {
+                // Get all the Tracker objects that are currently active.
+                Tracker[] activeTrackers = Context.get().tManager.getActiveTrackers();
+                foreach (_tracker; activeTrackers)
+                {
+                    auto commsStr = _tracker.getCommString();
+                    int numReprSkill = cast(int)_tracker.getSkill();
+                    this.write("Skill-" ~ to!string(numReprSkill) ~ "\t" ~ commsStr);
+                    if (!FlushFileBuffers(this.hPipe))
+                        error("FlushFileBuffers failed.");
+
+                    // TODO: 100ms is a tad extreme. Testing.
+                    Thread.sleep(dur!"msecs"(100));
+
+                    if (this.read() == "ACK")
+                        info("ACK received.");
+                }
+            }
         }
     }
 
@@ -121,10 +153,10 @@ public:
             return false;
         }
 
-        infoF!"[+] Wrote %d bytes to pipe."(writeSize);
         return true;
     }
 
+    /// Blocking read
     string read()
     {
         char[512] buffer;
@@ -140,7 +172,7 @@ public:
         if (!didRead)
         {
             auto errorCode = GetLastError();
-            infoF!"Read filure %d"(errorCode);
+            infoF!"Read failure %d"(errorCode);
             if (errorCode == ERROR_BROKEN_PIPE)
             {
                 info("Broken pipe, client disconnected?");

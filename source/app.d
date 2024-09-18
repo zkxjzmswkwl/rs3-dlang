@@ -24,6 +24,7 @@ import jagex.clientobjs.localplayer;
 import jagex.clientobjs.inventory;
 import tracker.tracker;
 import comms.pipes;
+import tracker.trackermanager;
 
 
 uintptr_t run(HMODULE hModule)
@@ -36,6 +37,7 @@ uintptr_t run(HMODULE hModule)
     // freopen(stdoutLog, "w", stdout.getFP);
 
     freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
+    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stderr.getFP);
 
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
@@ -59,10 +61,10 @@ uintptr_t run(HMODULE hModule)
     for (;;)
     {
         Thread.sleep(dur!"msecs"(50));
-        if (GetAsyncKeyState(VK_F1) & 1)
+
+        if (Exfil.get().skillArrayBaseLoc != 0x0 && !(Context.get().tManager is null))
         {
-            info("Ejecting");
-            break;
+            Context.get().instantiateTrackerManager();
         }
 
         // Testing etc.
@@ -72,17 +74,10 @@ uintptr_t run(HMODULE hModule)
             NamedPipe commsTest = new NamedPipe("BigOlDongs");
             commsTest.start();
         }
-
-        if (GetAsyncKeyState(VK_LEFT) & 1)
-        {
-            Tracker tracker = new Tracker(Skill.FISHING);
-            auto trackerThread = new Thread({ tracker.run(); }).start();
-            info("Tracker thread started.");
-            Thread.sleep(dur!"msecs"(1000));
-        }
     }
 
     fclose(stdout.getFP);
+    fclose(stderr.getFP);
     return 0;
 }
 

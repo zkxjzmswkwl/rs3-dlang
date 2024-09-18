@@ -1,20 +1,20 @@
 module kronos.hook;
 
-import std.stdio;
-import std.conv : to;
 import core.stdc.stdint;
 import core.sys.windows.windows;
+import std.stdio;
+import std.conv : to;
 import std.algorithm.comparison;
 import core.stdc.string;
-import util.types;
-import util.misc;
-
 
 ///
 /// https://code.dlang.org/packages/capstone-d
 ///
 import capstone;
 import slf4d;
+import util.types;
+import util.misc;
+
 
 class Instructions
 {
@@ -37,15 +37,15 @@ class Hook
     ///
     private string name;
     ///
-    /// Where we're placing the jmp.
+    /// Target function RVA.
     ///
-    private Address location;
+    private /*alias Address = ulong*/ Address location;
     /// 
     /// Location of our mapped function.
     ///
     private Address jmpTo;
     /// 
-    /// Capstone pointer
+    /// Capstone instance
     ///
     private Capstone cs;
 
@@ -78,7 +78,7 @@ class Hook
         The relay function looks like this, roughly:
             mov    rcx,[rcx+08]                    ; Stolen bytes
             mov    r8,rdx                          ; Stolen bytes
-            mov    r10,rs2client.exe+117555    
+            mov    r10,rs2client.exe+117555
             jmp    r10                             ; jmp back to just after our 32-bit jmp in the original func location.
             mov    r10,DeOppressoLiber.dll+13A2    
             jmp    r10                             ; jmp to the point in our jmp table where we jmp to the body of our hook. (see below)
@@ -116,7 +116,7 @@ class Hook
 
             if (isRelativeIsn(inst))
             {
-                relocateInstruction(this.cs, inst, stolenByteMem);
+                relocateInstruction(inst, stolenByteMem);
             }
             else if (isRelativeJump(inst))
             {
@@ -135,10 +135,7 @@ class Hook
         }
 
         writeJmp(jumpBackMem, cast(ubyte*) func + 5);
-        // writeln("Trampoline jumpBackMem: " ~ to!string(jumpBackMem));
 
-        // absTableMem should be type `ubyte*` but D says no.
-        // This might blow up.
         return cast(uint)(cast(void*) absTableMem - trampDest);
     }
 
@@ -159,8 +156,6 @@ class Hook
 
     private void rewriteJumpInstruction(X86Instruction* ins, ubyte* instrPtr, ubyte* absTableEntry)
     {
-        // This is also suspicious and might blow up. The cast seems wrong but D won't let me do what I want to do here.
-        // Maybe the correct phrasing would be "I don't know how to do what I want to do here in D, yet", but who knows.
         ubyte distToJumpTable = cast(ubyte)(absTableEntry - (instrPtr + ins.bytes.length));
         ubyte insByteSize = ins.bytes[0] == 0x0F ? 2 : 1;
         // Same here.
@@ -191,7 +186,6 @@ class Hook
         size_t count;
         auto disasmIsns = this.cs.disasm(readBytes(func, 14), cast(ulong) func, 14);
         count = disasmIsns.length;
-        // writeln("Count of disasmIsns: " ~ to!string(count));
 
         uint byteCount = 0;
         uint stolenIsnCount = 0;
@@ -205,7 +199,6 @@ class Hook
         }
 
         writeNops(func, byteCount);
-        // writeln("Wrote nops @ " ~ to!string(func) ~ " for " ~ to!string(byteCount) ~ " bytes");
         this.cs.detail = false;
 
         return new Instructions(cast(X86Instruction*) disasmIsns, stolenIsnCount, byteCount);
@@ -301,5 +294,87 @@ class Hook
                 break;
         }
         return null;
+    }
+
+    private ubyte[] readBytes(T)(T address, size_t size)
+    {
+        ubyte* bufferLoc = cast(ubyte*) address;
+        auto ret = bufferLoc[0 .. size];
+        return ret;
+    }
+
+    private void writeNops(T)(T address, size_t size)
+    {
+        memset(address, 0x90, size);
+    }
+
+    private bool isRelativeIsn(X86Instruction* inst)
+    {
+        const X86Detail detail = inst.detail;
+        if (detail is null)
+        {
+            return false;
+        }
+
+        foreach (op; detail.operands[0 .. detail.operands.length])
+        {
+            if (op.type == X86OpType.mem && op.mem.base.id == X86RegisterId.rip)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool isRelativeCall(X86Instruction* inst)
+    {
+        return inst.bytes[0] == 0xE8 && inst.id == X86InstructionId.call;
+    }
+
+    private bool isRelativeJump(X86Instruction* inst)
+    {
+        bool isAnyJmp = inst.id >= X86InstructionId.jae && inst.id <= X86InstructionId.js;
+        bool isJmp = inst.id == X86InstructionId.jmp;
+        bool startsWithEBorE9 = inst.bytes[0] == 0xEB || inst.bytes[0] == 0xE9;
+        return isJmp ? startsWithEBorE9 : isAnyJmp;
+    }
+
+    private T getDisplacement(T)(X86Instruction* inst, ubyte offset)
+    {
+        T disp;
+        memcpy(&disp, &inst.bytes[offset], T.sizeof);
+        return disp;
+    }
+
+    private void relocateInstruction(X86Instruction* inst, void* destination)
+    {
+        const X86Detail detail = inst.detail;
+        if (detail is null)
+        {
+            return;
+        }
+
+        ubyte offset = detail.encoding.dispOffset;
+        switch (offset)
+        {
+        case 1:
+            byte disp = getDisplacement!byte(inst, offset);
+            disp -= cast(ulong)(destination) - inst.address;
+            memcpy(cast(void*)&inst.bytes[offset], &disp, byte.sizeof);
+            break;
+        case 2:
+            short disp = getDisplacement!short(inst, offset);
+            disp -= cast(ulong)(destination) - inst.address;
+            memcpy(cast(void*)&inst.bytes[offset], &disp, short.sizeof);
+            break;
+        case 4:
+            int disp = getDisplacement!int(inst, offset);
+            disp -= cast(ulong)(destination) - inst.address;
+            memcpy(cast(void*)&inst.bytes[offset], &disp, int.sizeof);
+            break;
+        default:
+            break;
+        }
     }
 }
