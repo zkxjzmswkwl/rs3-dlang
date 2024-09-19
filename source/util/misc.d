@@ -47,3 +47,15 @@ auto minAddr = 0x100000uL;
     }
     return T.init;
 }
+
+extern(Windows) T vTableInvocation(T)(
+    ulong* thisptr,       // rcx
+    int fnIndex,   // Inc by sizeof ptr (0x8/0x4), *thisptr -> vTable data
+    long* arg
+)
+{
+    ulong* vTable = *cast(ulong**) thisptr;
+    alias FuncPtr = extern(Windows) T function(void*, long*);
+    FuncPtr func = cast(FuncPtr)(vTable[fnIndex]);
+    return func(thisptr, arg);
+}

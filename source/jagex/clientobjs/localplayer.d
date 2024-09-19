@@ -1,5 +1,7 @@
 module jagex.clientobjs.localplayer;
 
+import slf4d;
+
 import util.misc;
 import util.types;
 import jagex.clientobjs.clientobj;
@@ -10,6 +12,13 @@ class LocalPlayer : ClientObj
     {
         super(clientPtr, 0x19F50);
         super.logPtr();
+
+        infoF!"Logged in as %s"(this.getName());
+        if (this.isMember()) {
+            infoF!"This account (%s) is currently a member."(this.getName());
+        } else {
+            infoF!"This account (%s) is not currently a member."(this.getName());
+        }
     }
 
     public string getName()

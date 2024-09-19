@@ -7,10 +7,11 @@ import util.types;
 import util.misc;
 import context;
 
+import jagex.constants;
 import jagex.clientobjs.localplayer;
 import jagex.clientobjs.inventory;
 import jagex.clientobjs.skills;
-import jagex.constants;
+import jagex.clientobjs.scenemanager;
 
 class Client
 {
@@ -21,6 +22,7 @@ class Client
     ///
     private LocalPlayer localPlayer;
     private Inventory inventory;
+    private SceneManager sceneManager;
     private Skills skills;
 
     this()
@@ -45,6 +47,7 @@ class Client
         this.localPlayer = new LocalPlayer(this.clientPtr);
         this.inventory = new Inventory(this.clientPtr);
         this.skills = new Skills(this.clientPtr);
+        this.sceneManager = new SceneManager(this.clientPtr);
     }
 
     // Without this, hitting a breakpoint will cause your mouse to feel as though it's polling at 1hz.
@@ -73,9 +76,19 @@ class Client
         return this.localPlayer;
     }
 
+    public SceneManager getSceneManager()
+    {
+        return this.sceneManager;
+    }
+
     public Inventory getInventory()
     {
         return this.inventory;
+    }
+
+    public Address getPtr()
+    {
+        return this.clientPtr;
     }
 }
 

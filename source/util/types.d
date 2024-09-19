@@ -14,6 +14,50 @@ template offset(uint off)
     mixin("char[" ~ to!string(off) ~ "] padding_" ~ to!string(off) ~ ";");
 }
 
+struct JagArray(T)
+{
+    ulong _1;
+    size_t size;
+    T* data;
+
+    T opIndex(size_t index) const
+    {
+        return data[index];
+    }
+
+    T opIndex(size_t index)
+    {
+        return data[index];
+    }
+
+    // Iterators
+    T* begin()
+    {
+        return data;
+    }
+
+    T* end()
+    {
+        return data + size;
+    }
+
+    const(T)* cbegin() const
+    {
+        return data;
+    }
+
+    const(T)* cend() const
+    {
+        return data + size;
+    }
+
+    bool empty() const
+    {
+        // || size == 0 ?
+        return data is null;
+    }
+}
+
 struct JagString
 {
     struct HeapLayout
@@ -76,16 +120,30 @@ struct JagString
 
     @property bool isSSO() const
     {
-        return !isHeap();
+        return !isHeap;
     }
 
-    @property string read() const
+    string read() const
     {
-        if (isHeap())
+        if (isHeap)
         {
             return to!string(heap.data);
         }
         return to!string(raw.data.ptr);
+    }
+
+    char* readCstr()
+    {
+        if (isHeap)
+        {
+            return heap.data;
+        }
+        return raw.data.ptr;
+    }
+
+    string fromCstr()
+    {
+        return cast(string)fromStringz(readCstr());
     }
 
     @property size_t size() const

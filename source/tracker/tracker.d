@@ -100,7 +100,7 @@ class Tracker : Thread
         {
             this.lastSnapshot = this.newSnapshot();
             this.updateHourlyXp();
-            infoF!"[*] Total XP gained in skill (%d) with an hourly rate of (%.8f): %d"(this.skill, this.hourlyXp, this.getTotalXpGain());
+            // infoF!"[*] Total XP gained in skill (%d) with an hourly rate of (%.8f): %d"(this.skill, this.hourlyXp, this.getTotalXpGain());
             Thread.sleep(msecs(1000));
         }
     }

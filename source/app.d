@@ -3,72 +3,67 @@ import core.sys.windows.dll;
 import std.format;
 import std.stdio;
 import std.string;
-import std.concurrency;
 import core.runtime;
 import core.sys.windows.windows;
 import core.thread;
 import core.sys.windows.windef;
 import core.sys.windows.winnt;
 import core.stdc.stdint : uintptr_t;
-import core.memory;
 
 import slf4d;
 
 import util.types;
 import context;
-import jagex.item;
 import jagex.jaghooks;
 import jagex.client;
-import jagex.constants;
 import jagex.clientobjs.localplayer;
+import jagex.clientobjs.scenemanager;
 import jagex.clientobjs.inventory;
-import tracker.tracker;
+import jagex.engine.varbit;
 import comms.pipes;
-import tracker.trackermanager;
 
 
-uintptr_t run(HMODULE hModule)
+ulong run(HMODULE hModule)
 {
-
     // Maybe `stdoutLog` needs to be an lvalue so it can be kept alive?
     // Edit: No fucking clue why this doesn't work. No exceptions thrown, no crash.
     // Just no logging to that file. At a loss. Moving on.
     // auto stdoutLog = toStringz(Context.get().getWorkingDir() ~ "output.log");
     // freopen(stdoutLog, "w", stdout.getFP);
-
     freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
     freopen("C:/Users/owcar/personal/rsd/output.log", "w", stderr.getFP);
 
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
 
-    if (Context.get().isDebugMode())
-    {
-        info("Debug mode enabled.");
-    }
-
     Client jagClient = new Client();
+    Varbit varbit = new Varbit(jagClient.getPtr());
     LocalPlayer localPlayer = jagClient.getLocalPlayer();
+    SceneManager sceneManager = jagClient.getSceneManager();
     Inventory inventory = jagClient.getInventory();
-
-    infoF!"Logged in as %s"(localPlayer.getName());
-    if (localPlayer.isMember()) {
-        infoF!"This account (%s) is currently a member."(localPlayer.getName());
-    } else {
-        infoF!"This account (%s) is not currently a member."(localPlayer.getName());
-    }
 
     for (;;)
     {
         Thread.sleep(dur!"msecs"(50));
 
-        if (Exfil.get().skillArrayBaseLoc != 0x0 && !(Context.get().tManager is null))
-        {
-            Context.get().instantiateTrackerManager();
-        }
-
         // Testing etc.
         // TODO: Remove
+        if (GetAsyncKeyState(VK_UP) & 1)
+        {
+            // sceneManager.recurseGraphNode(0x0);
+            // infoF!"Praying melee: %d"(varbit.isPrayingMelee());
+            infoF!"Residual Soul count: %d"(varbit.getResidualSoulCount());
+        }
+
+        if (GetAsyncKeyState(VK_LEFT) & 1)
+        {
+            auto curHp = varbit.getCurrentHealth();
+            auto maxHp = varbit.getMaxHealth();
+            auto sp = varbit.getSummoningPoints();
+            auto pp = varbit.getPrayerPoints();
+            infoF!"HP: %d/%d Summoning points: %d Prayer points: %d"(curHp, maxHp, sp, pp);
+        }
+
         if (GetAsyncKeyState(VK_RIGHT) & 1)
         {
             NamedPipe commsTest = new NamedPipe("BigOlDongs");
