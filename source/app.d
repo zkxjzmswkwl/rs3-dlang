@@ -48,13 +48,6 @@ ulong run(HMODULE hModule)
 
         // Testing etc.
         // TODO: Remove
-        if (GetAsyncKeyState(VK_UP) & 1)
-        {
-            // sceneManager.recurseGraphNode(0x0);
-            // infoF!"Praying melee: %d"(varbit.isPrayingMelee());
-            infoF!"Residual Soul count: %d"(varbit.getResidualSoulCount());
-        }
-
         if (GetAsyncKeyState(VK_LEFT) & 1)
         {
             auto curHp = varbit.getCurrentHealth();

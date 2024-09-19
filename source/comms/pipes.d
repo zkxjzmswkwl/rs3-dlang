@@ -67,9 +67,6 @@ private:
                     if (!FlushFileBuffers(this.hPipe))
                         error("FlushFileBuffers failed.");
 
-                    // TODO: 100ms is a tad extreme. Testing.
-                    Thread.sleep(dur!"msecs"(100));
-
                     if (this.read() == "ACK")
                         info("ACK received.");
                 }
@@ -100,7 +97,6 @@ public:
 
         // Bunch of Windows ugliness. Support wstring.
         this.hPipe = CreateNamedPipeW(
-            // This might need to be a cast to (wchar*). If shit blows up, start here.
             to!wstring(pipePath).ptr,
             PIPE_ACCESS_DUPLEX,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,

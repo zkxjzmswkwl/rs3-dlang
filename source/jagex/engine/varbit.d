@@ -20,6 +20,11 @@ class Varbit
     /*
         PlayerVarDomain -> client]0x19f60
         ConfigProvider  -> client]0x18D30
+
+
+        This is very research-ey. Sorry about that.
+        For now, it does the job. As I need the relevant objects,
+        they will have their own homes and be resolved elsewhere.
      */
     extern (Windows) private int get(int varbitId)
     {
@@ -42,7 +47,7 @@ class Varbit
 
     public int getCurrentHealth()
     {
-        return this.get(1668);
+        return this.get(1_668);
     }
 
     public int getMaxHealth()
