@@ -1,6 +1,7 @@
 module jagex.engine.varbit;
 
 import std.string;
+import core.sys.windows.windows;
 
 import slf4d;
 
@@ -41,8 +42,43 @@ class Varbit
         ListShit fnList = cast(ListShit)(vtfn);
         long* varCategory = fnList(sharedPtrAccess, varbitId, null);
 
+        // Calls virtual method RVA:0xE42D0 (937-1)
         Address* pVarPtr = cast(Address*)(this.clientPtr + 0x19F60);
+        infoF!"VarPtr: %016X"(pVarPtr);
         return vTableInvocation!int(pVarPtr, 3, varCategory);
+    }
+
+    extern (Windows) private int get(Address* domain, int varbitId)
+    {
+        Address configProvider = read!Address(this.clientPtr + 0x18D30);
+        auto containers = read!(JagArray!Address)(configProvider + 0x98);
+        auto group = cast(Address)(containers[69] + 0x38);
+
+        // Fn proto, calls virtual method RVA:0x2A9020 (937-1)
+        alias ListShit = extern(Windows) long* function(ulong, int, void**);
+        Address sharedPtrAccess = read!Address(group + 0x8);
+        Address vTable = read!Address(sharedPtrAccess);
+
+        Address vtfn = read!Address(vTable + 0x38);
+        ListShit fnList = cast(ListShit)(vtfn);
+        long* varCategory = fnList(sharedPtrAccess, varbitId, null);
+
+        // Calls virtual method RVA:0xE42D0 (937-1)
+        return vTableInvocation!int(domain, 3, varCategory);
+    }
+
+    extern (Windows) public int getInv(int inventoryId, int inventorySlot, int varbitId)
+    {
+        mixin fn!("getInventory", 0x2D47D0, ulong*, int, bool);
+        Address* inventoryManager = read!(Address*)(this.clientPtr + 0x19980);
+
+        Address* inventory = cast(Address*)(getInventory(inventoryManager, inventoryId, false));
+        auto domains = read!(JagVector!(ForeignObjFixed!(56)))(cast(Address)inventory + 0x28);
+        if (domains.empty)  return 0;
+
+        ForeignObjFixed!56 domain = domains.at(inventorySlot);
+        int result = get(cast(Address*)&domain, varbitId);
+        return result;
     }
 
     public int getCurrentHealth()

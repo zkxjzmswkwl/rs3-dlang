@@ -14,6 +14,63 @@ template offset(uint off)
     mixin("char[" ~ to!string(off) ~ "] padding_" ~ to!string(off) ~ ";");
 }
 
+struct JagVector(V)
+{
+    V* _begin;
+    V* _end;
+    void* capacity;
+
+    // Index operator (const and non-const)
+    @property V opIndex(size_t index) const
+    {
+        return _begin[index];
+    }
+
+    @property V opIndex(size_t index)
+    {
+        return _begin[index];
+    }
+
+    // `at` function to access elements
+    V at(size_t index)
+    {
+        return _begin[index];
+    }
+
+    // Size function
+    @property size_t size() const
+    {
+        return cast(size_t)(_end - _begin);
+    }
+
+    // Begin and end iterators (non-const and const versions)
+    V* begin()
+    {
+        return _begin;
+    }
+
+    V* end()
+    {
+        return _end;
+    }
+
+    const(V)* cbegin() const
+    {
+        return _begin;
+    }
+
+    const(V)* cend() const
+    {
+        return _end;
+    }
+
+    // Check if the vector is empty
+    @property bool empty() const
+    {
+        return _begin == _end;
+    }
+}
+
 struct JagArray(T)
 {
     ulong _1;
@@ -150,6 +207,11 @@ struct JagString
     {
         return read().length;
     }
+}
+
+struct ForeignObjFixed(int size)
+{
+    char[size] data;
 }
 
 enum ClientState : int

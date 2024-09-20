@@ -14,6 +14,7 @@ class Inventory : ClientObj
     {
         // In this case, we want client]0x19980]0x8]0x18
         super(clientPtr, 0x19980);
+        super.logPtr();
         this.obj = read!Address(this.obj + 0x8);
         this.obj = read!Address(this.obj + 0x18);
         super.logPtr();

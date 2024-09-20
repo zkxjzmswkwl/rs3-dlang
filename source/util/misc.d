@@ -1,5 +1,7 @@
 module util.misc;
 
+import core.sys.windows.windows;
+import core.sys.windows.windef;
 import std.conv : to;
 import core.stdc.string;
 import util.types;
@@ -48,9 +50,22 @@ auto minAddr = 0x100000uL;
     return T.init;
 }
 
+@nogc void write(T)(Address address, T value)
+{
+    if (address < maxAddr && address > minAddr && address % 4uL == 0uL)
+    {
+        *cast(T*) address = value;
+    }
+}
+
+void rvaWrite(T)(Address address, T value)
+{
+    write!T(cast(Address)GetModuleHandle("rs2client.exe") + address, value);
+}
+
 extern(Windows) T vTableInvocation(T)(
-    ulong* thisptr,       // rcx
-    int fnIndex,   // Inc by sizeof ptr (0x8/0x4), *thisptr -> vTable data
+    ulong* thisptr,
+    int fnIndex,
     long* arg
 )
 {
@@ -58,4 +73,10 @@ extern(Windows) T vTableInvocation(T)(
     alias FuncPtr = extern(Windows) T function(void*, long*);
     FuncPtr func = cast(FuncPtr)(vTable[fnIndex]);
     return func(thisptr, arg);
+}
+
+mixin template fn(string name, ulong loc, T...)
+{
+    mixin("alias ", name, "_t = extern(Windows) ulong function(T);");
+    mixin(name, "_t ", name, " = cast(", name, "_t)(GetModuleHandle(NULL) + loc);");
 }

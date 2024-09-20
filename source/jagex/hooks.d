@@ -18,6 +18,7 @@ import jagex.client;
 __gshared Address npcTrampoline;
 __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
+__gshared Address getInventoryTrampoline;
 
 extern (Windows)
 void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
@@ -74,4 +75,11 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
     }
 
     fnCall(updateStatTrampoline, skillPtr, newSkillTotalExp);
+}
+
+extern(Windows)
+void hookGetInventory(ulong* rcx, int inventoryId, bool a3)
+{
+    infoF!"RCX: %016X | Inventory ID: %d | %d"(rcx, inventoryId, a3);
+    fnCall(getInventoryTrampoline, rcx, inventoryId, a3);
 }
