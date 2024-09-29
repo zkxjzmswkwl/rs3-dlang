@@ -20,10 +20,10 @@ class JagexHooks
 
     this()
     {
-        this.npcActionOne = new Hook(0x117550, "npcAction1");
-        this.addChatMessage = new Hook(0xCD640, "addChat");
-        this.updateStat = new Hook(0x270310, "updateStat");
-        this.getInventory = new Hook(0x2D47D0, "getInventory");
+        this.npcActionOne = new Hook(0x1653B0, "npcAction1");
+        this.addChatMessage = new Hook(0xCE8D0, "addChat");
+        this.updateStat = new Hook(0x272EA0, "updateStat");
+        this.getInventory = new Hook(0x2D7360, "getInventory");
     }
 
     public JagexHooks placeAll()

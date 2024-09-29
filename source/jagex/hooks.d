@@ -29,27 +29,31 @@ void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
     fnCall(npcTrampoline, sp, clientProt);
 }
 
+// This is broken in 938-1 because Jagex did a silly.
+// We don't currently use it for anything, so it sits unfixed.
+// When it's used for something, I'll fix it.
 extern (Windows)
 void hookAddChat(
     void* thisptr,
     int messageGroup,
     int a3,
-    JagString* author,
+    void* author,
     void* a5,
     void* a6,
-    JagString* message,
+    void* message,
     void* a8,
     void* a9,
-    int a10
+    int a10,
+    void* a11
 )
 {
     // Log shit
-    if (!message.empty())
-        infoF!"%s: %s"(author.read(), message.read());
+    // if (!message.empty())
+        // infoF!"%s: %s"(author.read(), message.read());
 
     // Just filter the annoying "Ability not ready yet." message, for now.
-    if (message.read() != "Ability not ready yet.")
-        fnCall(chatTrampoline, thisptr, messageGroup, a3, author, a5, a6, message, a8, a9, a10);
+    // if (message.read() != "Ability not ready yet.")
+    fnCall(chatTrampoline, thisptr, messageGroup, a3, author, a5, a6, message, a8, a9, a10, a11);
 }
 
 extern(Windows)

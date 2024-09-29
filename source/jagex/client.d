@@ -27,7 +27,7 @@ class Client
 
     this()
     {
-        auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD829B8;
+        auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD83AE8;
         this.clientPtr = read!Address(tmp);
 
         infoF!"Client ptr: %016X"(this.clientPtr);
@@ -54,7 +54,7 @@ class Client
     //------------------------------------------------------------------------------------------------ 
     public void unhookMouseHook()
     {
-        HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + 0xD7CFE8);
+        HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + 0xD7E118);
         if (UnhookWindowsHookEx(mouseHook))
         {
             infoF!"Mouse hook unhooked."();

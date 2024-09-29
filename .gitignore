@@ -9,7 +9,6 @@ docs/
 *.a
 *.lib
 *-test-*
-*.exe
 *.pdb
 *.o
 *.obj

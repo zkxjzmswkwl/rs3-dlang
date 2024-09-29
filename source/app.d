@@ -25,13 +25,8 @@ import comms.pipes;
 
 ulong run(HMODULE hModule)
 {
-    // Maybe `stdoutLog` needs to be an lvalue so it can be kept alive?
-    // Edit: No fucking clue why this doesn't work. No exceptions thrown, no crash.
-    // Just no logging to that file. At a loss. Moving on.
-    // auto stdoutLog = toStringz(Context.get().getWorkingDir() ~ "output.log");
-    // freopen(stdoutLog, "w", stdout.getFP);
-    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stdout.getFP);
-    freopen("C:/Users/owcar/personal/rsd/output.log", "w", stderr.getFP);
+    freopen("runedoc.log", "w", stdout.getFP);
+    freopen("runedoc.log", "w", stderr.getFP);
 
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();

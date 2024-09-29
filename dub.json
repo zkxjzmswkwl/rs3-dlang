@@ -5,7 +5,10 @@
 	],
 	"copyright": "XD",
 	"dependencies": {
-		"capstone-d": "~>2.1.1",
+		"capstone-d": {
+			"repository": "git+https://github.com/zkxjzmswkwl/capstone-d.git",
+			"version": "~master"
+		},
 		"dackson": "~>0.2.1",
 		"slf4d": "~>3.0.1"
 	},
