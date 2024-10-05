@@ -25,8 +25,8 @@ import comms.pipes;
 
 ulong run(HMODULE hModule)
 {
-    freopen("runedoc.log", "w", stdout.getFP);
-    freopen("runedoc.log", "w", stderr.getFP);
+    freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
+    freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
 
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
@@ -107,9 +107,9 @@ ulong run(HMODULE hModule)
         if (red == minCol && green == minCol && blue == minCol)
             phase = 0;
 
-        rvaWrite!uint(0xB62AC4, red);
-        rvaWrite!uint(0xB62AC4 + 0x4, green);
-        rvaWrite!uint(0xB62AC4 + 0x8, blue);
+        rvaWrite!uint(0xB63B74, red);
+        rvaWrite!uint(0xB63B74 + 0x4, green);
+        rvaWrite!uint(0xB63B74 + 0x8, blue);
 
         // if (varbit.getInv(94, 17, 30602) == 0 && phase != 3)
         //     phase = 3;
@@ -131,12 +131,6 @@ ulong run(HMODULE hModule)
         {
             infoF!"Scripture state: %d"(varbit.getInv(94, 17, 30602));
             infoF!"Scripture ticks: %d"(varbit.getInv(94, 17, 30603));
-        }
-
-        if (GetAsyncKeyState(VK_RIGHT) & 1)
-        {
-            NamedPipe commsTest = new NamedPipe("BigOlDongs");
-            commsTest.start();
         }
     }
 

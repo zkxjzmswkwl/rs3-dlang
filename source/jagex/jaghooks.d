@@ -31,12 +31,12 @@ class JagexHooks
         import slf4d;
 
         this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
-        this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
+        // this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         // this.getInventory.place(&hookGetInventory, cast(void**)&getInventoryTrampoline);
 
         infoF!"npcTrampoline: %016X"(npcTrampoline);
-        infoF!"chatTrampoline: %016X"(chatTrampoline);
+        // infoF!"chatTrampoline: %016X"(chatTrampoline);
         infoF!"updateStatTrampoline: %016X"(updateStatTrampoline);
         // infoF!"getInventoryTrampoline: %016X"(getInventoryTrampoline);
 
