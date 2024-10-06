@@ -6,6 +6,7 @@ import std.string;
 import core.runtime;
 import core.sys.windows.windows;
 import core.thread;
+import core.memory;
 import core.sys.windows.windef;
 import core.sys.windows.winnt;
 import core.stdc.stdint : uintptr_t;
@@ -25,6 +26,7 @@ import comms.pipes;
 
 ulong run(HMODULE hModule)
 {
+    Runtime.initialize();
     freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
     freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
 
@@ -42,7 +44,7 @@ ulong run(HMODULE hModule)
     uint red = minCol;
     uint green = minCol;
     uint blue = minCol;
-    uint stepAmt = 20000000 / 30;
+    uint stepAmt = 20000000 / 90;
 
     uint phase = 0;
 
@@ -111,11 +113,6 @@ ulong run(HMODULE hModule)
         rvaWrite!uint(0xB63B74 + 0x4, green);
         rvaWrite!uint(0xB63B74 + 0x8, blue);
 
-        // if (varbit.getInv(94, 17, 30602) == 0 && phase != 3)
-        //     phase = 3;
-        // else if (varbit.getInv(94, 17, 30602) == 1 && phase == 3)
-        //     phase = 0;
-
         // Testing etc.
         // TODO: Remove
         if (GetAsyncKeyState(VK_LEFT) & 1)
@@ -134,22 +131,30 @@ ulong run(HMODULE hModule)
         }
     }
 
+    GC.collect();
     fclose(stdout.getFP);
     fclose(stderr.getFP);
     return 0;
 }
 
-extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) // @suppress(dscanner.style.phobos_naming_convention)
+extern (Windows) BOOL DllMain(HMODULE hModule, uint reason, void*) // @suppress(dscanner.style.phobos_naming_convention)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {
-        Runtime.initialize();
-        auto t1 = new Thread({ run(module_); }).start();
+        CloseHandle(
+            CreateThread(
+                cast(SECURITY_ATTRIBUTES*) NULL,
+                cast(ulong) 0,
+                cast(LPTHREAD_START_ROUTINE) &run,
+                cast(PVOID) hModule,
+                cast(uint) 0,
+                cast(uint*) NULL
+            )
+        );
     }
     else if (reason == DLL_PROCESS_DETACH)
     {
         Runtime.terminate();
-        FreeLibraryAndExitThread(module_, 0);
     }
     return TRUE;
 }
