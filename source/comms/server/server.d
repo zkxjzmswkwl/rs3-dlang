@@ -13,8 +13,12 @@ import context;
 
 
 class Server : Thread {
+    private bool shouldRestart;
+
     this() {
         super(&this.run);
+
+        shouldRestart = false;
     }
 
     private void processCommand(string packet) {
@@ -58,9 +62,10 @@ class Server : Thread {
             scope (exit) {
                 clientSocket.close();
                 serverSocket.close();
+                shouldRestart = true;
             }
 
-            while (clientSocket.isAlive) {
+            while (true) {
                 ubyte[1024] buffer;
                 auto bytesRead = clientSocket.receive(buffer);
                 if (bytesRead > 0) {
@@ -76,23 +81,19 @@ class Server : Thread {
                     }
 
                     processPacket(recvBuffer);
+                } else {
+                    info("bytesRead <= 0.");
+                    break;
                 }
             }
         } catch (Exception e) {
             error(e.msg);
         }
 
-            // if (recvBuffer == "yellow") {
-            //     rvaWrite!uint(0xB63B74, 1065353216);
-            //     rvaWrite!uint(0xB63B74 + 0x4, 1065353216);
-            //     rvaWrite!uint(0xB63B74 + 0x8, 1045353216);
-            // } else if (recvBuffer == "black") {
-            //     rvaWrite!uint(0xB63B74, 1045353216);
-            //     rvaWrite!uint(0xB63B74 + 0x4, 1045353216);
-            //     rvaWrite!uint(0xB63B74 + 0x8, 1045353216);
-            // }
-
         info("Client disconnected!");
-        this.run();
+    }
+
+    @property public bool needsRestart() {
+        return this.shouldRestart;
     }
 }

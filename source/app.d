@@ -19,6 +19,11 @@ void run(HMODULE hModule) {
     server.start();
 
     for (;;) {
+        if (server.needsRestart) {
+            server = new Server();
+            server.start();
+        }
+
         Thread.sleep(dur!"msecs"(20));
     }
 
