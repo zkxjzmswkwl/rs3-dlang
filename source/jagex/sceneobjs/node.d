@@ -8,12 +8,10 @@ import jagex.constants;
 import jagex.sceneobjs.sceneobj;
 
 
-class Node : SceneObj
-{
+class Node : SceneObj {
     private Address location;
 
-    this(Address obj)
-    {
+    this(Address obj) {
         // Can be either 0, 10 or 12.
         auto type = read!ObjectType(obj + 0x10);
         if (type == ObjectType.ZERO) {
@@ -23,16 +21,13 @@ class Node : SceneObj
         }
 
         super(obj, type);
-        super.logPtr();
     }
 
-    override public string getName()
-    {
+    override public string getName() {
         return read!JagString(this.location + 0x1E0).read();
     }
 
-    public uint getServerIndex()
-    {
+    public uint getServerIndex() {
         return read!uint(this.location + 0x8);
     }
 }

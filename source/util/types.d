@@ -220,3 +220,25 @@ enum ClientState : int
     LOBBY = 20,
     IN_GAME = 30,
 }
+
+struct SharedPtr(T) {
+    this(T* ptr) {
+        this.ptr = ptr;
+    }
+
+    void* blah;
+    T* ptr;
+}
+
+struct Interaction {
+    this(uint identifier, int x, int y) {
+        this.identifier = identifier;
+        this.x = x;
+        this.y = y;
+    }
+
+    ubyte[0x48] pad;
+    uint identifier;
+    int x;
+    int y;
+}

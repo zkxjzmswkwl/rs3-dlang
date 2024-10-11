@@ -13,8 +13,7 @@ import jagex.clientobjs.inventory;
 import jagex.clientobjs.skills;
 import jagex.clientobjs.scenemanager;
 
-class Client
-{
+class Client {
     private Address clientPtr;
 
     ///
@@ -25,23 +24,18 @@ class Client
     private SceneManager sceneManager;
     private Skills skills;
 
-    this()
-    {
+    this() {
         auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD83AE8;
         this.clientPtr = read!Address(tmp);
 
-        infoF!"Client ptr: %016X"(this.clientPtr);
+        // infoF!"Client ptr: %016X"(this.clientPtr);
 
-        if (Context.get().isDebugMode())
-        {
-            this.unhookMouseHook();
-        }
+        this.unhookMouseHook();
 
         this.instantiateClientObjects();
     }
 
-    private void instantiateClientObjects()
-    {
+    private void instantiateClientObjects() {
         info("Instantiating client objects.");
 
         this.localPlayer = new LocalPlayer(this.clientPtr);
@@ -55,39 +49,31 @@ class Client
     public void unhookMouseHook()
     {
         HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + 0xD7E118);
-        if (UnhookWindowsHookEx(mouseHook))
-        {
+        if (UnhookWindowsHookEx(mouseHook)) {
             infoF!"Mouse hook unhooked."();
-        }
-        else
-        {
+        } else {
             warnF!"Mouse hook not handled, if you hit a breakpoint you're fucked.";
         }
     }
 
-    public ClientState getState()
-    {
+    public ClientState getState() {
         return read!ClientState(this.clientPtr + 0x19F48);
     }
 
     // TODO: Figure out mixin capitalization so we can generate all of our getters ~ [8.14.2024]
-    public LocalPlayer getLocalPlayer()
-    {
+    public LocalPlayer getLocalPlayer() {
         return this.localPlayer;
     }
 
-    public SceneManager getSceneManager()
-    {
+    public SceneManager getSceneManager() {
         return this.sceneManager;
     }
 
-    public Inventory getInventory()
-    {
+    public Inventory getInventory() {
         return this.inventory;
     }
 
-    public Address getPtr()
-    {
+    public Address getPtr() {
         return this.clientPtr;
     }
 }
@@ -104,13 +90,11 @@ struct SkillExpTable
 // Contains data exfiltrated from hooked functions.
 // Set via Context singleton.
 // This is a messy approach imo.
-class Exfil
-{
+class Exfil {
     // Singleton
     __gshared Exfil instance = null;
 
-    public static Exfil get()
-    {
+    public static Exfil get() {
         if (instance is null)
             instance = new Exfil();
         return instance;
@@ -119,23 +103,19 @@ class Exfil
     // Exfil
     private Address skillArrayBase = 0x0;
 
-    @property public Address skillArrayBaseLoc()
-    {
+    @property public Address skillArrayBaseLoc() {
         return this.skillArrayBase;
     }
 
-    public void setSkillArrayBase(Address val)
-    {
+    public void setSkillArrayBase(Address val) {
         this.skillArrayBase = val;
         infoF!"Exfil::skillArrayBase set (%016X)"(val);
     }
 
     // TODO: Very temporary
     // wanted to test.
-    public SkillExpTable getSkillExpTable(Skill skill)
-    {
-        if (this.skillArrayBase == 0x0)
-        {
+    public SkillExpTable getSkillExpTable(Skill skill) {
+        if (this.skillArrayBase == 0x0) {
             warn("Skill array base is null.");
             return SkillExpTable.init;
         }

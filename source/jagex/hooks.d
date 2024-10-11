@@ -1,6 +1,7 @@
 module jagex.hooks;
 
 import std.stdio;
+import std.format;
 import std.string : toStringz;
 import core.sys.windows.windows;
 
@@ -15,45 +16,81 @@ import jagex.client;
 /// Must be __gshared or shared.
 /// If not, we won't be able to call from the game thread, which means we'd always crash in the hook.
 ///
+__gshared Address npcGeneralTrampoline;
 __gshared Address npcTrampoline;
+__gshared Address nodeTrampoline1;
 __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
 __gshared Address getInventoryTrampoline;
 
+mixin template GenDoActionHookBody(string funcName, alias trampolineFunc) {
+    enum code = q{
+        extern(Windows) void %s(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
+            fnCall(%s, sp, miniMenu);
+        }
+    }.format(funcName, trampolineFunc.stringof);
+    mixin(code);
+}
+
+extern(Windows)
+void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
+    Interaction* action = miniMenu.ptr;
+    infoF!"%d, %d, %d"(action.identifier, action.x, action.y);
+
+    if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
+        auto client = Context.get().client();
+        client.getSceneManager().setPredicateIndex( action.identifier ).queryScene();
+    } else {
+        fnCall( nodeTrampoline1, sp, miniMenu );
+    }
+}
+
+
+extern(Windows)
+void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interaction* miniMenu) {
+    Interaction* action = miniMenu.ptr;
+    infoF!"%d, %d, %d"(action.identifier, action.x, action.y);
+
+    if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
+        auto client = Context.get().client();
+        client.getSceneManager().setPredicateIndex( action.identifier ).queryScene();
+    } else {
+        fnCall( npcGeneralTrampoline, clientPtr, clientProt, miniMenu );
+    }
+}
+
 extern (Windows)
-void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt)
-{
+void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt) {
     infoF!"Client shared ptr: %016X"(sp);
     infoF!"Client Prot: %016X"(clientProt);
 
     fnCall(npcTrampoline, sp, clientProt);
 }
 
-// This is broken in 938-1 because Jagex did a silly.
-// We don't currently use it for anything, so it sits unfixed.
-// When it's used for something, I'll fix it.
-extern (Windows)
-void hookAddChat(
-    void* thisptr,
-    int messageGroup,
+extern (Windows) void hookAddChat(
+    void* a1,
+    int a2,
     int a3,
-    void* author,
-    void* a5,
-    void* a6,
-    void* message,
-    void* a8,
-    void* a9,
-    int a10,
-    void* a11
-)
+    void* a4,
+    char* a5,
+    char* a6,
+    char* a7,
+    char* a8,
+    char* a9,
+    char* a10,
+    int a11
+) 
 {
-    // Log shit
-    // if (!message.empty())
-        // infoF!"%s: %s"(author.read(), message.read());
+
+    auto senderString = cast(JagString*)a5;
+    auto msgString = cast(JagString*)a8;
+    // // Log shit
+    if (!msgString.empty())
+        writefln("%s: %s", senderString.read(), msgString.read());
 
     // Just filter the annoying "Ability not ready yet." message, for now.
-    // if (message.read() != "Ability not ready yet.")
-    fnCall(chatTrampoline, thisptr, messageGroup, a3, author, a5, a6, message, a8, a9, a10, a11);
+    if (msgString.read() != "Ability not ready yet.")
+        fnCall(chatTrampoline, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 }
 
 extern(Windows)

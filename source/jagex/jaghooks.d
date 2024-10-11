@@ -13,14 +13,18 @@ import jagex.hooks;
 //------------------------------------------------------------------------------ 
 class JagexHooks
 {
+    private Hook npcGeneral;
     private Hook npcActionOne;
+    private Hook nodeActionOne;
     private Hook addChatMessage;
     private Hook updateStat;
     private Hook getInventory;
 
     this()
     {
+        this.npcGeneral = new Hook(0x1574D0, "npcGeneral");
         this.npcActionOne = new Hook(0x1653B0, "npcAction1");
+        this.nodeActionOne = new Hook(0x1655E0, "nodeAction1");
         this.addChatMessage = new Hook(0xCE8D0, "addChat");
         this.updateStat = new Hook(0x272EA0, "updateStat");
         this.getInventory = new Hook(0x2D7360, "getInventory");
@@ -30,11 +34,14 @@ class JagexHooks
     {
         import slf4d;
 
+        this.npcGeneral.place(&hookNpcGeneral, cast(void**)&npcGeneralTrampoline);
         this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
+        this.nodeActionOne.place(&hookNode1, cast(void**)&nodeTrampoline1);
         // this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         // this.getInventory.place(&hookGetInventory, cast(void**)&getInventoryTrampoline);
 
+        infoF!"npcGeneralTrampoline: %016X"(npcGeneralTrampoline);
         infoF!"npcTrampoline: %016X"(npcTrampoline);
         // infoF!"chatTrampoline: %016X"(chatTrampoline);
         infoF!"updateStatTrampoline: %016X"(updateStatTrampoline);

@@ -19,7 +19,6 @@ private:
     {
         for (int i = 0; i < 29; i++)
         {
-            infoF!"[+] Building tracker for skill %d"(i);
             this.skills[i] = new Tracker(cast(Skill)i);
         }
     }
@@ -48,7 +47,6 @@ public:
 
     void setTrackerActive(T)(T skill, bool val)
     {
-        infoF!"Setting tracker %d active to %s"(skill, val);
         this.skills[cast(int)skill].setActive(val);
     }
 

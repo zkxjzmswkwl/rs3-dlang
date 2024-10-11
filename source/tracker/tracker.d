@@ -36,12 +36,6 @@ class Tracker : Thread
         super(&run);
     }
 
-    // Important that we understand the lifetime of Tracker instances.
-    ~this()
-    {
-        info("[-] Tracker dtor");
-    }
-
     public Skill getSkill()
     {
         return this.skill;
@@ -93,8 +87,6 @@ class Tracker : Thread
 
         this.firstSnapshot = this.newSnapshot();
         this.lastSnapshot = firstSnapshot;
-
-        infoF!"Tracking skill (%d) with XP: %d"(this.skill, this.firstSnapshot.xp);
 
         while (shouldRun)
         {
