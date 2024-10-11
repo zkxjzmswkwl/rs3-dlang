@@ -1,9 +1,11 @@
 module jagex.jaghooks;
 
+import slf4d;
+
+import jagex;
 import kronos.hook;
 import util.types;
 
-import jagex.hooks;
 
 // All rs2client specific hooks.
 // I don't see a future where this project will involve circumventing
@@ -11,8 +13,7 @@ import jagex.hooks;
 // -
 // Hook fn bodies are in hooks.d, this class only manages the Hook instances.
 //------------------------------------------------------------------------------ 
-class JagexHooks
-{
+class JagexHooks {
     private Hook npcGeneral;
     private Hook npcActionOne;
     private Hook nodeActionOne;
@@ -20,8 +21,7 @@ class JagexHooks
     private Hook updateStat;
     private Hook getInventory;
 
-    this()
-    {
+    this() {
         this.npcGeneral = new Hook(0x1574D0, "npcGeneral");
         this.npcActionOne = new Hook(0x1653B0, "npcAction1");
         this.nodeActionOne = new Hook(0x1655E0, "nodeAction1");
@@ -30,9 +30,7 @@ class JagexHooks
         this.getInventory = new Hook(0x2D7360, "getInventory");
     }
 
-    public JagexHooks placeAll()
-    {
-        import slf4d;
+    public JagexHooks placeAll() {
 
         this.npcGeneral.place(&hookNpcGeneral, cast(void**)&npcGeneralTrampoline);
         this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
@@ -50,13 +48,11 @@ class JagexHooks
         return this;
     }
 
-    public JagexHooks enableAll()
-    {
+    public JagexHooks enableAll() {
         return this;
     }
 
-    public JagexHooks disableAll()
-    {
+    public JagexHooks disableAll() {
         return this;
     }
 }
