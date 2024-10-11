@@ -21,10 +21,9 @@ class Server : Thread {
         shouldRestart = false;
     }
 
-    private void processCommand(string packet) {
-        auto spl = packet.split(":");
-        string cmd = to!string(spl[1]);
-        auto params = spl[2..$];
+    private void processCommand(Socket clientSocket, string[] packet) {
+        string cmd = packet[1];
+        auto params = packet[2..$];
 
         switch (cmd) {
             default: break;
@@ -40,11 +39,28 @@ class Server : Thread {
         }
     }
 
-    private void processPacket(string packet) {
-        auto spl = packet.split(":");
+    private void processPacket(Socket clientSocket, string packet) {
+        // Each incoming packet is suffixed with "<dongs>".
+        // Sometimes, one read will yield what was intended to be multiple packets.
+        // So, we check for the suffix and if anything is after it, we process the rest as a separate packet.
+        auto dongIndex = packet.indexOf("<dongs>");
+        if (dongIndex != -1) {
+            auto dongSpl = packet.split("<dongs>")[1].to!string;
+            if (dongSpl.length > 1) {
+                scope (exit)    processPacket(clientSocket, dongSpl);
+            }
+        }
+
+        string[] spl;
+        if (dongIndex == -1) {
+            spl = packet.split(":");
+        } else {
+            spl = packet[0..dongIndex].split(":");
+        }
 
         if (canFind(packet, "cmd:")) {
-            this.processCommand(packet);
+            this.processCommand(clientSocket, spl);
+            clientSocket.send("ack");
         }
     }
 
@@ -70,6 +86,11 @@ class Server : Thread {
                 auto bytesRead = clientSocket.receive(buffer);
                 if (bytesRead > 0) {
                     string recvBuffer = cast(string) buffer[0..bytesRead];
+
+                    synchronized {
+                        info(recvBuffer);
+                    }
+
                     if (recvBuffer == "exit") {
                         info("Exiting server loop.");
                         break;
@@ -80,7 +101,7 @@ class Server : Thread {
                         clientSocket.send("rsn:"~rsn);
                     }
 
-                    processPacket(recvBuffer);
+                    processPacket(clientSocket, recvBuffer);
                 } else {
                     info("bytesRead <= 0.");
                     break;

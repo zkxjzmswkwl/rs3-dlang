@@ -1,10 +1,13 @@
 import core.sys.windows.dll;
 
+import slf4d;
+
 import std.stdio;
 import core.runtime;
 import core.sys.windows.windows;
 
 import jagex;
+import context;
 import comms.server;
 
 void run(HMODULE hModule) {
@@ -17,6 +20,10 @@ void run(HMODULE hModule) {
 
     Server server = new Server();
     server.start();
+
+    if (Context.get().isDebugMode) {
+        info("Operating under debug mode.");
+    }
 
     for (;;) {
         if (server.needsRestart) {
