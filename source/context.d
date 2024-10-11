@@ -9,7 +9,7 @@ import std.algorithm.searching;
 import slf4d;
 
 import runescape;
-import util.types;
+import util;
 import tracker.trackermanager;
 import jagex.client;
 

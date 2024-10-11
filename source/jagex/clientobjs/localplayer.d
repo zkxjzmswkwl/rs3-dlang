@@ -2,8 +2,7 @@ module jagex.clientobjs.localplayer;
 
 import slf4d;
 
-import util.misc;
-import util.types;
+import util;
 import jagex.clientobjs.clientobj;
 
 class LocalPlayer : ClientObj

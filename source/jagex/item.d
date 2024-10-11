@@ -4,7 +4,7 @@ import slf4d;
 import std.stdio;
 import std.array;
 import std.conv : to;
-import util.types;
+import util;
 import etc.c.curl;
 import std.net.curl;
 import std.regex;

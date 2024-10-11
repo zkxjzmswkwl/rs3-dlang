@@ -3,8 +3,7 @@ module jagex.client;
 import std.string;
 import core.sys.windows.windows;
 import slf4d;
-import util.types;
-import util.misc;
+import util;
 import context;
 
 import jagex.constants;

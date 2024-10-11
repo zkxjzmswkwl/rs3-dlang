@@ -12,8 +12,7 @@ import core.stdc.string;
 ///
 import capstone;
 import slf4d;
-import util.types;
-import util.misc;
+import util;
 
 
 class Instructions

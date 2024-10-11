@@ -4,8 +4,7 @@ import std.typecons;
 
 import slf4d;
 
-import util.types;
-import util.misc;
+import util;
 import jagex.constants;
 
 abstract class SceneObj

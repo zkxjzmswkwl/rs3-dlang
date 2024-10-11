@@ -2,8 +2,7 @@ module jagex.sceneobjs.node;
 
 import std.typecons;
 
-import util.types;
-import util.misc;
+import util;
 import jagex.constants;
 import jagex.sceneobjs.sceneobj;
 

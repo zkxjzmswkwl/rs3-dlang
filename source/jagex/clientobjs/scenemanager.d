@@ -6,8 +6,7 @@ import std.string;
 
 import slf4d;
 
-import util.misc;
-import util.types;
+import util;
 import jagex.constants;
 import jagex.clientobjs.clientobj;
 import jagex.sceneobjs;

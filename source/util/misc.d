@@ -4,7 +4,7 @@ import core.sys.windows.windows;
 import core.sys.windows.windef;
 import std.conv : to;
 import core.stdc.string;
-import util.types;
+import util;
 import capstone;
 import capstone.x86;
 import capstone.detail;

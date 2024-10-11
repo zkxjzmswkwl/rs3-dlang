@@ -4,7 +4,7 @@ import slf4d;
 
 import jagex;
 import kronos.hook;
-import util.types;
+import util;
 
 
 // All rs2client specific hooks.

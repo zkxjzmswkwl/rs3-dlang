@@ -1,7 +1,6 @@
 module jagex.clientobjs.skills;
 
-import util.misc;
-import util.types;
+import util;
 import jagex.clientobjs.clientobj;
 
 class Skills: ClientObj

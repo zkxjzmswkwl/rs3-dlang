@@ -2,8 +2,7 @@ module jagex.clientobjs.inventory;
 
 import slf4d;
 
-import util.misc;
-import util.types;
+import util;
 import jagex.item;
 import jagex.clientobjs.clientobj;
 import std.logger.core;
