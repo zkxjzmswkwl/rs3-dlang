@@ -9,8 +9,8 @@ Can switch out colours with only memory writes. There is no need to force a reap
 ![alt](https://i.imgur.com/w3akBzZ.gif)
 
 
-### RVA of static silhoutte colour array base
-`0xB62AC4` - can be found used in all cs2 functions pertaining to silhoutte highlighting, barring `set_loc/npc_show_as_important`.
+### RVA of static silhouette colour array base
+`0xB62AC4` - can be found used in all cs2 functions pertaining to silhouette highlighting, barring `set_loc/npc_show_as_important`.
 
 ### cs2 _highlight_set_category_colour 
 
