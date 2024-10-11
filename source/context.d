@@ -11,69 +11,59 @@ import slf4d;
 import runescape;
 import util.types;
 import tracker.trackermanager;
+import jagex.client;
 
 __gshared Context instance = null;
 
-class Context
-{
-
-    private RuneScape runeScape;
+class Context  {
     __gshared private TrackerManager trackerManager;
 
+    private Client jagClient;
     private bool debugMode = true;
     private string workingDirectory;
     private string windowsUser;
 
-    private this()
-    {
-        this.runeScape = new RuneScape();
+    private this() {
+        this.jagClient = new Client();
         this.trackerManager = null;
+    }
 
-        // Comically bad
-        this.windowsUser = getenv("USERPROFILE").to!string().replace("\\", "/").split("Users/")[1];
-        info("Windows user: " ~ this.windowsUser);
-        this.workingDirectory = "C:/Users/"~this.windowsUser~"/Documents/de-oppresso-liber/";
-        if (exists(this.workingDirectory))
-        {
-            info("Working directory exists.");
+    private static bool instantiated_;
+
+    private __gshared Context instance_;
+
+    static Context get() {
+        if (!instantiated_) {
+            synchronized(Context.classinfo) {
+                if (!instance_) {
+                    instance_ = new Context();
+                }
+
+                instantiated_ = true;
+            }
         }
-        else
-        {
-            info("Working directory does not exist. Creating.");
-            mkdir(this.workingDirectory);
-        }
+
+        return instance_;
     }
 
-    public static Context get()
-    {
-        if (instance is null)
-            instance = new Context();
-        return instance;
+    public Client client() {
+        return this.jagClient;
     }
 
-    public RuneScape getRuneScape()
-    {
-        return this.runeScape;
-    }
-
-    @property TrackerManager* tManager()
-    {
+    @property TrackerManager* tManager() {
         return &this.trackerManager;
     }
 
-    public void instantiateTrackerManager()
-    {
+    public void instantiateTrackerManager() {
         if (this.trackerManager is null)
             this.trackerManager = new TrackerManager();
     }
 
-    public bool isDebugMode()
-    {
+    public bool isDebugMode() {
         return this.debugMode;
     }
 
-    public string getWorkingDir()
-    {
+    public string getWorkingDir() {
         return this.workingDirectory;
     }
 }
