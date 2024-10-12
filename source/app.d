@@ -18,19 +18,19 @@ void run(HMODULE hModule) {
     JagexHooks jagexHooks = new JagexHooks();
     jagexHooks.placeAll();
 
-    Server server = new Server();
+    Server server = new Server("127.0.0.1", 6968);
     server.start();
+
 
     if (Context.get().isDebugMode) {
         info("Operating under debug mode.");
     }
 
     for (;;) {
-        if (server.needsRestart) {
-            server = new Server();
+        if (!server.hasClient) {
+            server.join();
             server.start();
         }
-
         Thread.sleep(dur!"msecs"(20));
     }
 
