@@ -116,14 +116,11 @@ class SceneManager : ClientObj {
     public void queryScene() {
         // recurseGraphNode(this.update());
     }
-    // -
 
-    // TODO: Come back to me later.
     public T[] queryScene(T)(string substr, ObjectType type) {
         lastQuery = [];
         recurseGraphNode(this.update(), type);
 
-        // filter!(a => a < 3)(arr);
         auto filteredQuery = filter!(a => canFind(a.getName(), substr))(lastQuery);
         lastQuery = filteredQuery.array;
         return cast(T[])lastQuery;

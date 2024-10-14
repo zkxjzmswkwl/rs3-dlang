@@ -39,12 +39,7 @@ void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
     Interaction* action = miniMenu.ptr;
     writefln("%d, %d, %d",action.identifier, action.x, action.y);
 
-    if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
-        auto client = Context.get().client();
-        client.getSceneManager().setPredicateIndex( action.identifier ).queryScene();
-    } else {
-        fnCall( nodeTrampoline1, sp, miniMenu );
-    }
+    fnCall( nodeTrampoline1, sp, miniMenu );
 }
 
 
@@ -53,12 +48,7 @@ void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interact
     Interaction* action = miniMenu.ptr;
     writefln("%d, %d, %d",action.identifier, action.x, action.y);
 
-    if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
-        auto client = Context.get().client();
-        client.getSceneManager().setPredicateIndex( action.identifier ).queryScene();
-    } else {
-        fnCall( npcGeneralTrampoline, clientPtr, clientProt, miniMenu );
-    }
+    fnCall( npcGeneralTrampoline, clientPtr, clientProt, miniMenu );
 }
 
 extern (Windows)
