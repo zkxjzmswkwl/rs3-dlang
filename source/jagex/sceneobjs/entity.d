@@ -1,6 +1,7 @@
 module jagex.sceneobjs.entity;
 
 import std.typecons;
+import std.format;
 
 import util;
 import jagex.constants;
@@ -42,5 +43,13 @@ class Entity : SceneObj {
 
     public int getServerIndex() {
         return read!uint(this.obj + 0x88);
+    }
+
+    public string asString() {
+        return format("%s#%d#%d#%d",
+            this.getName(),
+            this.getCombatLevel(),
+            this.getServerIndex(),
+            this.obj);
     }
 }

@@ -8,34 +8,48 @@ import core.sys.windows.windows;
 
 import jagex;
 import context;
+import tracker;
+import rdconstants;
 import comms.server;
+import jagex.engine.varbit;
+
+Server createServer() {
+    Server server = new Server(SERVER_IP, SERVER_PORT);
+    server.start();
+    return server;
+}
 
 void run(HMODULE hModule) {
-    freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
-    freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
+    try {
+        freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
+        freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
 
+        TrackerManager trackerManager = Context.get().tManager;
 
-    JagexHooks jagexHooks = new JagexHooks();
-    jagexHooks.placeAll();
+        JagexHooks jagexHooks = new JagexHooks();
+        jagexHooks.placeAll();
 
-    Server server = new Server("127.0.0.1", 6968);
-    server.start();
+        Server server = createServer();
 
-
-    if (Context.get().isDebugMode) {
-        info("Operating under debug mode.");
-    }
-
-    for (;;) {
-        if (!server.hasClient) {
-            server.join();
-            server.start();
+        if (Context.get().isDebugMode) {
+            info("Operating under debug mode.");
         }
-        Thread.sleep(dur!"msecs"(20));
-    }
 
-    fclose(stdout.getFP);
-    fclose(stderr.getFP);
+        for (;;) {
+            if (server.needsRestart) {
+                server.join();
+                server = createServer();
+            }
+
+            trackerManager.checkActivity();
+            Thread.sleep(dur!"msecs"(1_000));
+        }
+
+        fclose(stdout.getFP);
+        fclose(stderr.getFP);
+    } catch (Exception ex) {
+        writeln(ex.msg);
+    }
 }
 
 extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) { // @suppress(dscanner.style.phobos_naming_convention) {

@@ -11,6 +11,7 @@ import jagex.clientobjs.localplayer;
 import jagex.clientobjs.inventory;
 import jagex.clientobjs.skills;
 import jagex.clientobjs.scenemanager;
+import kronos.hook;
 
 class Client {
     private Address clientPtr;
@@ -33,6 +34,7 @@ class Client {
 
         this.instantiateClientObjects();
     }
+
 
     private void instantiateClientObjects() {
         info("Instantiating client objects.");

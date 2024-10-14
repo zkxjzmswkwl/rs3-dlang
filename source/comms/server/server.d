@@ -12,25 +12,33 @@ import core.stdc.string;
 import std.algorithm.searching;
 import util.misc;
 import context;
+import comms.server.packet;
 
 
 class Server : Thread
 {
     private string host;
     private ushort port;
+    private PacketManager packetManager;
 
-    public bool hasClient;
+    private bool hasClient;
     private Socket client;
+
+    public bool needsRestart = false;
 
     @disable this();
 
     this(string host, ushort port)
     {
         super(&run);
+
         this.host = host;
         this.port = port;
 
-        this.hasClient = false;
+        hasClient = false;
+
+        packetManager = new PacketManager();
+        packetManager.initializeAll();
     }
 
     private void processCommand(string[] packet) {
@@ -53,15 +61,18 @@ class Server : Thread
 
     private void processRequest(string[] packet) {
         auto cmd = packet[1];
-        auto params = packet[2..$];
 
-        if (cmd == "getRsn") {
-            auto rsn = Context.get().client().getLocalPlayer.getName();
-            infoF!"%s hit"(rsn);
-            client.send("rsn:"~rsn);
-        } else {
-            // TODO
+        auto packets = packetManager.packetMap();
+        if (packets[cmd] is null) {
+            warn("Packet not found: " ~ cmd);
+            return;
         }
+
+        string outBuffer;
+        if (packet.length > 1) {
+            outBuffer = packets[cmd].getBuffer(packet[2..$]);
+        }
+        client.send(outBuffer);
     }
 
     private void processPacket(string packet) {
@@ -90,7 +101,7 @@ class Server : Thread
             this.processCommand(spl);
             client.send("ack");
         } else if (canFind(packet, "req:")) {
-            this.processRequest( spl);
+            this.processRequest(spl);
             // Don't need ack, packets prefixed with `req:` are _requests,
             // meaning the server is intended to send data back regardless.
         }
@@ -128,11 +139,16 @@ class Server : Thread
             auto r = client.receive(buffer);
             if (r > -1)
             {
-                processPacket(buffer[0..r].to!string);
+                try {
+                    processPacket(buffer[0..r].to!string);
+                } catch (Exception ex) {
+                    warn(ex.msg);
+                }
             }
 			else
 			{
 				hasClient = false;
+                needsRestart = true;
 			}
         }
 

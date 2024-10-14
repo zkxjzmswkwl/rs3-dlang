@@ -28,6 +28,8 @@ class JagexHooks {
         this.addChatMessage = new Hook(0xCE8D0, "addChat");
         this.updateStat = new Hook(0x272EA0, "updateStat");
         this.getInventory = new Hook(0x2D7360, "getInventory");
+
+        // this.placeSetForegroundHook();
     }
 
     public JagexHooks placeAll() {
@@ -47,6 +49,16 @@ class JagexHooks {
 
         return this;
     }
+
+    /// Not Jagex related, but they call this on afk timer like three fucking times.
+    /// Really annoying.
+    private void placeSetForegroundHook() {
+        auto setForegroundWindow = resolveFunction("user32.dll", "SetForegroundWindow");
+        infoF!"SetForegroundWindow: %016X"(setForegroundWindow);
+        Hook sfgHook = new Hook(setForegroundWindow, "SetForegroundWindowHook");
+        sfgHook.place(&hookSetForegroundWindow, cast(void**)&setForegroundTrampoline);
+    }
+
 
     public JagexHooks enableAll() {
         return this;

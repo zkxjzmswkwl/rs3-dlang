@@ -9,6 +9,7 @@ import capstone;
 import capstone.x86;
 import capstone.detail;
 
+
 struct Fn(T...)
 {
     T args_;
@@ -79,4 +80,10 @@ mixin template fn(string name, ulong loc, T...)
 {
     mixin("alias ", name, "_t = extern(Windows) ulong function(T);");
     mixin(name, "_t ", name, " = cast(", name, "_t)(GetModuleHandle(NULL) + loc);");
+}
+
+Address resolveFunction(string moduleName, string exportedFunction) {
+    auto moduleHandle = GetModuleHandle(cast(const(wchar)*)moduleName);
+    auto procAddr = GetProcAddress(cast(void*)moduleHandle, cast(const(char)*)exportedFunction);
+    return cast(Address)procAddr;
 }

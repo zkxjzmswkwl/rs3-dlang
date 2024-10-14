@@ -19,3 +19,10 @@ Can switch out colours with only memory writes. There is no need to force a reap
 - Constant `0.0039215689` is used. Multiplying this constant converts a colour value in range 1-255 into OpenGl's 0f-1f range.
 
 `83 82 ? ? ? ? ? 4C 8B C2 44 8B 8A`
+
+### highlight_set_loc_show_as_important
+- Probably useful for QuestHelper.
+- cs2 function, contains debug string.
+
+### highlight_set_npc_show_as_important
+- Ditto

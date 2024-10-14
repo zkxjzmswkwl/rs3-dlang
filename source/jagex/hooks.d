@@ -22,6 +22,8 @@ __gshared Address nodeTrampoline1;
 __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
 __gshared Address getInventoryTrampoline;
+/// Unused.
+__gshared Address setForegroundTrampoline;
 
 mixin template GenDoActionHookBody(string funcName, alias trampolineFunc) {
     enum code = q{
@@ -35,7 +37,7 @@ mixin template GenDoActionHookBody(string funcName, alias trampolineFunc) {
 extern(Windows)
 void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
     Interaction* action = miniMenu.ptr;
-    infoF!"%d, %d, %d"(action.identifier, action.x, action.y);
+    writefln("%d, %d, %d",action.identifier, action.x, action.y);
 
     if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
         auto client = Context.get().client();
@@ -49,7 +51,7 @@ void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
 extern(Windows)
 void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interaction* miniMenu) {
     Interaction* action = miniMenu.ptr;
-    infoF!"%d, %d, %d"(action.identifier, action.x, action.y);
+    writefln("%d, %d, %d",action.identifier, action.x, action.y);
 
     if ( GetAsyncKeyState( VK_LSHIFT ) & 1 ) {
         auto client = Context.get().client();
@@ -61,8 +63,8 @@ void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interact
 
 extern (Windows)
 void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt) {
-    infoF!"Client shared ptr: %016X"(sp);
-    infoF!"Client Prot: %016X"(clientProt);
+    writefln("Client shared ptr: %016X", sp);
+    writefln("Client Prot: %016X", clientProt);
 
     fnCall(npcTrampoline, sp, clientProt);
 }
@@ -94,23 +96,19 @@ extern (Windows) void hookAddChat(
 }
 
 extern(Windows)
-void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
-{
+void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp) {
     auto skillId = **skillPtr;
     auto curArrayOffset = skillId * 0x18;
     auto arrayBase = cast(ulong)(skillPtr) - curArrayOffset;
 
-    if (Exfil.get().skillArrayBaseLoc == 0x0)
-    {
+    if (Exfil.get().skillArrayBaseLoc == 0x0) {
         Exfil.get().setSkillArrayBase(arrayBase);
     }
 
     // We exfiltrate the memory location pointing to an array of skills/their xp from this hook.
     // We wait until that data has been exfiltrated before we can track anything.
     // Overuse of Singletons is an unfortunate side effect of the game thread calling the shots.
-    Context.get().instantiateTrackerManager();
-    if (!Context.get().tManager.isTrackerActive!uint(skillId))
-    {
+    if (!Context.get().tManager.isTrackerActive!uint(skillId)) {
         infoF!"Starting tracker thread for skill: %d"(skillId);
         Context.get().tManager.startTracker(skillId);
     }
@@ -119,8 +117,12 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp)
 }
 
 extern(Windows)
-void hookGetInventory(ulong* rcx, int inventoryId, bool a3)
-{
+void hookGetInventory(ulong* rcx, int inventoryId, bool a3) {
     infoF!"RCX: %016X | Inventory ID: %d | %d"(rcx, inventoryId, a3);
     fnCall(getInventoryTrampoline, rcx, inventoryId, a3);
+}
+
+extern(Windows)
+BOOL hookSetForegroundWindow(HWND hWnd) {
+    return 1;
 }

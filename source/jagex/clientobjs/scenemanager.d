@@ -2,6 +2,9 @@ module jagex.clientobjs.scenemanager;
 
 import core.sys.windows.windows;
 import core.sys.windows.windef;
+import std.algorithm.iteration;
+import std.algorithm.searching;
+import std.array;
 import std.string;
 
 import slf4d;
@@ -119,6 +122,10 @@ class SceneManager : ClientObj {
     public T[] queryScene(T)(string substr, ObjectType type) {
         lastQuery = [];
         recurseGraphNode(this.update(), type);
+
+        // filter!(a => a < 3)(arr);
+        auto filteredQuery = filter!(a => canFind(a.getName(), substr))(lastQuery);
+        lastQuery = filteredQuery.array;
         return cast(T[])lastQuery;
     }
 }

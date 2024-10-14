@@ -2,21 +2,21 @@ module tracker.tracker;
 
 import core.thread;
 import std.datetime.stopwatch;
+import std.format;
 import std.conv : to;
 
 import slf4d;
 
+import rdconstants;
 import jagex.client;
 import jagex.constants;
 
-struct ExpSnapshot
-{
+struct ExpSnapshot {
     uint xp;
     long timestamp;
 }
 
-class Tracker : Thread
-{
+class Tracker : Thread {
     private Skill skill;
 
     private bool shouldRun;
@@ -27,8 +27,7 @@ class Tracker : Thread
     private ExpSnapshot firstSnapshot;
     private ExpSnapshot lastSnapshot;
 
-    this(Skill skill)
-    {
+    this(Skill skill) {
         this.shouldRun = true;
         this.active = false;
 
@@ -36,34 +35,33 @@ class Tracker : Thread
         super(&run);
     }
 
-    public Skill getSkill()
-    {
+    public Skill getSkill() {
         return this.skill;
     }
 
-    @property public bool isActive()
-    {
+    @property public bool isActive() {
         return this.active;
     }
 
-    public Tracker setActive(bool val)
-    {
+    @property public bool isTracking() {
+        return this.shouldRun;
+    }
+
+    public Tracker setActive(bool val) {
         this.active = val;
         return this;
     }
 
-    public uint getTotalXpGain()
-    {
-        return this.lastSnapshot.xp - this.firstSnapshot.xp;
+    public uint getTotalXpGain() {
+        auto total = this.lastSnapshot.xp - this.firstSnapshot.xp;
+        return total;
     }
 
-    public double getHourlyXp()
-    {
+    public double getHourlyXp() {
         return this.hourlyXp;
     }
 
-    private ExpSnapshot newSnapshot()
-    {
+    private ExpSnapshot newSnapshot() {
         auto skillExp = getSkill(this.skill);
         ExpSnapshot snapshot;
         snapshot.xp = skillExp.xp;
@@ -71,8 +69,7 @@ class Tracker : Thread
         return snapshot;
     }
 
-    private void updateHourlyXp()
-    {
+    private void updateHourlyXp() {
         auto totalXpGain = this.getTotalXpGain();
         float elapsedHours = cast(float) this.stopwatch.peek.total!"seconds" / 3600.0;
         if (totalXpGain == 0)
@@ -81,35 +78,43 @@ class Tracker : Thread
         this.hourlyXp = (this.getTotalXpGain() / elapsedHours);
     }
 
-    private void run()
-    {
+    private void run() {
         this.stopwatch.start();
 
         this.firstSnapshot = this.newSnapshot();
         this.lastSnapshot = firstSnapshot;
 
-        while (shouldRun)
-        {
-            this.lastSnapshot = this.newSnapshot();
+        while (shouldRun) {
+            Thread.sleep(msecs(TRACKER_FREQUENCY));
             this.updateHourlyXp();
-            // infoF!"[*] Total XP gained in skill (%d) with an hourly rate of (%.8f): %d"(this.skill, this.hourlyXp, this.getTotalXpGain());
-            Thread.sleep(msecs(1000));
+
+            if (this.getSkill(skill).xp != lastSnapshot.xp) {
+                this.lastSnapshot = this.newSnapshot();
+            } else {
+                 auto delta = this.stopwatch.peek.total!"seconds" - this.lastSnapshot.timestamp;
+                 // Shit's dead, no longer training this skill.
+                 if (delta >= TRACKER_TIMEOUT) {
+                    this.shouldRun = false;
+                 }
+            }
         }
     }
 
-    public string getCommString()
-    {
+    public string getCommString() {
         auto skillXp = getSkill(this.skill);
-        string str = "";
-        str ~= "Gained: " ~ to!string(this.getTotalXpGain());
-        str ~= "\tHourly: " ~ to!string(this.getHourlyXp());
-        str ~= "\tCurrent: " ~ to!string(skillXp.xp);
-        return str;
+        // skillId:level:current:gained:hourly
+        return format(
+            "%d#%d#%d#%d#%f",
+            this.skill,
+            skillXp.currentLevel,
+            skillXp.xp,
+            this.getTotalXpGain(),
+            this.getHourlyXp()
+        );
     }
 
     // Small wrapper around the temporary (and dirty) Exfil class
-    public static SkillExpTable getSkill(Skill skill)
-    {
+    public static SkillExpTable getSkill(Skill skill) {
         return Exfil.get().getSkillExpTable(skill);
     }
 }

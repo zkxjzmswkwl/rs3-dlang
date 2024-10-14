@@ -50,13 +50,10 @@ class Context  {
         return this.jagClient;
     }
 
-    @property TrackerManager* tManager() {
-        return &this.trackerManager;
-    }
-
-    public void instantiateTrackerManager() {
+    @property TrackerManager tManager() {
         if (this.trackerManager is null)
             this.trackerManager = new TrackerManager();
+        return this.trackerManager;
     }
 
     public bool isDebugMode() {

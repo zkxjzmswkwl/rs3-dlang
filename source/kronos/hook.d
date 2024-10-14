@@ -9,6 +9,7 @@ import core.stdc.string;
 
 ///
 /// https://code.dlang.org/packages/capstone-d
+/// Slight modification, see https://github.com/zkxjzmswkwl/capstone-d
 ///
 import capstone;
 import slf4d;

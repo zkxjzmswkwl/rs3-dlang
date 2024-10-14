@@ -12,9 +12,12 @@ class Varbit
 {
     private Address clientPtr;
 
-    this(Address clientPtr)
+    this()
     {
-        this.clientPtr = clientPtr;
+        // Hack in lieu of place to put this globally.
+        // TODO: Global storage
+        auto tmp  = cast(Address) GetModuleHandle("rs2client.exe") + 0xD83AE8;
+        this.clientPtr = read!Address(tmp);
     }
 
     /*
