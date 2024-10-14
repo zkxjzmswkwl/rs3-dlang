@@ -113,10 +113,6 @@ class SceneManager : ClientObj {
         return this;
     }
 
-    public void queryScene() {
-        // recurseGraphNode(this.update());
-    }
-
     public T[] queryScene(T)(string substr, ObjectType type) {
         lastQuery = [];
         recurseGraphNode(this.update(), type);
