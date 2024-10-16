@@ -27,7 +27,7 @@ class LocalPlayer : ClientObj {
         return read!bool(this.obj + 0x28);
     }
 
-    private Entity getEntity() {
+    public Entity getEntity() {
         auto index = read!uint(this.obj + 0x48);
         auto playerList = read!Address(this.clientPtr + 0x19918);
         auto playerEntLoc = resolvePtrChain(playerList, [0x10, index * 0x8, 0x38]);

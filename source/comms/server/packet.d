@@ -108,7 +108,6 @@ class PacketRespNodes : Packet {
             nodes = sceneManager.queryScene!Node("", ObjectType.LOCATION);
         }
 
-
         try {
             foreach (node; nodes) {
                 buffer ~= node.asString() ~ "^";

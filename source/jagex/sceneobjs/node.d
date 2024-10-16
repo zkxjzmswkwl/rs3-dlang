@@ -6,6 +6,7 @@ import std.typecons;
 import util;
 import jagex.constants;
 import jagex.sceneobjs.sceneobj;
+import context;
 
 
 class Node : SceneObj {
@@ -32,8 +33,10 @@ class Node : SceneObj {
     }
 
     public string asString() {
-        return format("%s#%d#%d",
+        auto localPlayerEnt = Context.get().client().getLocalPlayer().getEntity();
+        return format("%s#%d#%d#%d",
             this.getName(),
+            this.getDistance(localPlayerEnt.getTilePos()),
             this.getServerIndex(),
             this.obj);
     }

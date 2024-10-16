@@ -99,7 +99,7 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp) {
     // We wait until that data has been exfiltrated before we can track anything.
     // Overuse of Singletons is an unfortunate side effect of the game thread calling the shots.
     if (!Context.get().tManager.isTrackerActive!uint(skillId)) {
-        infoF!"Starting tracker thread for skill: %d"(skillId);
+        writefln("Starting tracker thread for skill: %d", skillId);
         Context.get().tManager.startTracker(skillId);
     }
 

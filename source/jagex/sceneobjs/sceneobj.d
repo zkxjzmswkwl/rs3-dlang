@@ -69,12 +69,12 @@ abstract class SceneObj
         return tuple(x, y);
     }
 
-    public double getDistance(Tuple!(uint, uint) pointA)
+    public uint getDistance(Tuple!(uint, uint) pointA)
     {
         auto pointB = this.getTilePos();
         uint dx = pointB[0] - pointA[0];
         uint dy = pointB[1] - pointA[1];
-        return sqrt(pow(dx, 2) + pow(dy, 2));
+        return cast(uint)sqrt(dx * dx + dy * dy);
     }
 
     protected void logPtr()
