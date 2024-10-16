@@ -68,6 +68,7 @@ class PacketRespSceneObjects : Packet {
     }
 
     public override string getBuffer(string[] args = []) {
+        string buffer = "resp:sceneobjects:";
         auto sceneManager = Context.get().client().getSceneManager();
         Entity[] entities;
 
@@ -78,8 +79,6 @@ class PacketRespSceneObjects : Packet {
             entities = sceneManager.queryScene!Entity("Goblin", ObjectType.NPC);
         }
 
-        infoF!"Found %d goblins."(entities.length);
-        string buffer = "resp:sceneobjects:";
 
         try {
             foreach (entity; entities) {
@@ -92,6 +91,36 @@ class PacketRespSceneObjects : Packet {
         return buffer;
     }
 }
+
+class PacketRespNodes : Packet {
+    this() {
+        super(PacketType.RESPONSE);
+    }
+
+    public override string getBuffer(string[] args = []) {
+        string buffer = "resp:nodes:";
+        auto sceneManager = Context.get().client().getSceneManager();
+        Node[] nodes;
+
+        if (args.length > 0) {
+            nodes = sceneManager.queryScene!Node(args[0], ObjectType.LOCATION);
+        } else {
+            nodes = sceneManager.queryScene!Node("", ObjectType.LOCATION);
+        }
+
+
+        try {
+            foreach (node; nodes) {
+                buffer ~= node.asString() ~ "^";
+            }
+        } catch (Exception ex) {
+            info(ex.msg);
+        }
+
+        return buffer;
+    }
+}
+
 
 class PacketRespMetrics : Packet {
     this() {
@@ -129,6 +158,7 @@ class PacketManager {
         this.packets["rsn"]          = new PacketRespRsn();
         this.packets["sceneobjects"] = new PacketRespSceneObjects();
         this.packets["metrics"]      = new PacketRespMetrics();
+        this.packets["nodes"]        = new PacketRespNodes();
     }
 
     @property Packet[string] packetMap() {

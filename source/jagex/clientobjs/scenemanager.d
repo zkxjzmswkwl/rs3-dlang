@@ -53,23 +53,8 @@ class SceneManager : ClientObj {
                 switch (sceneObjectType) {
                     case ObjectType.PLAYER:
                     case ObjectType.NPC: {
-                        // Entity entity = new Entity(sceneObject);
                         SceneObj entity = new Entity(sceneObject);
-                        // if ( entity.getServerIndex() == this.predicateServerIdx ) {
-                        //     string url = "https://runescape.wiki/w/" ~ entity.getName();
-                        //     const(char)* urlCStr = toStringz(url);
-                        //     ShellExecuteA( NULL, NULL, urlCStr, NULL, NULL, SW_SHOW );
-                        //     return;
-                        // }
-                        // If the NPC has no name we likely don't give a shit about it.
-                        // (Or we've misflagged a non-NPC as an NPC)
-                        // At which point we also don't give a shit about it.
-                        // auto entityName = entity.getName();
-                        // if (entityName.length == 0)
-                        //     break;
 
-                        // auto entityPos = entity.getTilePos();
-                        // infoF!"Entity: %s Lv. %d (%d) [%d, %d]"(entityName, entity.getCombatLevel(), entity.getTotalLevel(), entityPos[0], entityPos[1]);
                         if (searchType == ObjectType.PLAYER || searchType == ObjectType.NPC)
                             lastQuery ~= entity;
                         break;
@@ -77,18 +62,6 @@ class SceneManager : ClientObj {
                     case ObjectType.ZERO:
                     case ObjectType.LOCATION: {
                         Node node = new Node(sceneObject);
-                        // if ( node.getServerIndex() == this.predicateServerIdx ) {
-                        //     string url = "https://runescape.wiki/w/" ~ node.getName();
-                        //     const(char)* urlCStr = toStringz(url);
-                        //     ShellExecuteA( NULL, NULL, urlCStr, NULL, NULL, SW_SHOW );
-                        //     return;
-                        // }
-                        // auto nodeName = node.getName();
-                        // if (nodeName.length == 0)   break;
-
-                        // auto nodePos = node.getTilePos();
-                        // infoF!"Node: %s idx(%d) - [%d, %d]"(nodeName, node.getServerIndex(), nodePos[0], nodePos[1]);
-
                         if (searchType == ObjectType.LOCATION || searchType == ObjectType.ZERO)
                             lastQuery ~= node;
                         break;
@@ -104,13 +77,6 @@ class SceneManager : ClientObj {
                 head += 0x8;
             }
         }
-    }
-
-
-    // TODO: Temp, testing, remove this.
-    public SceneManager setPredicateIndex(int idx) {
-        this.predicateServerIdx = idx;
-        return this;
     }
 
     public T[] queryScene(T)(string substr, ObjectType type) {

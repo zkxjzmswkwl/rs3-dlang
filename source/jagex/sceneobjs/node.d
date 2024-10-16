@@ -1,5 +1,6 @@
 module jagex.sceneobjs.node;
 
+import std.format;
 import std.typecons;
 
 import util;
@@ -28,5 +29,12 @@ class Node : SceneObj {
 
     public uint getServerIndex() {
         return read!uint(this.location + 0x8);
+    }
+
+    public string asString() {
+        return format("%s#%d#%d",
+            this.getName(),
+            this.getServerIndex(),
+            this.obj);
     }
 }
