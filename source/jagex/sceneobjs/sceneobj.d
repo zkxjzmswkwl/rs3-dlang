@@ -6,6 +6,7 @@ import slf4d;
 
 import util;
 import jagex.constants;
+import core.stdc.math;
 
 abstract class SceneObj
 {
