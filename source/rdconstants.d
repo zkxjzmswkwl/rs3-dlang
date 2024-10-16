@@ -16,3 +16,6 @@ __gshared const string SERVER_IP = "127.0.0.1";
 /// TODO: Needs to be dynamic if we're to support > 1 client.
 ///
 __gshared const ushort SERVER_PORT = 6969;
+
+__gshared MAX_ADDRESS = 0x7FFFFFFF0000uL;
+__gshared MIN_ADDRESS = 0x100000uL;

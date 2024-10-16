@@ -49,9 +49,31 @@ abstract class SceneObj
 
     public Tuple!(uint, uint) getTilePos()
     {
-        auto xf = read!float(this.graphNode + 0xEC);
-        auto yf = read!float(this.graphNode + 0xF4);
-        return tuple(cast(uint)(xf / 512.0f), cast(uint)(yf / 512.0f));
+        if (type == ObjectType.NPC || type == ObjectType.PLAYER)
+        {
+            auto xf = read!float(this.graphNode + 0xEC);
+            auto yf = read!float(this.graphNode + 0xF4);
+            return tuple(cast(uint)(xf / 512.0f), cast(uint)(yf / 512.0f));
+        }
+
+        if (type == ObjectType.LOCATION)
+        {
+            auto x = read!uint(this.obj + 0x9C);
+            auto y = read!uint(this.obj + 0xA0);
+            return tuple(x, y);
+        }
+
+        auto x = read!uint(this.obj + 0x16C);
+        auto y = read!uint(this.obj + 0x170);
+        return tuple(x, y);
+    }
+
+    public double getDistance(Tuple!(uint, uint) pointA)
+    {
+        auto pointB = this.getTilePos();
+        uint dx = pointB[0] - pointA[0];
+        uint dy = pointB[1] - pointA[1];
+        return sqrt(pow(dx, 2) + pow(dy, 2));
     }
 
     protected void logPtr()
