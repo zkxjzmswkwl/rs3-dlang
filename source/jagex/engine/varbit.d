@@ -71,7 +71,7 @@ class Varbit
 
     extern (Windows) public int getInv(int inventoryId, int inventorySlot, int varbitId)
     {
-        mixin fn!("getInventory", 0x2D47D0, ulong*, int, bool);
+        mixin fn!("getInventory", 0x2D7360, ulong*, int, bool);
         Address* inventoryManager = read!(Address*)(this.clientPtr + 0x19980);
 
         Address* inventory = cast(Address*)(getInventory(inventoryManager, inventoryId, false));

@@ -26,3 +26,11 @@ Can switch out colours with only memory writes. There is no need to force a reap
 
 ### highlight_set_npc_show_as_important
 - Ditto
+
+### getInventory
+
+938-1 RVA: `0x2D7360`
+
+Signature from 938-1 binary, tested in 937-1.
+
+`48 89 5C 24 ? 4C 8B 59 ? 44 8D 14 12`
