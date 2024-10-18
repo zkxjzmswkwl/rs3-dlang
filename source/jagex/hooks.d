@@ -107,8 +107,8 @@ void hookUpdateStat(uint** skillPtr, uint newSkillTotalExp) {
 }
 
 extern(Windows)
-void hookGetInventory(ulong* rcx, int inventoryId, bool a3) {
-    infoF!"RCX: %016X | Inventory ID: %d | %d"(rcx, inventoryId, a3);
+void hookGetInventory(ulong* rcx, int inventoryId, void* a3) {
+    writefln("Inventory ID: %d", inventoryId);
     fnCall(getInventoryTrampoline, rcx, inventoryId, a3);
 }
 

@@ -21,7 +21,7 @@ class Inventory : ClientObj
 
     public ItemStack[] getItems()
     {
-        ItemStack[] items = new ItemStack[](28);
+        ItemStack[] items = new ItemStack[28];
         uint cursor = 0x0;
         
         while (cursor < 0xDC)

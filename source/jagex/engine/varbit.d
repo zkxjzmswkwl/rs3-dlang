@@ -7,6 +7,7 @@ import slf4d;
 
 import util;
 import jagex.constants;
+import jagex.engine.functions;
 
 class Varbit
 {
@@ -44,7 +45,6 @@ class Varbit
         ListShit fnList = cast(ListShit)(vtfn);
         long* varCategory = fnList(sharedPtrAccess, varbitId, null);
 
-        // Calls virtual method RVA:0xE42D0 (937-1)
         Address* pVarPtr = cast(Address*)(this.clientPtr + 0x19F60);
         infoF!"VarPtr: %016X"(pVarPtr);
         return vTableInvocation!int(pVarPtr, 3, varCategory);
@@ -65,7 +65,6 @@ class Varbit
         ListShit fnList = cast(ListShit)(vtfn);
         long* varCategory = fnList(sharedPtrAccess, varbitId, null);
 
-        // Calls virtual method RVA:0xE42D0 (937-1)
         return vTableInvocation!int(domain, 3, varCategory);
     }
 

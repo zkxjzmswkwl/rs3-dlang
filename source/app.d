@@ -9,9 +9,9 @@ import core.sys.windows.windows;
 import jagex;
 import context;
 import tracker;
+import util;
 import rdconstants;
 import comms.server;
-import jagex.engine.varbit;
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);
