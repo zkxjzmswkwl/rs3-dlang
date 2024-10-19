@@ -1,7 +1,7 @@
 module comms.server.packet;
 
 import slf4d;
-import jagex.engine.varbit;
+import jagex.engine;
 import std.conv;
 import context;
 import jagex.sceneobjs;
@@ -143,6 +143,25 @@ class PacketRespMetrics : Packet {
     }
 }
 
+class PacketRespHideEntities : Packet {
+    this() {
+        super(PacketType.RESPONSE);
+    }
+
+    public override string getBuffer(string[] args = []) {
+        if (args.length > 0) {
+            if (args[0] == "npc") {
+                nopEntityRendering(CALL_RENDER_NPCS, RENDER_ENTITIES_BYTES);
+            } else if (args[0] == "entity") {
+                nopEntityRendering(CALL_RENDER_ENTITIES, RENDER_ENTITIES_BYTES);
+            } else {
+                return "resp:hideentities:invalid";
+            }
+        }
+        return "resp:hideentities";
+    }
+}
+
 /// Unsure if I want to do this or not. We'll see.
 class PacketManager {
     // I don't know if this is passed by value or reference.
@@ -158,6 +177,7 @@ class PacketManager {
         this.packets["sceneobjects"] = new PacketRespSceneObjects();
         this.packets["metrics"]      = new PacketRespMetrics();
         this.packets["nodes"]        = new PacketRespNodes();
+        this.packets["hideentities"] = new PacketRespHideEntities();
     }
 
     @property Packet[string] packetMap() {

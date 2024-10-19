@@ -12,6 +12,7 @@ import tracker;
 import util;
 import rdconstants;
 import comms.server;
+import jagex.engine.patches;
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);
@@ -23,6 +24,7 @@ void run(HMODULE hModule) {
     try {
         freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
         freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
+        infoF!"Client ptr: %016X"(Context.get().client().getPtr());
 
         TrackerManager trackerManager = Context.get().tManager;
 
@@ -42,7 +44,7 @@ void run(HMODULE hModule) {
             }
 
             trackerManager.checkActivity();
-            Thread.sleep(dur!"msecs"(1_000));
+            Thread.sleep(dur!"msecs"(300));
         }
 
         fclose(stdout.getFP);

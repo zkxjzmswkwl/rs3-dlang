@@ -59,20 +59,8 @@ __gshared const uint[] XP_TABLE = [
     7944614, 8771558, 9684577, 10692629, 11805606, 13034431
 ];
 
-// // Skill colors
-// enum SkillColor
-// {
-//     // TODO: Automate this cba
-//     ATTACK = Color(152, 20, 20, 255),
-//     DEFENCE = Color(20, 126, 152, 255),
-//     WOODCUTTING = Color(126, 79, 53, 255),
-//     FISHING = Color(62, 112, 185, 255),
+// 48 85 FF 0F 84 ? ? ? ? 48 8B 01 FF 90 ? ? ? ? 84 C0 0F 85
+__gshared ulong CALL_RENDER_ENTITIES = 0x317890;
+__gshared ulong CALL_RENDER_NPCS     = 0x354FD3;
 
-//     SEPARATOR = Color(30, 30, 30, 255)
-// }
-
-// enum KColor
-// {
-//     TRACKER_BG = Color(30, 30, 30, 255),
-//     TRACKER_FG = Color(247, 247, 247, 255)
-// }
+__gshared ubyte[] RENDER_ENTITIES_BYTES = [0xFF, 0x90, 0x20, 0x01, 0x00, 0x00];

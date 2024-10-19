@@ -31,12 +31,10 @@ Fn!(Args) fnCall(Args...)(Address loc, Args args) {
 }
 
 @nogc T read(T)(Address address) {
-    if (address < MAX_ADDRESS && address > MIN_ADDRESS && address % 4uL == 0uL) {
-        try
-            return *cast(T*) address;
-        catch (Exception e)
-            return T.init;
-    }
+    try
+        return *cast(T*) address;
+    catch (Exception e)
+        return T.init;
     return T.init;
 }
 
@@ -52,6 +50,13 @@ void rvaWrite(T)(Address address, T value) {
 
 T rvaRead(T)(Address address) {
     return read!T(cast(Address)GetModuleHandle("rs2client.exe") + address);
+}
+
+DWORD rvaAlterPageAccess(Address address, size_t size, DWORD newProtect) {
+    auto base = cast(Address)GetModuleHandle("rs2client.exe");
+    DWORD oldProtect;
+    VirtualProtect(cast(void*)(base + address), size, newProtect, &oldProtect);
+    return oldProtect;
 }
 
 Address resolvePtrChain(Address base, size_t[] offsets) {
@@ -80,4 +85,10 @@ Address resolveFunction(string moduleName, string exportedFunction) {
     auto moduleHandle = GetModuleHandle(cast(const(wchar)*)moduleName);
     auto procAddr = GetProcAddress(cast(void*)moduleHandle, cast(const(char)*)exportedFunction);
     return cast(Address)procAddr;
+}
+
+void rvaFillBuffer(Address buffer, ubyte[] data) {
+    auto base = cast(Address)GetModuleHandle("rs2client.exe");
+    auto loc = cast(Address*)(base + buffer);
+    memcpy(cast(void*)loc, data.ptr, data.length);
 }
