@@ -45,6 +45,10 @@ class Entity : SceneObj {
         return read!uint(this.obj + 0x88);
     }
 
+    public void forceHighlight() {
+        write!int(this.obj + 0x1100, 0);
+    }
+
     public string asString() {
         return format("%s#%d#%d#%d",
             this.getName(),

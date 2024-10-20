@@ -11,8 +11,7 @@ import tracker.tracker;
 import jagex.constants;
 
 
-class TrackerManager
-{
+class TrackerManager {
 private:
     Tracker[] skills;
 

@@ -13,11 +13,19 @@ import util;
 import rdconstants;
 import comms.server;
 import jagex.engine.patches;
+import plugins;
+import plugins.highlighter;
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);
     server.start();
     return server;
+}
+
+void registerPluginsTest() {
+    auto highlighter = new shared(Highlighter);
+    auto pm = PluginManager.get();
+    pm.addPlugin(highlighter);
 }
 
 void run(HMODULE hModule) {
@@ -36,6 +44,8 @@ void run(HMODULE hModule) {
         if (Context.get().isDebugMode) {
             info("Operating under debug mode.");
         }
+
+        registerPluginsTest();
 
         for (;;) {
             if (server.needsRestart) {
@@ -58,7 +68,6 @@ extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) { // @suppres
     if (reason == DLL_PROCESS_ATTACH) {
         Runtime.initialize();
         auto t1 = new Thread({ run(module_); }).start();
-
     }
     else if (reason == DLL_PROCESS_DETACH) {
         Runtime.terminate();

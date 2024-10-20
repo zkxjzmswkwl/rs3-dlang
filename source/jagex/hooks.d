@@ -11,6 +11,8 @@ import context;
 import util.misc;
 import util.types;
 import jagex.client;
+import jagex.sceneobjs;
+import plugins;
 
 ///
 /// Must be __gshared or shared.
@@ -22,6 +24,7 @@ __gshared Address nodeTrampoline1;
 __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
 __gshared Address getInventoryTrampoline;
+__gshared Address highlightEntityTrampoline;
 /// Unused.
 __gshared Address setForegroundTrampoline;
 
@@ -41,7 +44,6 @@ void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
 
     fnCall( nodeTrampoline1, sp, miniMenu );
 }
-
 
 extern(Windows)
 void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interaction* miniMenu) {
@@ -73,7 +75,6 @@ extern (Windows) void hookAddChat(
     int a11
 ) 
 {
-
     auto senderString = cast(JagString*)a5;
     auto msgString = cast(JagString*)a8;
     // // Log shit
@@ -115,4 +116,15 @@ void hookGetInventory(ulong* rcx, int inventoryId, void* a3) {
 extern(Windows)
 BOOL hookSetForegroundWindow(HWND hWnd) {
     return 1;
+}
+
+extern(Windows)
+void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float colour) {
+    auto pm = PluginManager.get();
+    try {
+        pm.onHighlightEntity(new Entity(entityPtr), highlightVal, a3, colour);
+    } catch (Interrupt i) {
+        return;
+    }
+    fnCall(highlightEntityTrampoline, entityPtr, highlightVal, a3, colour);
 }

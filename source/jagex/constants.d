@@ -62,5 +62,9 @@ __gshared const uint[] XP_TABLE = [
 // 48 85 FF 0F 84 ? ? ? ? 48 8B 01 FF 90 ? ? ? ? 84 C0 0F 85
 __gshared ulong CALL_RENDER_ENTITIES = 0x317890;
 __gshared ulong CALL_RENDER_NPCS     = 0x354FD3;
+__gshared ulong MOV_ENTITY_HIGHLIGHT = 0x3552B4;
 
 __gshared ubyte[] RENDER_ENTITIES_BYTES = [0xFF, 0x90, 0x20, 0x01, 0x00, 0x00];
+
+// Responsible for setting appropriate entity highlighting value
+__gshared ubyte[] SET_ENTITY_HIGHLIGHT = [0x44, 0x89, 0x99, 0x00, 0x11, 0x00];
