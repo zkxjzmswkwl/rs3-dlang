@@ -148,7 +148,7 @@ struct JagString
         return this;
     }
 
-    private void set(immutable(char)* val)
+    public void set(immutable(char)* val)
     {
         if (isHeap())
         {

@@ -48,13 +48,13 @@ class Server : Thread
         switch (cmd) {
             default: break;
             case "red": {
-                rvaWrite!uint(0xB63B74, params[0].to!uint);
+                rvaWrite!uint(0xB63AC4, params[0].to!uint);
             } break;
             case "green": {
-                rvaWrite!uint(0xB63B74 + 4, params[0].to!uint);
+                rvaWrite!uint(0xB63AC4 + 4, params[0].to!uint);
             } break;
             case "blue": {
-                rvaWrite!uint(0xB63B74 + 8, params[0].to!uint);
+                rvaWrite!uint(0xB63AC4 + 8, params[0].to!uint);
             } break;
         }
     }

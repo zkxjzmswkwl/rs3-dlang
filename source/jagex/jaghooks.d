@@ -24,15 +24,19 @@ class JagexHooks {
     private Hook getInventory;
     private Hook highlightEntity;
     private Hook swapBuffers;
+    private Hook drawStringInner;
 
     this() {
-        this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
-        this.npcActionOne    = new Hook(0x1653B0, "npcAction1");
-        this.nodeActionOne   = new Hook(0x1655E0, "nodeAction1");
+        // this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
+        // this.npcActionOne    = new Hook(0x1653B0, "npcAction1");
+        // this.nodeActionOne   = new Hook(0x1655E0, "nodeAction1");
         this.addChatMessage  = new Hook(0xCE8D0,  "addChat");
-        this.updateStat      = new Hook(0x272EA0, "updateStat");
-        this.getInventory    = new Hook(0x2D7360, "getInventory");
-        this.highlightEntity = new Hook(0x354EF0, "highlightEntity");
+        // 48 89 5C 24 ? 0F B6 41 ? 4C 8B C9
+        this.updateStat      = new Hook(0x2729B0, "updateStat");
+        this.getInventory    = new Hook(0x2D72B0, "getInventory");
+        this.highlightEntity = new Hook(0x355330, "highlightEntity");
+        // 40 53 48 81 EC ? ? ? ? 48 8B 41 ? 45 8B D9 44 8B 94 24
+        this.drawStringInner = new Hook(/*0x4188B0*/0x418790, "drawStringInner");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -40,13 +44,17 @@ class JagexHooks {
     }
 
     public JagexHooks placeAll() {
-        this.npcGeneral.place(&hookNpcGeneral, cast(void**)&npcGeneralTrampoline);
-        this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
-        this.nodeActionOne.place(&hookNode1, cast(void**)&nodeTrampoline1);
-        // this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
+        // this.npcGeneral.place(&hookNpcGeneral, cast(void**)&npcGeneralTrampoline);
+        // this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
+        // this.nodeActionOne.place(&hookNode1, cast(void**)&nodeTrampoline1);
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
-        // this.getInventory.place(&hookGetInventory, cast(void**)&getInventoryTrampoline);
         this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
+        this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
+        this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
+
+        this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
+        // this.getInventory.place(&hookGetInventory, cast(void**)&getInventoryTrampoline);
+
         return this;
     }
 

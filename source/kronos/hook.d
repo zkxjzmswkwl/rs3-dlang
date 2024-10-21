@@ -62,47 +62,51 @@ class Hook
 
     extern (Windows) public void place(void* ourFunction, void** trampolinePtr)
     {
-        DWORD previousProtection;
-        // take da condom off
-        VirtualProtect(cast(void*) location, 1024, PAGE_EXECUTE_READWRITE, &previousProtection);
+        try {
+            DWORD previousProtection;
+            // take da condom off
+            VirtualProtect(cast(void*) location, 1024, PAGE_EXECUTE_READWRITE, &previousProtection);
 
-        void* relayPage = this.writeRelayPage();
-        uint trampolineSize = buildTrampoline(cast(void*) location, relayPage);
-        *trampolinePtr = relayPage;
+            void* relayPage = this.writeRelayPage();
+            uint trampolineSize = buildTrampoline(cast(void*) location, relayPage);
+            *trampolinePtr = relayPage;
 
-        void* relayFuncMemory = cast(char*) relayPage + trampolineSize;
-        this.writeJmp(relayFuncMemory, ourFunction);
+            void* relayFuncMemory = cast(char*) relayPage + trampolineSize;
+            this.writeJmp(relayFuncMemory, ourFunction);
 
-        ubyte[] jmpIsns32 = [0xE9, 0x0, 0x0, 0x0, 0x0];
-        /*
-        Since we only have space for a 32-bit relative jmp (0xE9), we need to calculate the relative address
-        from the start of the hooked function (this.location) to the point in the relay function
-        in which we 64-bit absolute jmp to the body of our hook.
+            ubyte[] jmpIsns32 = [0xE9, 0x0, 0x0, 0x0, 0x0];
+            /*
+            Since we only have space for a 32-bit relative jmp (0xE9), we need to calculate the relative address
+            from the start of the hooked function (this.location) to the point in the relay function
+            in which we 64-bit absolute jmp to the body of our hook.
 
-        The relay function looks like this, roughly:
-            mov    rcx,[rcx+08]                    ; Stolen bytes
-            mov    r8,rdx                          ; Stolen bytes
-            mov    r10,rs2client.exe+117555
-            jmp    r10                             ; jmp back to just after our 32-bit jmp in the original func location.
-            mov    r10,DeOppressoLiber.dll+13A2    
-            jmp    r10                             ; jmp to the point in our jmp table where we jmp to the body of our hook. (see below)
+            The relay function looks like this, roughly:
+                mov    rcx,[rcx+08]                    ; Stolen bytes
+                mov    r8,rdx                          ; Stolen bytes
+                mov    r10,rs2client.exe+117555
+                jmp    r10                             ; jmp back to just after our 32-bit jmp in the original func location.
+                mov    r10,DeOppressoLiber.dll+13A2    
+                jmp    r10                             ; jmp to the point in our jmp table where we jmp to the body of our hook. (see below)
 
-        The jmp table looks like this:
-            jmp    DeOpressoLiber.dll+16BA0
-            jmp    DeOpressoLiber.dll+16FDBC
-            jmp    DeOpressoLiber.dll+15F874
-            ...etc
-        
-        It's just a big table filled with jmps to locations in our module.
-        */
-        int32_t relativeAddress = cast(int32_t)(cast(uintptr_t) relayFuncMemory - (cast(uintptr_t) location + 5));
-        memcpy(&jmpIsns32[1], &relativeAddress, 4);
-        memcpy(cast(void*) location, &jmpIsns32[0], 5);
+            The jmp table looks like this:
+                jmp    DeOpressoLiber.dll+16BA0
+                jmp    DeOpressoLiber.dll+16FDBC
+                jmp    DeOpressoLiber.dll+15F874
+                ...etc
+            
+            It's just a big table filled with jmps to locations in our module.
+            */
+            int32_t relativeAddress = cast(int32_t)(cast(uintptr_t) relayFuncMemory - (cast(uintptr_t) location + 5));
+            memcpy(&jmpIsns32[1], &relativeAddress, 4);
+            memcpy(cast(void*) location, &jmpIsns32[0], 5);
 
-        // put da condom back on
-        VirtualProtect(cast(void*) location, 1024, previousProtection, null);
+            // put da condom back on
+            VirtualProtect(cast(void*) location, 1024, previousProtection, null);
 
-        infoF!"Hook(%s) at %016X"(this.name, location);
+            infoF!"Hook(%s) at %016X"(this.name, location);
+        } catch (Exception ex) {
+            writeln(ex.msg);
+        }
     }
 
     private uint buildTrampoline(void* func, void* trampDest)

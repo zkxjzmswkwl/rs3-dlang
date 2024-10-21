@@ -15,6 +15,11 @@
 	"libs": [
 		"user32"
 	],
+    "dflags": [
+		"-singleobj",
+        "-ffast-math",
+		"-shared"
+    ],
 	"license": "Apache 2.0",
 	"name": "DeOppressoLiber",
 	"targetType": "dynamicLibrary"

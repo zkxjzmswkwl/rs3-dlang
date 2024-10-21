@@ -17,7 +17,7 @@ class Varbit
     {
         // Hack in lieu of place to put this globally.
         // TODO: Global storage
-        auto tmp  = cast(Address) GetModuleHandle("rs2client.exe") + 0xD83AE8;
+        auto tmp  = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
         this.clientPtr = read!Address(tmp);
     }
 
@@ -70,7 +70,7 @@ class Varbit
 
     extern (Windows) public int getInv(int inventoryId, int inventorySlot, int varbitId)
     {
-        mixin fn!("getInventory", 0x2D7360, ulong*, int, bool);
+        mixin fn!("getInventory", 0x2D72B0, ulong*, int, bool);
         Address* inventoryManager = read!(Address*)(this.clientPtr + 0x19980);
 
         Address* inventory = cast(Address*)(getInventory(inventoryManager, inventoryId, false));
