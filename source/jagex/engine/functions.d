@@ -1,3 +1,4 @@
+// Collection of engine functions we call, but don't hook.
 module jagex.engine.functions;
 
 import core.sys.windows.windows;
@@ -6,7 +7,6 @@ import util;
 import jagex.item;
 import context;
 
-// Collection of engine functions we call, but don't hook.
 
 enum InventoryContainer {
     BACKPACK              = 93,
@@ -41,4 +41,3 @@ public ItemStack[] getItems(InventoryContainer container) {
 
     return items;
 }
-

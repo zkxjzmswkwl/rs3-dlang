@@ -25,6 +25,7 @@ __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
 __gshared Address getInventoryTrampoline;
 __gshared Address highlightEntityTrampoline;
+__gshared Address swapBuffersTrampoline;
 /// Unused.
 __gshared Address setForegroundTrampoline;
 
@@ -127,4 +128,18 @@ void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float co
         return;
     }
     fnCall(highlightEntityTrampoline, entityPtr, highlightVal, a3, colour);
+}
+
+// Called at the end of each frame.
+// SwapBuffers is responsible for turning the frame.
+// `extern(C)` is used to tell the compiler that this function should 
+// have the calling convention __stdcall.
+extern(C)
+void hookSwapBuffers(HDC hDc)
+{
+    if (Context.get().getWindowHandle() is null) {
+        Context.get().setWindowHandle(WindowFromDC(hDc));
+    }
+
+    fnCall(swapBuffersTrampoline, hDc);
 }

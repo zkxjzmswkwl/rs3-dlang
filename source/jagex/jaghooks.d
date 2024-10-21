@@ -1,5 +1,7 @@
 module jagex.jaghooks;
 
+import core.sys.windows.windows;
+
 import slf4d;
 
 import jagex;
@@ -21,6 +23,7 @@ class JagexHooks {
     private Hook updateStat;
     private Hook getInventory;
     private Hook highlightEntity;
+    private Hook swapBuffers;
 
     this() {
         this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
@@ -31,7 +34,9 @@ class JagexHooks {
         this.getInventory    = new Hook(0x2D7360, "getInventory");
         this.highlightEntity = new Hook(0x354EF0, "highlightEntity");
 
-        // this.placeSetForegroundHook();
+        auto oglModuleHandle = GetModuleHandle("opengl32.dll");
+        auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
+        this.swapBuffers = new Hook(swapBuffersAddr, "swapBuffers", false);
     }
 
     public JagexHooks placeAll() {

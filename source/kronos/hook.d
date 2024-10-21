@@ -49,9 +49,13 @@ class Hook
     ///
     private Capstone cs;
 
-    this(Address location, string name)
+    this(Address location, string name, bool sameModule = true)
     {
-        this.location = cast(ulong) GetModuleHandle("rs2client.exe") + location;
+        if (sameModule) {
+            this.location = cast(ulong) GetModuleHandle("rs2client.exe") + location;
+        } else {
+            this.location = location;
+        }
         this.cs = create(Arch.x86, ModeFlags(Mode.bit64));
         this.name = name;
     }

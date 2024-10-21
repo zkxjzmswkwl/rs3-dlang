@@ -1,6 +1,7 @@
 module context;
 
 import core.stdc.stdlib;
+import core.sys.windows.windows;
 import std.conv;
 import std.array;
 import std.file;
@@ -22,10 +23,12 @@ class Context  {
     private bool debugMode = true;
     private string workingDirectory;
     private string windowsUser;
+    private HWND windowHandle;
 
     private this() {
         this.jagClient = new Client();
         this.trackerManager = null;
+        this.windowHandle = null;
     }
 
     private static bool instantiated_;
@@ -62,5 +65,14 @@ class Context  {
 
     public string getWorkingDir() {
         return this.workingDirectory;
+    }
+
+    public HWND getWindowHandle() {
+        return this.windowHandle;
+    }
+
+    public Context setWindowHandle(HWND handle) {
+        this.windowHandle = handle;
+        return this;
     }
 }
