@@ -36,7 +36,7 @@ class JagexHooks {
         this.getInventory    = new Hook(0x2D72B0, "getInventory");
         this.highlightEntity = new Hook(0x355330, "highlightEntity");
         // 40 53 48 81 EC ? ? ? ? 48 8B 41 ? 45 8B D9 44 8B 94 24
-        this.drawStringInner = new Hook(/*0x4188B0*/0x418790, "drawStringInner");
+        this.drawStringInner = new Hook(/*0x4188B0*/0x3C1520, "drawStringInner");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -49,7 +49,7 @@ class JagexHooks {
         // this.nodeActionOne.place(&hookNode1, cast(void**)&nodeTrampoline1);
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
-        this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
+        // this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
         this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
 
         this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);

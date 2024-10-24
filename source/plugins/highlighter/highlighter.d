@@ -8,14 +8,6 @@ class Highlighter : Plugin {
         super("Entity Highlighter", 1.0);
     }
 
-    shared override void onUpdateStat(uint** skillPtr, uint newExp) {
-        // Do nothing
-    }
-
-    shared override void postUpdateStat(uint** skillPtr, uint newExp) {
-        // Do nothing
-    }
-
     shared override void onHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour) {
         if (entity.getName() == "War") {
             entity.forceHighlight();
@@ -24,9 +16,5 @@ class Highlighter : Plugin {
             // never calling the original function.
             throw new Interrupt();
         }
-    }
-
-    shared override void postHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour) {
-        // Do nothing
     }
 }

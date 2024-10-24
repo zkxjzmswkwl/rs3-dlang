@@ -1,6 +1,8 @@
 module plugins.plugin;
 
 import jagex.sceneobjs;
+import jagex.clientobjs;
+import context;
 
 class Plugin {
     private string name;
@@ -17,12 +19,24 @@ class Plugin {
         this.enabled = !this.enabled;
     }
 
-    // Disabled for now
-    // abstract void onChat(int messageType, string sender, string message);
-    shared abstract void onUpdateStat(uint** skillPtr, uint newExp);
-    shared abstract void postUpdateStat(uint** skillPtr, uint newExp);
-    shared abstract void onHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour);
-    shared abstract void postHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour);
+    @property public ChatHistory chatHistory() {
+        return Context.get().client().getChatHistory();
+    }
+
+    @property public SceneManager sceneManager() {
+        return Context.get().client().getSceneManager();
+    }
+
+    @property public LocalPlayer localPlayer() {
+        return Context.get().client().getLocalPlayer();
+    }
+
+    // Hopefully they don't get optimized out.
+    shared void onChat(int messageType, string author, string message) {}
+    shared void onUpdateStat(uint** skillPtr, uint newExp) {}
+    shared void postUpdateStat(uint** skillPtr, uint newExp) {}
+    shared void onHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour) {}
+    shared void postHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour) {}
 
     // TODO:
     // abstract void onDrawMiniMenu();

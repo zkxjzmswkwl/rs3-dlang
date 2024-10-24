@@ -38,4 +38,10 @@ class PluginManager {
             plugin.onHighlightEntity(entity, highlightVal, frameCount, colour);
         }
     }
+
+    public void onChat(int messageType, string author, string message) {
+        foreach (shared(Plugin) plugin; runningPlugins) {
+            plugin.onChat(messageType, author, message);
+        }
+    }
 }

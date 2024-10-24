@@ -1,5 +1,7 @@
 {
     "dscanner.ignoredKeys": [
-        "dscanner.style.number_literals"
+        "dscanner.style.number_literals",
+        "dscanner.style.long_line",
+        "dscanner.style.phobos_naming_convention"
     ]
 }

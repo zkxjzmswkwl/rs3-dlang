@@ -13,8 +13,11 @@ import util;
 import rdconstants;
 import comms.server;
 import jagex.engine.patches;
+import jagex.clientobjs.chathistory : ChatMessage;
 import plugins;
 import plugins.highlighter;
+import plugins.chatexample.chatexample;
+
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);
@@ -24,8 +27,11 @@ Server createServer() {
 
 void registerPluginsTest() {
     auto highlighter = new shared(Highlighter);
+    auto logChat = new shared(ChatExample);
+
     auto pm = PluginManager.get();
     pm.addPlugin(highlighter);
+    pm.addPlugin(logChat);
 }
 
 void run(HMODULE hModule) {

@@ -2,7 +2,7 @@ module jagex.hooks;
 
 import std.stdio;
 import std.format;
-import std.string : toStringz;
+import std.string;
 import std.conv;
 import core.sys.windows.windows;
 
@@ -13,8 +13,9 @@ import util.misc;
 import util.types;
 import jagex.client;
 import jagex.sceneobjs;
-import plugins;
 import jagex.engine.functions;
+import plugins;
+
 
 ///
 /// Must be __gshared or shared.
@@ -29,8 +30,10 @@ __gshared Address getInventoryTrampoline;
 __gshared Address highlightEntityTrampoline;
 __gshared Address swapBuffersTrampoline;
 __gshared Address drawStringInnerTrampoline;
+
 /// Unused.
 __gshared Address setForegroundTrampoline;
+
 
 mixin template GenDoActionHookBody(string funcName, alias trampolineFunc) {
     enum code = q{
@@ -67,13 +70,13 @@ void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt) {
 
 extern (Windows) void hookAddChat(
     void* a1,
-    int a2,
+    int messageType,
     int a3,
     void* a4,
-    JagString* a5,
+    JagString* author,
     void* a6,
     void* a7,
-    JagString* a8,
+    JagString* message,
     void* a9,
     void* a10,
     int a11
@@ -81,14 +84,11 @@ extern (Windows) void hookAddChat(
 {
     pragma(inline, false);
     pragma(optimize, false);
-    // Log shit
-    infoF!"(%d) %s: %s"(a2, a5.read(), a8.read());
 
-    // Just filter the annoying "Ability not ready yet." message, for now.
-    // if (a8.toString() != "Ability not ready yet.") {
-    //     fnCall(chatTrampoline, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-    // }
-    fnCall(chatTrampoline, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
+    auto pm = PluginManager.get();
+    pm.onChat(messageType, author.read(), message.read());
+
+    fnCall(chatTrampoline, a1, messageType, a3, a4, author, a6, a7, message, a9, a10, a11);
 }
 
 extern(Windows)
@@ -134,26 +134,25 @@ void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float co
     fnCall(highlightEntityTrampoline, entityPtr, highlightVal, a3, colour);
 }
 
+
 // Called at the end of each frame.
 // SwapBuffers is responsible for turning the frame.
 // `extern(C)` is used to tell the compiler that this function should 
 // have the calling convention __stdcall.
-extern(C)
+extern (C)
 void hookSwapBuffers(HDC hDc) {
+    // Ensure the window handle is set
     if (Context.get().getWindowHandle() is null) {
-        Context.get().setWindowHandle(WindowFromDC(hDc));
+        auto window = WindowFromDC(hDc);
+        Context.get().setWindowHandle(window);
     }
-
-    // Maybe here better. Rendering thread.
-    // If we crash, JagString is fuuuuuucked.
-    // testDrawShit(cast(immutable(char)*)&Context.get().largeStr, 1600, 800);
 
     fnCall(swapBuffersTrampoline, hDc);
 }
 
 extern(Windows)
 // void hookDrawStringInner(JagString *text, size_t *len, long a3, uint a4, char a5, bool shouldRender) {
-void hookDrawStringInner(ulong* thisptr, char *text, int x, int y, int colour, int opacity, char type) {
+void hookDrawStringInner(ulong* thisptr, char *text, int x, int y, int colour, int opacity, byte* type) {
     if (text) {
         writefln(
             "DrawStringInner: %s\n%d, %d, %d, %d",
@@ -162,6 +161,5 @@ void hookDrawStringInner(ulong* thisptr, char *text, int x, int y, int colour, i
         );
         writeln("==================================================");
     }
-    // immutable(char)* aaa = "HELLFIRE RAGECOCKS".toStringz();
     fnCall(drawStringInnerTrampoline, thisptr, text, x, y, colour, opacity, type);
 }

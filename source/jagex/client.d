@@ -7,10 +7,7 @@ import util;
 import context;
 
 import jagex.constants;
-import jagex.clientobjs.localplayer;
-import jagex.clientobjs.inventory;
-import jagex.clientobjs.skills;
-import jagex.clientobjs.scenemanager;
+import jagex.clientobjs;
 import kronos.hook;
 
 class Client {
@@ -23,6 +20,8 @@ class Client {
     private Inventory inventory;
     private SceneManager sceneManager;
     private Skills skills;
+    private Render render;
+    private ChatHistory chatHistory;
 
     this() {
         auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
@@ -43,6 +42,8 @@ class Client {
         this.inventory = new Inventory(this.clientPtr);
         this.skills = new Skills(this.clientPtr);
         this.sceneManager = new SceneManager(this.clientPtr);
+        this.render = new Render(this.clientPtr);
+        this.chatHistory = new ChatHistory(this.clientPtr);
     }
 
     // Without this, hitting a breakpoint will cause your mouse to feel as though it's polling at 1hz.
@@ -72,6 +73,14 @@ class Client {
 
     public Inventory getInventory() {
         return this.inventory;
+    }
+
+    public Render getRender() {
+        return this.render;
+    }
+
+    public ChatHistory getChatHistory() {
+        return this.chatHistory;
     }
 
     public Address getPtr() {
