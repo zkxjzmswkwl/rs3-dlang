@@ -17,7 +17,7 @@ import jagex.clientobjs.chathistory : ChatMessage;
 import plugins;
 import plugins.highlighter;
 import plugins.chatexample.chatexample;
-
+import plugins.afkwarden.afkwarden;
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);
@@ -26,12 +26,14 @@ Server createServer() {
 }
 
 void registerPluginsTest() {
-    auto highlighter = new shared(Highlighter);
-    auto logChat = new shared(ChatExample);
+    auto highlighter = new Highlighter();
+    auto logChat     = new ChatExample();
+    auto afkWarden   = new AFKWarden();
 
     auto pm = PluginManager.get();
     pm.addPlugin(highlighter);
     pm.addPlugin(logChat);
+    pm.addPlugin(afkWarden);
 }
 
 void run(HMODULE hModule) {

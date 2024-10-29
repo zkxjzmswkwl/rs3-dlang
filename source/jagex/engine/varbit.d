@@ -8,19 +8,9 @@ import slf4d;
 import util;
 import jagex.constants;
 import jagex.engine.functions;
+import context;
 
-class Varbit
-{
-    private Address clientPtr;
-
-    this()
-    {
-        // Hack in lieu of place to put this globally.
-        // TODO: Global storage
-        auto tmp  = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
-        this.clientPtr = read!Address(tmp);
-    }
-
+class Varbit {
     /*
         PlayerVarDomain -> client]0x19f60
         ConfigProvider  -> client]0x18D30
@@ -30,9 +20,10 @@ class Varbit
         For now, it does the job. As I need the relevant objects,
         they will have their own homes and be resolved elsewhere.
      */
-    extern (Windows) private int get(int varbitId)
-    {
-        Address configProvider = read!Address(this.clientPtr + 0x18D30);
+    extern (Windows) static private int get(int varbitId) {
+        auto clientPtr = Context.get().client().getPtr();
+
+        Address configProvider = read!Address(clientPtr + 0x18D30);
         auto containers = read!(JagArray!Address)(configProvider + 0x98);
         auto group = cast(Address)(containers[69] + 0x38);
 
@@ -45,14 +36,15 @@ class Varbit
         ListShit fnList = cast(ListShit)(vtfn);
         long* varCategory = fnList(sharedPtrAccess, varbitId, null);
 
-        Address* pVarPtr = cast(Address*)(this.clientPtr + 0x19F60);
+        Address* pVarPtr = cast(Address*)(clientPtr + 0x19F60);
         infoF!"VarPtr: %016X"(pVarPtr);
         return vTableInvocation!int(pVarPtr, 3, varCategory);
     }
 
-    extern (Windows) private int get(Address* domain, int varbitId)
-    {
-        Address configProvider = read!Address(this.clientPtr + 0x18D30);
+    extern (Windows) static private int get(Address* domain, int varbitId) {
+        auto clientPtr = Context.get().client().getPtr();
+
+        Address configProvider = read!Address(clientPtr + 0x18D30);
         auto containers = read!(JagArray!Address)(configProvider + 0x98);
         auto group = cast(Address)(containers[69] + 0x38);
 
@@ -68,10 +60,11 @@ class Varbit
         return vTableInvocation!int(domain, 3, varCategory);
     }
 
-    extern (Windows) public int getInv(int inventoryId, int inventorySlot, int varbitId)
-    {
+    extern (Windows) static public int getInv(int inventoryId, int inventorySlot, int varbitId) {
+        auto clientPtr = Context.get().client().getPtr();
+
         mixin fn!("getInventory", 0x2D72B0, ulong*, int, bool);
-        Address* inventoryManager = read!(Address*)(this.clientPtr + 0x19980);
+        Address* inventoryManager = read!(Address*)(clientPtr + 0x19980);
 
         Address* inventory = cast(Address*)(getInventory(inventoryManager, inventoryId, false));
         auto domains = read!(JagVector!(ForeignObjFixed!(56)))(cast(Address)inventory + 0x28);
@@ -82,9 +75,8 @@ class Varbit
         return result;
     }
 
-    public int getCurrentHealth()
-    {
-        return this.get(1_668);
+    public static int getCurrentHealth() {
+        return get(1_668);
     }
 
     public int getMaxHealth()
@@ -97,9 +89,9 @@ class Varbit
         return this.get(41_524);
     }
 
-    public int getPrayerPoints()
+    public static int getPrayerPoints()
     {
-        return this.get(16_736);
+        return get(16_736);
     }
 
     public int getScriptureTicks()

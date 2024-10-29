@@ -4,7 +4,7 @@ import jagex.sceneobjs;
 import plugins;
 
 class PluginManager {
-    shared private Plugin[] runningPlugins;
+    private Plugin[string] installedPlugins;
 
     // Low-lock singleton. Thread safe.
     // After enough accesses, it becomes an incredibly predictable codepath for the cpu.
@@ -23,25 +23,29 @@ class PluginManager {
         return instance_;
     }
 
-    public void addPlugin(shared(Plugin) plugin) {
-        runningPlugins ~= plugin;
+    public void addPlugin(Plugin plugin) {
+        installedPlugins[plugin.name] = plugin;
     }
 
     public void onUpdateStat(uint** skillPtr, uint newExp) {
-        foreach (shared(Plugin) plugin; runningPlugins) {
+        foreach (Plugin plugin; installedPlugins) {
             plugin.onUpdateStat(skillPtr, newExp);
         }
     }
 
     public void onHighlightEntity(Entity entity, uint highlightVal, char frameCount, float colour) {
-        foreach (shared(Plugin) plugin; runningPlugins) {
+        foreach (Plugin plugin; installedPlugins) {
             plugin.onHighlightEntity(entity, highlightVal, frameCount, colour);
         }
     }
 
     public void onChat(int messageType, string author, string message) {
-        foreach (shared(Plugin) plugin; runningPlugins) {
+        foreach (Plugin plugin; installedPlugins) {
             plugin.onChat(messageType, author, message);
         }
+    }
+
+    @property public Plugin[string] plugins() {
+        return this.installedPlugins;
     }
 }

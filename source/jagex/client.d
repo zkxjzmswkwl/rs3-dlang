@@ -26,17 +26,7 @@ class Client {
     this() {
         auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
         this.clientPtr = read!Address(tmp);
-
-        // infoF!"Client ptr: %016X"(this.clientPtr);
-
         this.unhookMouseHook();
-
-        this.instantiateClientObjects();
-    }
-
-
-    private void instantiateClientObjects() {
-        info("Instantiating client objects.");
 
         this.localPlayer = new LocalPlayer(this.clientPtr);
         this.inventory = new Inventory(this.clientPtr);
@@ -47,9 +37,9 @@ class Client {
     }
 
     // Without this, hitting a breakpoint will cause your mouse to feel as though it's polling at 1hz.
+    // NOTE: See https://github.com/zkxjzmswkwl/rs3-dlang/issues/1
     //------------------------------------------------------------------------------------------------ 
-    public void unhookMouseHook()
-    {
+    public void unhookMouseHook() {
         HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + 0xD7E078);
         if (UnhookWindowsHookEx(mouseHook)) {
             infoF!"Mouse hook unhooked."();
@@ -62,7 +52,6 @@ class Client {
         return read!ClientState(this.clientPtr + 0x19F48);
     }
 
-    // TODO: Figure out mixin capitalization so we can generate all of our getters ~ [8.14.2024]
     public LocalPlayer getLocalPlayer() {
         return this.localPlayer;
     }

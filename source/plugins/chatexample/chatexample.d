@@ -6,12 +6,11 @@ import jagex.sceneobjs;
 
 // Logs chat.
 class ChatExample : Plugin {
-    shared this() {
-        super("Chat History Example", 1.0);
+    this() {
+        super("chatexample", new Manifest(), 1.0);
     }
 
-    shared override void onChat(int messageType, string author, string message) {
-        // Log chat.
+    override void onChat(int messageType, string author, string message) {
         infoF!"(%d) %s: %s"(messageType, author, message);
     }
 }

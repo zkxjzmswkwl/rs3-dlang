@@ -7,6 +7,7 @@ import context;
 import jagex.sceneobjs;
 import jagex;
 import tracker;
+import plugins;
 
 enum PacketType {
     REQUEST,
@@ -16,12 +17,9 @@ enum PacketType {
 
 class Packet {
     private PacketType type;
-    private Varbit varbit;
 
     this(PacketType type, string[] args = []) {
         this.type = type;
-        // Bad.
-        this.varbit = new Varbit();
     }
 
     public abstract string getBuffer(string[] args = []);
@@ -35,7 +33,7 @@ class PacketRespPrayer : Packet {
     public override string getBuffer(string[] args = []) {
         // Prayer, along with some other values, are stored in multiples of 10.
         // Current prayer points being 410, `varbit.getPrayerPoints()` would return 4,100.
-        return "resp:prayer:" ~ to!string(varbit.getPrayerPoints() / 10);
+        return "resp:prayer:" ~ to!string(Varbit.getPrayerPoints() / 10);
     }
 }
 
@@ -45,7 +43,7 @@ class PacketRespHealth : Packet {
     }
 
     public override string getBuffer(string[] args = []) {
-        return "resp:health:" ~ varbit.getCurrentHealth().to!string;
+        return "resp:health:" ~ Varbit.getCurrentHealth().to!string;
     }
 }
 
@@ -78,7 +76,6 @@ class PacketRespSceneObjects : Packet {
             // Gobbos. every1 loves gobbos
             entities = sceneManager.queryScene!Entity("Goblin", ObjectType.NPC);
         }
-
 
         try {
             foreach (entity; entities) {
@@ -162,6 +159,20 @@ class PacketRespHideEntities : Packet {
     }
 }
 
+// import plugins.afkwarden;
+// class PacketRespAFKWardenView : Packet {
+//     this() {
+//         super(PacketType.RESPONSE);
+//     }
+
+//     public override string getBuffer(string[] args = []) {
+//         auto pm = PluginManager.get();
+//         auto afkWarden = cast(AFKWarden)pm.plugins["afkwarden"];
+//         return "_specpl_:afkwardenview:queryresp:" ~ to!string(afkWarden.getAfkMessages());
+//     }
+// }
+
+
 /// Unsure if I want to do this or not. We'll see.
 class PacketManager {
     // I don't know if this is passed by value or reference.
@@ -170,7 +181,7 @@ class PacketManager {
     // TODO: Profile
     private Packet[string] packets;
 
-    public void initializeAll() {
+    this() {
         this.packets["prayer"]       = new PacketRespPrayer();
         this.packets["health"]       = new PacketRespHealth();
         this.packets["rsn"]          = new PacketRespRsn();
@@ -182,5 +193,9 @@ class PacketManager {
 
     @property Packet[string] packetMap() {
         return this.packets;
+    }
+
+    public void register(string key, Packet packet) {
+        this.packets[key] = packet;
     }
 }

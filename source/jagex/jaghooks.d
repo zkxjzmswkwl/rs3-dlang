@@ -25,6 +25,8 @@ class JagexHooks {
     private Hook highlightEntity;
     private Hook swapBuffers;
     private Hook drawStringInner;
+    private Hook renderMenuEntry;
+    private Hook runClientScript;
 
     this() {
         // this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
@@ -37,6 +39,8 @@ class JagexHooks {
         this.highlightEntity = new Hook(0x355330, "highlightEntity");
         // 40 53 48 81 EC ? ? ? ? 48 8B 41 ? 45 8B D9 44 8B 94 24
         this.drawStringInner = new Hook(/*0x4188B0*/0x3C1520, "drawStringInner");
+        this.renderMenuEntry = new Hook(0x14D210, "renderMenuEntry");
+        this.runClientScript = new Hook(0x008BA10, "runClientScript");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -50,6 +54,8 @@ class JagexHooks {
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
         // this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
+        // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
+        // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
         this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
 
         this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);

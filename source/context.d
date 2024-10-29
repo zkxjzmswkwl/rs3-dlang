@@ -13,6 +13,9 @@ import runescape;
 import util;
 import tracker.trackermanager;
 import jagex.client;
+import jagex.engine.varbit;
+import comms.server;
+import std.concurrency;
 
 __gshared Context instance = null;
 
@@ -20,13 +23,16 @@ class Context  {
     __gshared private TrackerManager trackerManager;
 
     private Client jagClient;
+    private PacketManager _packetManager;
     private bool debugMode = true;
     private string workingDirectory;
     private string windowsUser;
     private HWND windowHandle;
+    private Tid serverThreadId;
 
     private this() {
         this.jagClient = new Client();
+        this._packetManager = new PacketManager();
         this.trackerManager = null;
         this.windowHandle = null;
     }
@@ -53,6 +59,10 @@ class Context  {
         return this.jagClient;
     }
 
+    public PacketManager packetManager() {
+        return this._packetManager;
+    }
+    
     @property TrackerManager tManager() {
         if (this.trackerManager is null)
             this.trackerManager = new TrackerManager();
@@ -74,5 +84,13 @@ class Context  {
     public Context setWindowHandle(HWND handle) {
         this.windowHandle = handle;
         return this;
+    }
+
+    @property public Tid serverTid() {
+        return this.serverThreadId;
+    }
+
+    @property public void serverTid(Tid tid) {
+        this.serverThreadId = tid;
     }
 }

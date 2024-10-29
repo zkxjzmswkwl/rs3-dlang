@@ -30,6 +30,8 @@ __gshared Address getInventoryTrampoline;
 __gshared Address highlightEntityTrampoline;
 __gshared Address swapBuffersTrampoline;
 __gshared Address drawStringInnerTrampoline;
+__gshared Address renderMenuEntryTrampoline;
+__gshared Address runClientScriptTrampoline;
 
 /// Unused.
 __gshared Address setForegroundTrampoline;
@@ -162,4 +164,26 @@ void hookDrawStringInner(ulong* thisptr, char *text, int x, int y, int colour, i
         writeln("==================================================");
     }
     fnCall(drawStringInnerTrampoline, thisptr, text, x, y, colour, opacity, type);
+}
+
+extern(Windows)
+void hookRenderMenuEntry(Address* thisptr, ulong index, ulong what) {
+    infoF!"RenderMenuEntry: %016X, %016X, %016X"(thisptr, index, what);
+    fnCall(renderMenuEntryTrampoline, thisptr, index, what);
+}
+
+// Ignore
+uint[] blacklistedScripts = [8773, 8298, 10902, 10823, 13824, 1269, 10902, 1652, 8415];
+extern(Windows)
+void hookRunClientScript(Address* thisptr, Address* script, int a3) {
+    auto scriptId = *cast(uint*)script;
+    foreach (bs; blacklistedScripts) {
+        if (scriptId == bs) {
+            goto ret;
+        }
+    }
+
+    infoF!"RunClientScript: %016X, %d, %d"(thisptr, scriptId, a3);
+ret:
+    fnCall(runClientScriptTrampoline, thisptr, script, a3);
 }
