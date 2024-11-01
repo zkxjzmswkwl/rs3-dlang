@@ -133,7 +133,9 @@ class PacketRespMetrics : Packet {
         string buffer = "resp:metrics:";
 
         foreach (tracker; activeTrackers) {
-            buffer ~= tracker.getCommString() ~ "^";
+            if (tracker.getTotalXpGain() > 0) {
+                buffer ~= tracker.getCommString() ~ "^";
+            }
         }
 
         return buffer;
@@ -158,20 +160,6 @@ class PacketRespHideEntities : Packet {
         return "resp:hideentities";
     }
 }
-
-// import plugins.afkwarden;
-// class PacketRespAFKWardenView : Packet {
-//     this() {
-//         super(PacketType.RESPONSE);
-//     }
-
-//     public override string getBuffer(string[] args = []) {
-//         auto pm = PluginManager.get();
-//         auto afkWarden = cast(AFKWarden)pm.plugins["afkwarden"];
-//         return "_specpl_:afkwardenview:queryresp:" ~ to!string(afkWarden.getAfkMessages());
-//     }
-// }
-
 
 /// Unsure if I want to do this or not. We'll see.
 class PacketManager {
