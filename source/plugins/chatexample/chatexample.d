@@ -1,6 +1,6 @@
 module plugins.chatexample.chatexample;
 
-import slf4d;
+import std.stdio;
 import plugins;
 import jagex.sceneobjs;
 
@@ -11,6 +11,6 @@ class ChatExample : Plugin {
     }
 
     override void onChat(int messageType, string author, string message) {
-        infoF!"(%d) %s: %s"(messageType, author, message);
+        writefln("(%d) %s: %s", messageType, author, message);
     }
 }
