@@ -1,0 +1,32 @@
+{
+  "pluginName": "demo",
+  "version": "2.3",
+  "ui": {
+    "layout": "Grid",
+    "columns": 2,
+    "children": [
+      {
+        "type": "TextBlock",
+        "properties": {
+          "Text": "Health:",
+          "FontWeight": "Bold"
+        }
+      },
+      {
+        "type": "ProgressBar",
+        "properties": {
+          "Minimum": 0,
+          "Maximum": 100,
+          "Value": 75
+        }
+      },
+      {
+        "type": "Button",
+        "properties": {
+          "Content": "Hide Entities",
+          "Command": "HideEntitiesCmd"
+        }
+      }
+    ]
+  }
+}

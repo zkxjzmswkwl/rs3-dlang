@@ -11,6 +11,7 @@ import comms.server;
 class AFKWarden : Plugin {
     private string[] afkMessages;
     private bool shouldAlert;
+    private string alertTriggeredBy;
 
     this() {
         auto manifest = new Manifest();
@@ -32,7 +33,7 @@ class AFKWarden : Plugin {
     private string checkinExecutor(string[] args) {
         if (shouldAlert) {
             shouldAlert = false;
-            return "playalert";
+            return "playalert:" ~ alertTriggeredBy;
         }
         return "0";
     }
@@ -46,6 +47,8 @@ class AFKWarden : Plugin {
         foreach (string afkMessage; afkMessages) {
             if (canFind(message, afkMessage)) {
                 shouldAlert = true;
+                alertTriggeredBy = afkMessage;
+                break;
             }
         }
     }

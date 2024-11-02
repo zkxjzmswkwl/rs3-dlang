@@ -5,6 +5,7 @@ import slf4d;
 import std.stdio;
 import core.runtime;
 import core.sys.windows.windows;
+import std.conv;
 
 import jagex;
 import context;
@@ -68,7 +69,7 @@ void run(HMODULE hModule) {
         fclose(stdout.getFP);
         fclose(stderr.getFP);
     } catch (Exception ex) {
-        writeln(ex.msg);
+        writeln(ex.msg ~ " " ~ ex.file ~ " " ~ ex.line.to!string);
     }
 }
 
