@@ -90,6 +90,7 @@ class Server : Thread {
         if (packet == "1" || !canFind(packet, ":")) {
             return;
         }
+        writeln(packet);
         // Each incoming packet is suffixed with "<dongs>".
         // Sometimes, one read will yield what was intended to be multiple packets.
         // So, we check for the suffix and if anything is after it, we process the rest as a separate packet.
@@ -151,7 +152,7 @@ class Server : Thread {
         }
 
         tcpSocket.bind(new InternetAddress(this.host, this.port));
-        tcpSocket.listen(10);
+        tcpSocket.listen(30);
 
         info("[>] START | " ~ this.host ~ ":" ~ this.port.to!string);
 
