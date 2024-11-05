@@ -44,9 +44,11 @@ void run(HMODULE hModule) {
         infoF!"Client ptr: %016X"(Context.get().client().getPtr());
 
         TrackerManager trackerManager = Context.get().tManager;
-
         JagexHooks jagexHooks = new JagexHooks();
         jagexHooks.placeAll();
+        // TODO: Might burn
+        nopSetSilhouette();
+        nopSetLocalSilhouette();
 
         Server server = createServer();
 

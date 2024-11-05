@@ -242,3 +242,18 @@ struct Interaction {
     int x;
     int y;
 }
+
+
+struct Silhouette {
+    char[0x100] pad;
+    // 0x100
+    float r;
+    // 0x104
+    float g;
+    // 0x108
+    float b;
+    // 0x10C
+    float opacity;
+    // 0x110
+    float width;
+}

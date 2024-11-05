@@ -56,4 +56,17 @@ class Entity : SceneObj {
             this.getServerIndex(),
             this.obj);
     }
+
+    public Address getSilhouette() {
+        return read!Address(this.obj + 0xC68);
+    }
+
+    public void setSilhouette(float r, float g, float b, float opacity, float width) {
+        auto silhouette = read!Address(this.obj + 0xC68);
+        write!float(silhouette + 0x100, r);
+        write!float(silhouette + 0x104, g);
+        write!float(silhouette + 0x108, b);
+        write!float(silhouette + 0x10C, opacity);
+        write!float(silhouette + 0x110, width);
+    }
 }

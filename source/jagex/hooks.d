@@ -136,7 +136,6 @@ void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float co
     fnCall(highlightEntityTrampoline, entityPtr, highlightVal, a3, colour);
 }
 
-
 // Called at the end of each frame.
 // SwapBuffers is responsible for turning the frame.
 // `extern(C)` is used to tell the compiler that this function should 

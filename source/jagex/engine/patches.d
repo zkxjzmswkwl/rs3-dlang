@@ -18,3 +18,24 @@ static void nopEntityRendering(Address renderCall, ubyte[] originalBytes) {
     
     rvaAlterPageAccess(renderCall, 6, oldProtect);
 }
+
+// Early returns the function that resets silhouette while doing anything except afking
+static void nopSetSilhouette() {
+    auto oldProtect = rvaAlterPageAccess(RESET_SILHOUETTE, 1, PAGE_EXECUTE_READWRITE);
+    rvaFillBuffer(RESET_SILHOUETTE, [0xC3]);
+    rvaAlterPageAccess(RESET_SILHOUETTE, 1, oldProtect);
+}
+
+static void nopSetLocalSilhouette() {
+    auto oldProtect = rvaAlterPageAccess(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE.length, PAGE_EXECUTE_READWRITE);
+    auto firstByte = rvaRead!ubyte(SET_SILHOUETTE);
+
+    if (firstByte == SET_LOCAL_PLAYER_SILHOUETTE[0]) {
+        // Everything's fine.
+        rvaFillBuffer(SET_SILHOUETTE, [0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90]);
+    } else {
+        rvaFillBuffer(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE);
+    }
+    
+    rvaAlterPageAccess(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE.length, oldProtect);
+}

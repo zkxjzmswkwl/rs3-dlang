@@ -56,16 +56,25 @@ class Server : Thread {
         string cmd = packet[1];
         auto params = packet[2..$];
 
+        // ya know.
+        auto silhouette = Context.get().client().getLocalPlayer().getEntity().getSilhouette();
+
         switch (cmd) {
             default: break;
             case "red": {
-                rvaWrite!uint(0xB63AC4, params[0].to!uint);
+                write!float(silhouette + 0x100, params[0].to!float);
             } break;
             case "green": {
-                rvaWrite!uint(0xB63AC4 + 4, params[0].to!uint);
+                write!float(silhouette + 0x104, params[0].to!float);
             } break;
             case "blue": {
-                rvaWrite!uint(0xB63AC4 + 8, params[0].to!uint);
+                write!float(silhouette + 0x108, params[0].to!float);
+            } break;
+            case "opacity": {
+                write!float(silhouette + 0x10C, params[0].to!float);
+            } break;
+            case "width": {
+                write!float(silhouette + 0x110, params[0].to!float);
             } break;
         }
     }
