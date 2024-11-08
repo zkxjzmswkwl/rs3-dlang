@@ -18,7 +18,8 @@ class AFKWarden : Plugin {
         manifest
             .withCommand("addWatchedMessage", 1, Direction.IN, &addWatchedMessageExecutor)
             .withCommand("removeWatchedMessage", 1, Direction.IN, &removeWatchedMessageExecutor)
-            .withCommand("checkin", 0, Direction.IN, &checkinExecutor);
+            .withCommand("checkin", 0, Direction.IN, &checkinExecutor)
+            .withCommand("query", 0, Direction.IN, &queryWatchedMessagesExecutor);
 
         super("afkwarden", manifest, 1.0);
         shouldAlert = false;
@@ -36,6 +37,10 @@ class AFKWarden : Plugin {
             return "playalert:" ~ alertTriggeredBy;
         }
         return "0";
+    }
+
+    private string queryWatchedMessagesExecutor(string[] args) {
+        return "queryresp:" ~ afkMessages.join("^") ~ "^";
     }
 
     private string removeWatchedMessageExecutor(string[] args) {

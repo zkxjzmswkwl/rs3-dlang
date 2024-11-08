@@ -24,10 +24,13 @@ class Client {
     private ChatHistory chatHistory;
 
     this() {
+        this.refresh();
+        this.unhookMouseHook();
+    }
+
+    public void refresh() {
         auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
         this.clientPtr = read!Address(tmp);
-        this.unhookMouseHook();
-
         this.localPlayer = new LocalPlayer(this.clientPtr);
         this.inventory = new Inventory(this.clientPtr);
         this.skills = new Skills(this.clientPtr);

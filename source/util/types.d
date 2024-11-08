@@ -256,4 +256,12 @@ struct Silhouette {
     float opacity;
     // 0x110
     float width;
+
+    void set(float r, float g, float b, float opacity, float width) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.opacity = opacity;
+        this.width = width;
+    }
 }

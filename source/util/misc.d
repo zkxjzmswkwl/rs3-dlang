@@ -7,6 +7,7 @@ import std.conv : to;
 
 import util;
 import rdconstants;
+import core.int128;
 
 struct Fn(T...) {
     T args_;
@@ -36,6 +37,10 @@ Fn!(Args) fnCall(Args...)(Address loc, Args args) {
     catch (Exception e)
         return T.init;
     return T.init;
+}
+
+@nogc T readPtr(T)(Address address) {
+    return read!T(read!Address(address));
 }
 
 @nogc void write(T)(Address address, T value) {

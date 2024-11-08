@@ -69,4 +69,9 @@ class Entity : SceneObj {
         write!float(silhouette + 0x10C, opacity);
         write!float(silhouette + 0x110, width);
     }
+
+    public void setSilhouette2(float r, float g, float b, float opacity, float width) {
+        auto silhouette = readPtr!Silhouette(this.obj + 0xC68);
+        silhouette.set(r, g, b, opacity, width);
+    }
 }
