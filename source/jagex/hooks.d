@@ -32,6 +32,7 @@ __gshared Address swapBuffersTrampoline;
 __gshared Address drawStringInnerTrampoline;
 __gshared Address renderMenuEntryTrampoline;
 __gshared Address runClientScriptTrampoline;
+__gshared Address highlightTrampoline;
 
 /// Unused.
 __gshared Address setForegroundTrampoline;
@@ -185,4 +186,11 @@ void hookRunClientScript(Address* thisptr, Address* script, int a3) {
     infoF!"RunClientScript: %016X, %d, %d"(thisptr, scriptId, a3);
 ret:
     fnCall(runClientScriptTrampoline, thisptr, script, a3);
+}
+
+extern(Windows)
+void hookHighlight(Address entity, ulong unsure) {
+    // auto e = new Entity(entity);
+    // infoF!"Highlight: %s, %016X"(e.getName(), unsure);
+    fnCall(highlightTrampoline, entity, unsure);
 }

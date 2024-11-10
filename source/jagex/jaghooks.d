@@ -27,6 +27,7 @@ class JagexHooks {
     private Hook drawStringInner;
     private Hook renderMenuEntry;
     private Hook runClientScript;
+    private Hook highlight;
 
     this() {
         // this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
@@ -41,6 +42,7 @@ class JagexHooks {
         this.drawStringInner = new Hook(/*0x4188B0*/0x3C1520, "drawStringInner");
         this.renderMenuEntry = new Hook(0x14D210, "renderMenuEntry");
         this.runClientScript = new Hook(0x008BA10, "runClientScript");
+        this.highlight       = new Hook(0x124620, "highlight");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -56,6 +58,7 @@ class JagexHooks {
         // this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
+        this.highlight.place(&hookHighlight, cast(void**)&highlightTrampoline);
         this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
 
         this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);

@@ -256,6 +256,8 @@ struct Silhouette {
     float opacity;
     // 0x110
     float width;
+    // 0x114
+    float zIndex;
 
     void set(float r, float g, float b, float opacity, float width) {
         this.r = r;
