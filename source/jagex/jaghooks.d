@@ -44,7 +44,6 @@ class JagexHooks {
     public JagexHooks placeAll() {
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
-        // this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
         this.highlight.place(&hookHighlight, cast(void**)&highlightTrampoline);

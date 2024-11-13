@@ -15,9 +15,4 @@ class Render : ClientObj {
         this.obj = read!Address(this.obj + 0x40);
         this.obj = read!Address(this.obj + 0x8);
     }
-
-    public void testDrawShit(immutable(char)* text, int x, int y) {
-        auto colour = 0xFF0000;
-        fnCall(drawStringInnerTrampoline, this.obj, text, x, y, colour, 255, 2);
-    }
 }
