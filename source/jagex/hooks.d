@@ -21,55 +21,15 @@ import plugins;
 /// Must be __gshared or shared.
 /// If not, we won't be able to call from the game thread, which means we'd always crash in the hook.
 ///
-__gshared Address npcGeneralTrampoline;
-__gshared Address npcTrampoline;
-__gshared Address nodeTrampoline1;
 __gshared Address chatTrampoline;
 __gshared Address updateStatTrampoline;
 __gshared Address getInventoryTrampoline;
 __gshared Address highlightEntityTrampoline;
 __gshared Address swapBuffersTrampoline;
-__gshared Address drawStringInnerTrampoline;
 __gshared Address renderMenuEntryTrampoline;
 __gshared Address runClientScriptTrampoline;
 __gshared Address highlightTrampoline;
-
-/// Unused.
-__gshared Address setForegroundTrampoline;
-
-
-mixin template GenDoActionHookBody(string funcName, alias trampolineFunc) {
-    enum code = q{
-        extern(Windows) void %s(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
-            fnCall(%s, sp, miniMenu);
-        }
-    }.format(funcName, trampolineFunc.stringof);
-    mixin(code);
-}
-
-extern(Windows)
-void hookNode1(HookedArgPtr sp, SharedPtr!Interaction* miniMenu) {
-    Interaction* action = miniMenu.ptr;
-    writefln("%d, %d, %d",action.identifier, action.x, action.y);
-
-    fnCall( nodeTrampoline1, sp, miniMenu );
-}
-
-extern(Windows)
-void hookNpcGeneral(HookedArgPtr clientPtr, void* clientProt, SharedPtr!Interaction* miniMenu) {
-    Interaction* action = miniMenu.ptr;
-    writefln("%d, %d, %d",action.identifier, action.x, action.y);
-
-    fnCall( npcGeneralTrampoline, clientPtr, clientProt, miniMenu );
-}
-
-extern (Windows)
-void hookNpc1(HookedArgPtr sp, HookedArgPtr clientProt) {
-    writefln("Client shared ptr: %016X", sp);
-    writefln("Client Prot: %016X", clientProt);
-
-    fnCall(npcTrampoline, sp, clientProt);
-}
+__gshared Address addEntryInnerTrampoline;
 
 extern (Windows) void hookAddChat(
     void* a1,
@@ -122,11 +82,6 @@ void hookGetInventory(ulong* rcx, int inventoryId, void* a3) {
 }
 
 extern(Windows)
-BOOL hookSetForegroundWindow(HWND hWnd) {
-    return 1;
-}
-
-extern(Windows)
 void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float colour) {
     auto pm = PluginManager.get();
     try {
@@ -153,20 +108,6 @@ void hookSwapBuffers(HDC hDc) {
 }
 
 extern(Windows)
-// void hookDrawStringInner(JagString *text, size_t *len, long a3, uint a4, char a5, bool shouldRender) {
-void hookDrawStringInner(ulong* thisptr, char *text, int x, int y, int colour, int opacity, byte* type) {
-    if (text) {
-        writefln(
-            "DrawStringInner: %s\n%d, %d, %d, %d",
-            text.to!string,
-            x, y, colour, opacity
-        );
-        writeln("==================================================");
-    }
-    fnCall(drawStringInnerTrampoline, thisptr, text, x, y, colour, opacity, type);
-}
-
-extern(Windows)
 void hookRenderMenuEntry(Address* thisptr, ulong index, ulong what) {
     infoF!"RenderMenuEntry: %016X, %016X, %016X"(thisptr, index, what);
     fnCall(renderMenuEntryTrampoline, thisptr, index, what);
@@ -190,7 +131,12 @@ ret:
 
 extern(Windows)
 void hookHighlight(Address entity, ulong unsure) {
-    // auto e = new Entity(entity);
-    // infoF!"Highlight: %s, %016X"(e.getName(), unsure);
     fnCall(highlightTrampoline, entity, unsure);
+}
+
+// 14edd0
+extern(Windows)
+void hookAddEntryInner(Address* thisptr, void* optionStr, void* objNameStr, void* type, void* idk, void* idk2, void* idk3, void* idk4, void* idk5, void* idk6) {
+    infoF!"AddEntryInner: %016X %016X %016X %016X %016X %016X %016X %016X %016X %016X"(thisptr, optionStr, objNameStr, type, idk, idk2, idk3, idk4, idk5, idk6);
+    fnCall(addEntryInnerTrampoline, thisptr, optionStr, objNameStr, type, idk, idk2, idk3, idk4, idk5, idk6);
 }

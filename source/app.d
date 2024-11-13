@@ -19,6 +19,7 @@ import plugins;
 import plugins.highlighter;
 import plugins.chatexample.chatexample;
 import plugins.afkwarden.afkwarden;
+import jagex.engine.functions;
 
 Server createServer() {
     Server server = new Server(SERVER_IP, SERVER_PORT);

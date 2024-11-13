@@ -14,14 +14,14 @@ template offset(uint off)
     mixin("char[" ~ to!string(off) ~ "] padding_" ~ to!string(off) ~ ";");
 }
 
+extern(C++)
 struct JagVector(V)
 {
     V* _begin;
     V* _end;
     void* capacity;
 
-    // Index operator (const and non-const)
-    @property V opIndex(size_t index) const
+    @property const(V) opIndex(size_t index) const
     {
         return _begin[index];
     }
@@ -31,19 +31,16 @@ struct JagVector(V)
         return _begin[index];
     }
 
-    // `at` function to access elements
     V at(size_t index)
     {
         return _begin[index];
     }
 
-    // Size function
     @property size_t size() const
     {
         return cast(size_t)(_end - _begin);
     }
 
-    // Begin and end iterators (non-const and const versions)
     V* begin()
     {
         return _begin;
@@ -64,7 +61,6 @@ struct JagVector(V)
         return _end;
     }
 
-    // Check if the vector is empty
     @property bool empty() const
     {
         return _begin == _end;
@@ -224,6 +220,10 @@ enum ClientState : int
 struct SharedPtr(T) {
     this(T* ptr) {
         this.ptr = ptr;
+    }
+
+    auto opDispatch(string memberName, Args...)(Args args) {
+        return ptr.memberName(args);
     }
 
     void* blah;

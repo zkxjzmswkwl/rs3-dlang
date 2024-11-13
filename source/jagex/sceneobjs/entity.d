@@ -62,16 +62,7 @@ class Entity : SceneObj {
     }
 
     public void setSilhouette(float r, float g, float b, float opacity, float width) {
-        auto silhouette = read!Address(this.obj + 0xC68);
-        write!float(silhouette + 0x100, r);
-        write!float(silhouette + 0x104, g);
-        write!float(silhouette + 0x108, b);
-        write!float(silhouette + 0x10C, opacity);
-        write!float(silhouette + 0x110, width);
-    }
-
-    public void setSilhouette2(float r, float g, float b, float opacity, float width) {
-        auto silhouette = readPtr!Silhouette(this.obj + 0xC68);
+        auto silhouette = read!(Silhouette*)(this.obj + 0xC68);
         silhouette.set(r, g, b, opacity, width);
     }
 }

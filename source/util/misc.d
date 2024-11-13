@@ -39,10 +39,6 @@ Fn!(Args) fnCall(Args...)(Address loc, Args args) {
     return T.init;
 }
 
-@nogc T readPtr(T)(Address address) {
-    return read!T(read!Address(address));
-}
-
 @nogc void write(T)(Address address, T value) {
     if (address < MAX_ADDRESS && address > MIN_ADDRESS && address % 4uL == 0uL) {
         *cast(T*) address = value;

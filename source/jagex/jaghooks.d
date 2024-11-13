@@ -16,33 +16,25 @@ import util;
 // Hook fn bodies are in hooks.d, this class only manages the Hook instances.
 //------------------------------------------------------------------------------ 
 class JagexHooks {
-    private Hook npcGeneral;
-    private Hook npcActionOne;
-    private Hook nodeActionOne;
     private Hook addChatMessage;
     private Hook updateStat;
-    private Hook getInventory;
     private Hook highlightEntity;
     private Hook swapBuffers;
-    private Hook drawStringInner;
     private Hook renderMenuEntry;
     private Hook runClientScript;
     private Hook highlight;
+    private Hook addEntryInner;
 
     this() {
-        // this.npcGeneral      = new Hook(0x1574D0, "npcGeneral");
-        // this.npcActionOne    = new Hook(0x1653B0, "npcAction1");
-        // this.nodeActionOne   = new Hook(0x1655E0, "nodeAction1");
         this.addChatMessage  = new Hook(0xCE8D0,  "addChat");
         // 48 89 5C 24 ? 0F B6 41 ? 4C 8B C9
         this.updateStat      = new Hook(0x2729B0, "updateStat");
-        this.getInventory    = new Hook(0x2D72B0, "getInventory");
         this.highlightEntity = new Hook(0x355330, "highlightEntity");
         // 40 53 48 81 EC ? ? ? ? 48 8B 41 ? 45 8B D9 44 8B 94 24
-        this.drawStringInner = new Hook(/*0x4188B0*/0x3C1520, "drawStringInner");
         this.renderMenuEntry = new Hook(0x14D210, "renderMenuEntry");
         this.runClientScript = new Hook(0x008BA10, "runClientScript");
         this.highlight       = new Hook(0x124620, "highlight");
+        this.addEntryInner   = new Hook(0x14edd0, "addEntryInner");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -50,30 +42,17 @@ class JagexHooks {
     }
 
     public JagexHooks placeAll() {
-        // this.npcGeneral.place(&hookNpcGeneral, cast(void**)&npcGeneralTrampoline);
-        // this.npcActionOne.place(&hookNpc1, cast(void**)&npcTrampoline);
-        // this.nodeActionOne.place(&hookNode1, cast(void**)&nodeTrampoline1);
         this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
         // this.drawStringInner.place(&hookDrawStringInner, cast(void**)&drawStringInnerTrampoline);
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
         this.highlight.place(&hookHighlight, cast(void**)&highlightTrampoline);
+        // this.addEntryInner.place(&hookAddEntryInner, cast(void**)&addEntryInnerTrampoline);
         this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
-
         this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
-        // this.getInventory.place(&hookGetInventory, cast(void**)&getInventoryTrampoline);
 
         return this;
-    }
-
-    /// Not Jagex related, but they call this on afk timer like three fucking times.
-    /// Really annoying.
-    private void placeSetForegroundHook() {
-        auto setForegroundWindow = resolveFunction("user32.dll", "SetForegroundWindow");
-        infoF!"SetForegroundWindow: %016X"(setForegroundWindow);
-        Hook sfgHook = new Hook(setForegroundWindow, "SetForegroundWindowHook");
-        sfgHook.place(&hookSetForegroundWindow, cast(void**)&setForegroundTrampoline);
     }
 
     public JagexHooks enableAll() {
