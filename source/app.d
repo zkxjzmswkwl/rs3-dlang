@@ -27,7 +27,7 @@ Server createServer() {
     return server;
 }
 
-void registerPluginsTest() {
+void registerPlugins() {
     auto highlighter = new Highlighter();
     auto logChat     = new ChatExample();
     auto afkWarden   = new AFKWarden();
@@ -47,17 +47,11 @@ void run(HMODULE hModule) {
         TrackerManager trackerManager = Context.get().tManager;
         JagexHooks jagexHooks = new JagexHooks();
         jagexHooks.placeAll();
-        // TODO: Might burn
-        nopSetSilhouette();
-        nopSetLocalSilhouette();
 
+        applyPatches();
         Server server = createServer();
 
-        if (Context.get().isDebugMode) {
-            info("Operating under debug mode.");
-        }
-
-        registerPluginsTest();
+        registerPlugins();
 
         for (;;) {
             if (server.needsRestart) {
@@ -79,7 +73,7 @@ void run(HMODULE hModule) {
 extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) { // @suppress(dscanner.style.phobos_naming_convention) {
     if (reason == DLL_PROCESS_ATTACH) {
         Runtime.initialize();
-        auto t1 = new Thread({ run(module_); }).start();
+        new Thread({ run(module_); }).start();
     }
     else if (reason == DLL_PROCESS_DETACH) {
         Runtime.terminate();

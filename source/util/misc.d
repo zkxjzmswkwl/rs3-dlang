@@ -93,3 +93,9 @@ void rvaFillBuffer(Address buffer, ubyte[] data) {
     auto loc = cast(Address*)(base + buffer);
     memcpy(cast(void*)loc, data.ptr, data.length);
 }
+
+import core.stdc.string;
+void rvaMemset(Address address, int newByte, size_t size) {
+    auto base = cast(Address)GetModuleHandle("rs2client.exe");
+    memset(cast(void*)(base + address), newByte, size);
+}

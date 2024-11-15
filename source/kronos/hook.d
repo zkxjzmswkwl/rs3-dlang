@@ -15,7 +15,6 @@ import capstone;
 import slf4d;
 import util;
 
-
 class Instructions
 {
     X86Instruction* instructions;
@@ -39,7 +38,7 @@ class Hook
     ///
     /// Target function RVA.
     ///
-    private /*alias Address = ulong*/ Address location;
+    private Address location;
     /// 
     /// Location of our mapped function.
     ///
@@ -51,18 +50,20 @@ class Hook
 
     this(Address location, string name, bool sameModule = true)
     {
-        if (sameModule) {
+        if (sameModule)
             this.location = cast(ulong) GetModuleHandle("rs2client.exe") + location;
-        } else {
+        else
             this.location = location;
-        }
+
         this.cs = create(Arch.x86, ModeFlags(Mode.bit64));
         this.name = name;
     }
 
-    extern (Windows) public void place(void* ourFunction, void** trampolinePtr)
+    extern (Windows)
+    public void place(void* ourFunction, void** trampolinePtr)
     {
-        try {
+        try
+        {
             DWORD previousProtection;
             // take da condom off
             VirtualProtect(cast(void*) location, 1024, PAGE_EXECUTE_READWRITE, &previousProtection);
@@ -104,7 +105,9 @@ class Hook
             VirtualProtect(cast(void*) location, 1024, previousProtection, null);
 
             infoF!"Hook(%s) at %016X"(this.name, location);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             writeln(ex.msg);
         }
     }
@@ -153,20 +156,16 @@ class Hook
 
         ubyte[] jmpBytes = [0xEB, distToJumpTable];
         for (uint i = 0; i < ins.bytes.length; ++i)
-        {
             ins.setByte(i, 0x90);
-        }
+
         for (uint i = 0; i < jmpBytes.length; ++i)
-        {
             ins.setByte(i, jmpBytes[i]);
-        }
     }
 
     private void rewriteJumpInstruction(X86Instruction* ins, ubyte* instrPtr, ubyte* absTableEntry)
     {
         ubyte distToJumpTable = cast(ubyte)(absTableEntry - (instrPtr + ins.bytes.length));
         ubyte insByteSize = ins.bytes[0] == 0x0F ? 2 : 1;
-        // Same here.
         ubyte operandSize = cast(ubyte)(ins.bytes.length - insByteSize);
 
         switch (operandSize)

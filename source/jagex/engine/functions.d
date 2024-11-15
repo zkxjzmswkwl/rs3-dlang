@@ -52,6 +52,7 @@ public ItemStack[] getItems(InventoryContainer container) {
 
 class RuneTek {
 
+    extern (C++)
     struct Layer {
         /* 0x000 */ ulong* vtable;
         /* 0x008 */ ushort id;
@@ -65,6 +66,7 @@ class RuneTek {
         /* 0x1A8 */ JagVector!LayerSlot components;
     }
 
+    extern (C++)
     struct LayerSlot {
         uint __padding000;
         uint __padding004;
@@ -80,7 +82,6 @@ class RuneTek {
         return resolvePtrChain(result, [0x8, 0x8, 0x28]);
     }
 
-    extern(C++)
     public static bool buffbarContains(int spriteId, bool logLayers = false) {
         auto bar = getComponent(284);
         infoF!"BuffBar: %016X"(bar);
