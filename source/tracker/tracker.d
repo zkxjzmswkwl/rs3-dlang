@@ -47,6 +47,10 @@ class Tracker : Thread {
         return this.shouldRun;
     }
 
+    public void setShouldRun(bool val) {
+        this.shouldRun = val;
+    }
+
     public Tracker setActive(bool val) {
         this.active = val;
         return this;

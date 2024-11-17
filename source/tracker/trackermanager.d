@@ -61,4 +61,11 @@ public:
         this.setTrackerStatus(skill, true);
         givenTracker.start();
     }
+
+    void stopAll() {
+        foreach (tracker; skills) {
+            tracker.setShouldRun(false);
+            tracker.join();
+        }
+    }
 }

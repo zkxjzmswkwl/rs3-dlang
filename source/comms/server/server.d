@@ -25,10 +25,8 @@ class Server : Thread {
     private PluginManager pluginManager;
     private string[] packetQueue;
     private Mutex packetQueueMutex;
-
+    private bool shouldRun;
     private bool hasClient;
-    // private Socket client;
-    public bool needsRestart;
 
     @disable this();
 
@@ -39,13 +37,11 @@ class Server : Thread {
         this.port = port;
 
         hasClient    = false;
-        needsRestart = false;
 
         packetManager    = Context.get().packetManager();
         pluginManager    = PluginManager.get();
         packetQueueMutex = new Mutex();
     }
-
     private void queuePacket(string packet) {
         synchronized(packetQueueMutex) {
             packetQueue ~= packet;
@@ -95,9 +91,15 @@ class Server : Thread {
         queuePacket(outBuffer);
     }
 
-    private void processPacket(Socket client, string packet) {
+    private bool processPacket(Socket client, string packet) {
+        if (packet == "KILLSELF") {
+            info("Server killing itself.");
+            this.shouldRun = false;
+            return false;
+        }
+
         if (packet == "1" || !canFind(packet, ":")) {
-            return;
+            return true;
         }
         writeln(packet);
         // Each incoming packet is suffixed with "<dongs>".
@@ -131,13 +133,15 @@ class Server : Thread {
         } else if (canFind(packet, "_specpl_")) {
             if (pluginManager.plugins[spl[1]] is null) {
                 warn("Packet received for plugin that does not exist: " ~ spl[1]);
-                return;
+                return true;
             }
 
             auto plugin = pluginManager.plugins[spl[1]];
             auto resp = plugin.onPacketRecv(spl);
             queuePacket("_specpl_:" ~ plugin.name ~ ":" ~ resp);
         }
+
+        return true;
     }
 
     private void processReceived(Socket client, string buffer) {
@@ -165,7 +169,7 @@ class Server : Thread {
 
         info("[>] START | " ~ this.host ~ ":" ~ this.port.to!string);
 
-        while (true) {
+        while (shouldRun) {
             readSet.reset();
             readSet.add(tcpSocket);
 
@@ -185,7 +189,10 @@ class Server : Thread {
                                 info("Removing disconnected client at index " ~ i.to!string);
                                 continue;
                             }
-                            processPacket(client, buffer[0..r].to!string);
+
+                            if (!processPacket(client, buffer[0..r].to!string)) {
+                                break;
+                            }
 
                         } catch (Exception ex) {
                             info(ex.msg);
@@ -208,6 +215,21 @@ class Server : Thread {
                         packetQueue = [];
                     }
                 }
+            }
+        }
+    }
+
+    public static void killSelf() {
+        auto socket = new TcpSocket();
+        try {
+            socket.connect(new InternetAddress("127.0.0.1", 6969));
+            socket.send("KILLSELF");
+            socket.close();
+        } catch (SocketException e) {
+            writeln("Socket error: ", e.msg);
+        } finally {
+            if (socket.isAlive) {
+                socket.close();
             }
         }
     }

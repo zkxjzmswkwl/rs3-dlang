@@ -21,12 +21,6 @@ import plugins.chatexample.chatexample;
 import plugins.afkwarden.afkwarden;
 import jagex.engine.functions;
 
-Server createServer() {
-    Server server = new Server(SERVER_IP, SERVER_PORT);
-    server.start();
-    return server;
-}
-
 void registerPlugins() {
     auto highlighter = new Highlighter();
     auto logChat     = new ChatExample();
@@ -44,21 +38,15 @@ void run(HMODULE hModule) {
         freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
         infoF!"Client ptr: %016X"(Context.get().client().getPtr());
 
+        Server server = new Server(SERVER_IP, SERVER_PORT);
         TrackerManager trackerManager = Context.get().tManager;
         JagexHooks jagexHooks = new JagexHooks();
-        jagexHooks.placeAll();
-
+        jagexHooks.enableAll();
         applyPatches();
-        Server server = createServer();
-
+        server.start();
         registerPlugins();
 
         for (;;) {
-            if (server.needsRestart) {
-                server.join();
-                server = createServer();
-            }
-
             trackerManager.checkActivity();
             Thread.sleep(dur!"msecs"(300));
         }
@@ -73,11 +61,11 @@ void run(HMODULE hModule) {
 extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) { // @suppress(dscanner.style.phobos_naming_convention) {
     if (reason == DLL_PROCESS_ATTACH) {
         Runtime.initialize();
-        new Thread({ run(module_); }).start();
+        auto t1 = new Thread({ run(module_); }).start();
     }
     else if (reason == DLL_PROCESS_DETACH) {
         Runtime.terminate();
-        FreeLibraryAndExitThread(module_, 0);
+        FreeLibrary(module_);
     }
     return TRUE;
 }

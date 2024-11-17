@@ -41,24 +41,27 @@ class JagexHooks {
         this.swapBuffers = new Hook(swapBuffersAddr, "swapBuffers", false);
     }
 
-    public JagexHooks placeAll() {
-        this.updateStat.place(&hookUpdateStat, cast(void**)&updateStatTrampoline);
-        this.highlightEntity.place(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
+    public JagexHooks enableAll() {
+        this.updateStat.enable(&hookUpdateStat, cast(void**)&updateStatTrampoline);
+        this.highlightEntity.enable(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
-        this.highlight.place(&hookHighlight, cast(void**)&highlightTrampoline);
+        this.highlight.enable(&hookHighlight, cast(void**)&highlightTrampoline);
         // this.addEntryInner.place(&hookAddEntryInner, cast(void**)&addEntryInnerTrampoline);
-        this.swapBuffers.place(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
-        this.addChatMessage.place(&hookAddChat, cast(void**)&chatTrampoline);
+        // this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
+        this.addChatMessage.enable(&hookAddChat, cast(void**)&chatTrampoline);
 
         return this;
     }
 
-    public JagexHooks enableAll() {
-        return this;
-    }
-
-    public JagexHooks disableAll() {
-        return this;
+    public void disableAll() {
+        this.addChatMessage.disable();
+        this.updateStat.disable();
+        this.highlightEntity.disable();
+        this.swapBuffers.disable();
+        this.renderMenuEntry.disable();
+        this.runClientScript.disable();
+        this.highlight.disable();
+        this.addEntryInner.disable();
     }
 }
