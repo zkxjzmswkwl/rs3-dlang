@@ -14,8 +14,6 @@ import context;
 import jagex.hooks;
 import jagex.engine.interfacemanager;
 
-// alias Fn = function(ulong*) function(...);
-
 enum InventoryContainer {
     BACKPACK              = 93,
     ARMOUR                = 94,

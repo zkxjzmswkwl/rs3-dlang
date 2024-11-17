@@ -38,13 +38,14 @@ void run(HMODULE hModule) {
         freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
         infoF!"Client ptr: %016X"(Context.get().client().getPtr());
 
-        Server server = new Server(SERVER_IP, SERVER_PORT);
         TrackerManager trackerManager = Context.get().tManager;
         JagexHooks jagexHooks = new JagexHooks();
         jagexHooks.enableAll();
         applyPatches();
-        server.start();
         registerPlugins();
+
+        Server server = new Server(SERVER_IP, SERVER_PORT);
+        server.start();
 
         for (;;) {
             trackerManager.checkActivity();

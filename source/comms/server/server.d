@@ -36,12 +36,14 @@ class Server : Thread {
         this.host = host;
         this.port = port;
 
-        hasClient    = false;
+        hasClient = false;
+        shouldRun = true;
 
         packetManager    = Context.get().packetManager();
         pluginManager    = PluginManager.get();
         packetQueueMutex = new Mutex();
     }
+
     private void queuePacket(string packet) {
         synchronized(packetQueueMutex) {
             packetQueue ~= packet;
@@ -101,26 +103,26 @@ class Server : Thread {
         if (packet == "1" || !canFind(packet, ":")) {
             return true;
         }
-        writeln(packet);
-        // Each incoming packet is suffixed with "<dongs>".
+
+        // Each incoming packet is suffixed with "<EOL>".
         // Sometimes, one read will yield what was intended to be multiple packets.
         // So, we check for the suffix and if anything is after it, we process the rest as a separate packet.
-        auto dongIndex = packet.indexOf("<dongs>");
-        if (dongIndex != -1) {
-            auto dongSpl = packet.split("<dongs>")[1].to!string;
-            if (dongSpl.length > 1) {
+        auto eolIndex = packet.indexOf("<EOL>");
+        if (eolIndex != -1) {
+            auto eolSpl = packet.split("<EOL>")[1].to!string;
+            if (eolSpl.length > 1) {
                 // scope (exit) lets us ensure packets are still processed in the order they were sent.
                 // TCP guarantees that packets are sent and received in order,
-                // so we can assume that any data present _after_ `<dongs>` is intended to be the next packet.
-                scope (exit)    processPacket(client, dongSpl);
+                // so we can assume that any data present _after_ `<EOL>` is intended to be the next packet.
+                scope (exit)    processPacket(client, eolSpl);
             }
         }
 
         string[] spl;
-        if (dongIndex == -1) {
+        if (eolIndex == -1) {
             spl = packet.split(":");
         } else {
-            spl = packet[0..dongIndex].split(":");
+            spl = packet[0..eolIndex].split(":");
         }
 
         if (canFind(packet, "cmd:")) {
