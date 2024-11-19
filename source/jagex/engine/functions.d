@@ -48,6 +48,7 @@ public ItemStack[] getItems(InventoryContainer container) {
     return items;
 }
 
+// Testing ground for new shit, mostly.
 class RuneTek {
 
     extern (C++)
@@ -100,5 +101,31 @@ class RuneTek {
             }
         }
         return false;
+    }
+
+    extern(C++)
+    struct GraphNode {
+        byte[0x168] __padding000;
+        ulong childrenHead;
+        ulong childrenEnd;
+        byte[0x58] __padding170;
+        Entity2* entity;
+    }
+
+    extern(C++)
+    struct Entity2 {
+        ulong* vtable;
+        GraphNode* graphNode;
+        byte entityType;
+    }
+
+    public static void testLocationShit(ulong start) {
+        if (start == 0) return;
+        JagVector!GraphNode* vec = cast(JagVector!(GraphNode)*)(start + 0x168);
+        auto b = *vec;
+        for (int i = 0; i < b.size; i++) {
+            auto node = b[i];
+            infoF!"Entity: %01X"(node.entity.entityType);
+        }
     }
 }

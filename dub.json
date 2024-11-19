@@ -13,7 +13,9 @@
 		"slf4d": "~>3.0.1"
 	},
 	"libs": [
-		"user32"
+		"user32",
+		"psapi",
+		"ntdll"
 	],
 	"license": "Apache 2.0",
 	"name": "DeOppressoLiber",

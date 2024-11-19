@@ -1,21 +1,23 @@
 module jagex.client;
 
 import std.string;
+import std.conv;
+import std.variant;
 import core.sys.windows.windows;
+import core.thread;
 import slf4d;
 import util;
 import context;
 
+import rd.eventbus;
+import jagex.globals;
 import jagex.constants;
 import jagex.clientobjs;
 import kronos.hook;
+import circus;
 
-class Client {
+public class Client : Observer {
     private Address clientPtr;
-
-    ///
-    /// Client objects; typically these are children of jag::Client.
-    ///
     private LocalPlayer localPlayer;
     private Inventory inventory;
     private SceneManager sceneManager;
@@ -39,6 +41,21 @@ class Client {
         this.chatHistory = new ChatHistory(this.clientPtr);
     }
 
+    public void update(Event event, Variant data) {
+        // Refresh necessary objects whenever state reflects we've loaded into the world.
+        info(data.get!(ClientState).to!string);
+        if (event == Event.CLIENT_STATE_CHANGE) {
+            auto clientState = data.get!ClientState;
+            if (clientState == ClientState.IN_GAME) {
+                new Thread(delegate() {
+                    Thread.sleep(dur!"msecs"(1200));
+                    this.refresh();
+                    info("Client state change detected, refreshing client objects.");
+                }).start();
+            }
+        }
+    }
+
     // Without this, hitting a breakpoint will cause your mouse to feel as though it's polling at 1hz.
     // NOTE: See https://github.com/zkxjzmswkwl/rs3-dlang/issues/1
     //------------------------------------------------------------------------------------------------ 
@@ -52,7 +69,7 @@ class Client {
     }
 
     public ClientState getState() {
-        return read!ClientState(this.clientPtr + 0x19F48);
+        return cast(ClientState)read!int(this.clientPtr + 0x19F48);
     }
 
     public LocalPlayer getLocalPlayer() {

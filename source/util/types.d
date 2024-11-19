@@ -205,16 +205,8 @@ struct JagString
     }
 }
 
-struct ForeignObjFixed(int size)
-{
+struct ForeignObjFixed(int size) {
     char[size] data;
-}
-
-enum ClientState : int
-{
-    LOGIN = 10,
-    LOBBY = 20,
-    IN_GAME = 30,
 }
 
 struct SharedPtr(T) {

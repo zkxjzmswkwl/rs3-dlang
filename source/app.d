@@ -1,4 +1,6 @@
 import core.sys.windows.dll;
+import jagex.constants;
+import jagex.sceneobjs;
 
 import slf4d;
 
@@ -7,6 +9,7 @@ import core.runtime;
 import core.sys.windows.windows;
 import std.conv;
 
+import rd.eventbus;
 import jagex;
 import context;
 import tracker;
@@ -20,6 +23,7 @@ import plugins.highlighter;
 import plugins.chatexample.chatexample;
 import plugins.afkwarden.afkwarden;
 import jagex.engine.functions;
+import jagex.globals;
 
 void registerPlugins() {
     auto highlighter = new Highlighter();

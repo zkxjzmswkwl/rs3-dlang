@@ -24,6 +24,7 @@ class JagexHooks {
     private Hook runClientScript;
     private Hook highlight;
     private Hook addEntryInner;
+    private Hook setClientState;
 
     this() {
         this.addChatMessage  = new Hook(0xCE8D0,  "addChat");
@@ -35,6 +36,8 @@ class JagexHooks {
         this.runClientScript = new Hook(0x008BA10, "runClientScript");
         this.highlight       = new Hook(0x124620, "highlight");
         this.addEntryInner   = new Hook(0x14edd0, "addEntryInner");
+        // 48 8B 99 ? ? ? ? 48 3B 99 20 98 01 00 74 24
+        this.setClientState  = new Hook(0x25A00, "setClientState");
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
@@ -48,8 +51,9 @@ class JagexHooks {
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
         this.highlight.enable(&hookHighlight, cast(void**)&highlightTrampoline);
         // this.addEntryInner.place(&hookAddEntryInner, cast(void**)&addEntryInnerTrampoline);
-        // this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
+        this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
         this.addChatMessage.enable(&hookAddChat, cast(void**)&chatTrampoline);
+        this.setClientState.enable(&hookSetClientState, cast(void**)&setClientStateTrampoline);
 
         return this;
     }

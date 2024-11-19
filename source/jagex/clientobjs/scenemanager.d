@@ -6,6 +6,7 @@ import std.algorithm.iteration;
 import std.algorithm.searching;
 import std.array;
 import std.string;
+import jagex.engine.functions;
 
 import slf4d;
 

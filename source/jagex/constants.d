@@ -2,6 +2,15 @@ module jagex.constants;
 
 import jagex.clientobjs.skills;
 
+public enum ClientState : int
+{
+    LOGIN_SCREEN = 10,
+    LOBBY = 20,
+    IN_GAME = 30,
+    WORLD_HOP = 37,
+    DISCONNECTING = 40,
+}
+
 enum Skill
 {
     ATTACK = 0,

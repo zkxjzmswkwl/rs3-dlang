@@ -8,13 +8,16 @@ import core.sys.windows.windows;
 
 import slf4d;
 
+import rd.eventbus;
 import context;
 import util.misc;
 import util.types;
 import jagex.client;
 import jagex.sceneobjs;
 import jagex.engine.functions;
+import jagex.constants;
 import plugins;
+import jagex.globals;
 
 
 ///
@@ -30,6 +33,7 @@ __gshared Address renderMenuEntryTrampoline;
 __gshared Address runClientScriptTrampoline;
 __gshared Address highlightTrampoline;
 __gshared Address addEntryInnerTrampoline;
+__gshared Address setClientStateTrampoline;
 
 extern (Windows) void hookAddChat(
     void* a1,
@@ -139,4 +143,13 @@ extern(Windows)
 void hookAddEntryInner(Address* thisptr, void* optionStr, void* objNameStr, void* type, void* idk, void* idk2, void* idk3, void* idk4, void* idk5, void* idk6) {
     infoF!"AddEntryInner: %016X %016X %016X %016X %016X %016X %016X %016X %016X %016X"(thisptr, optionStr, objNameStr, type, idk, idk2, idk3, idk4, idk5, idk6);
     fnCall(addEntryInnerTrampoline, thisptr, optionStr, objNameStr, type, idk, idk2, idk3, idk4, idk5, idk6);
+}
+
+
+import std.variant;
+
+extern(Windows)
+void hookSetClientState(ulong* client, int newState) {
+    ZGetBus().notify(Event.CLIENT_STATE_CHANGE, Variant(cast(ClientState)newState));
+    fnCall(setClientStateTrampoline, client, newState);
 }
