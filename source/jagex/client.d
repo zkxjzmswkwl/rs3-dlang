@@ -27,7 +27,6 @@ public class Client : Observer {
 
     this() {
         this.refresh();
-        this.unhookMouseHook();
     }
 
     public void refresh() {
@@ -43,7 +42,6 @@ public class Client : Observer {
 
     public void update(Event event, Variant data) {
         // Refresh necessary objects whenever state reflects we've loaded into the world.
-        info(data.get!(ClientState).to!string);
         if (event == Event.CLIENT_STATE_CHANGE) {
             auto clientState = data.get!ClientState;
             if (clientState == ClientState.IN_GAME) {
