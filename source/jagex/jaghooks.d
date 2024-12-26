@@ -68,4 +68,14 @@ class JagexHooks {
         this.highlight.disable();
         this.addEntryInner.disable();
     }
+
+
+    /**************************
+     * Instantiates `JagexHooks`, enables all hooks and returns the instance.
+     */
+    public static JagexHooks bootstrap() {
+        auto instance = new JagexHooks();
+        instance.enableAll();
+        return instance;
+    }
 }

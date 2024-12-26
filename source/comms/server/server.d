@@ -235,4 +235,11 @@ class Server : Thread {
             }
         }
     }
+
+    import rdconstants;
+    public static Server bootstrap() {
+        auto instance = new Server(SERVER_IP, SERVER_PORT);
+        instance.start();
+        return instance;
+    }
 }
