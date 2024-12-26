@@ -38,6 +38,7 @@ void registerPlugins() {
     pm.addPlugin(highlighter);
     pm.addPlugin(logChat);
     pm.addPlugin(afkWarden);
+    info("Registered plugins.");
 }
 
 void prelude() {

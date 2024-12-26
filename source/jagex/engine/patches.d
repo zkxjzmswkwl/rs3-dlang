@@ -4,6 +4,7 @@ import core.sys.windows.windows;
 import util.types;
 import util.misc;
 import jagex.constants;
+import slf4d;
 
 
 static void nopEntityRendering(Address renderCall, ubyte[] originalBytes) {
@@ -42,4 +43,5 @@ static void nopSetLocalSilhouette() {
 public static void applyPatches() {
     nopSetSilhouette();
     nopSetLocalSilhouette();
+    info("Patches applied.");
 }
