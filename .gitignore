@@ -5,7 +5,6 @@ docs/
 /rsd
 *.so
 *.dylib
-*.dll
 *.a
 *.lib
 *-test-*
