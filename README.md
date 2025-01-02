@@ -8,6 +8,11 @@ In all seriousness, this project came to exist almost entirely because there is 
 
 Everything else is kind of auxiliary.
 
+# Building
+**Project should be built using [LDC2](https://github.com/ldc-developers/ldc) in `release`**.
+
+`dub -b release --compiler=ldc2`
+
 # Will this get me banned?
 It is currently, as of writing (_engine revision 938-1)_, **__not possible for Jagex to programmatically detect this software__** as the engine contains no way of doing so. I suppose decades of relying on Java's reflection has taken its toll.
 

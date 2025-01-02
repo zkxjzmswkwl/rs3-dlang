@@ -40,7 +40,12 @@ class Item {
             // This doesn't currently support prices of >= 1m. Too annoyed to do it atm.
             if (canFind(priceStr, "k")) {
                 priceStr = priceStr.replace("k", "");
-                auto thousands = priceStr[0..indexOf(priceStr, ".")].to!uint * 1000;
+                auto thousands = priceStr[0..indexOf(priceStr, ".")].to!uint * 1_000;
+                auto hundreds = priceStr.split(".")[1].to!uint;
+                this.marketValue = thousands + hundreds;
+            } else if (canFind(priceStr, "m")) {
+                priceStr = priceStr.replace("m", "");
+                auto thousands = priceStr[0..indexOf(priceStr, ".")].to!uint * 1_000_000;
                 auto hundreds = priceStr.split(".")[1].to!uint;
                 this.marketValue = thousands + hundreds;
             } else {
@@ -49,7 +54,7 @@ class Item {
 
             this.name = content.split("\"name\":")[1].split(",")[0];
         } catch (Exception ex) {
-            warn(ex.msg);
+            warn("Fail - " ~ ex.msg);
         }
     }
 

@@ -46,7 +46,7 @@ void prelude() {
     freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stdout.getFP);
     freopen("C:\\ProgramData\\Jagex\\launcher\\runedoc.log", "w", stderr.getFP);
     // Useful
-    infoF!"Client ptr: %016X"(Context.get().client().getPtr());
+    infoF!"Client ptr: %016X"(ZGetClient().getPtr());
     // Horrible, this shouldn't even be the module's job to begin with.
     gTrackerManager = Context.get().tManager;
     // Create instance of `JagexHooks`, call `enableAll`, return instance.

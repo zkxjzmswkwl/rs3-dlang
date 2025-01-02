@@ -39,6 +39,10 @@ const ulong FN_SET_CLIENT_STATE  = 0x25A00;
 const ulong FN_RUN_SCRIPT        = 0x8B9E0;
 // 40 55 41 54 41 55 41 56 41 57 48 8D AC 24
 const ulong FN_ADD_ENTRY_INNER   = 0x14EDA0;
+// 48 89 5C 24 ? 4C 8B 59 ? 44 8D 14 12
+const ulong FN_GET_INVENTORY     = 0x2D7280;
+// 44 88 44 24 ? 89 54 24 ? 56
+const ulong FN_GET_COMP_BY_ID    = 0x2DFCA0;
 
 // Client
 const ulong OF_CLIENT_STATE     = 0x19F48;
