@@ -10,12 +10,15 @@
 			"version": "~master"
 		},
 		"dackson": "~>0.2.1",
+		"opengl:gl3-static": "~>1.0.1",
 		"slf4d": "~>3.0.1"
 	},
 	"libs": [
 		"user32",
 		"psapi",
-		"ntdll"
+		"ntdll",
+		"opengl32",
+		"gdi32"
 	],
 	"license": "Apache 2.0",
 	"name": "DeOppressoLiber",

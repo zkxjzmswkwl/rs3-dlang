@@ -82,3 +82,9 @@ __gshared ubyte[] SET_LOCAL_PLAYER_SILHOUETTE = [
 
 // Responsible for setting appropriate entity highlighting value
 // __gshared ubyte[] SET_ENTITY_HIGHLIGHT = [0x44, 0x89, 0x99, 0x00, 0x11, 0x00];
+
+
+struct _hglrc_{
+    int unused;
+}
+alias HGLRC = _hglrc_*;

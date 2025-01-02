@@ -8,6 +8,10 @@ import rd.eventbus;
 // ---------------------------------------------------------------------------
 // Much more appealing than `Context.get()....` everywhere.
 // ---------------------------------------------------------------------------
+Context ZGetContext() {
+    return Context.get();
+}
+
 LocalPlayer ZGetLocalPlayer() {
     return Context.get().client().getLocalPlayer();
 }

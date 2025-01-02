@@ -34,6 +34,8 @@ class Context  {
     private PacketManager _packetManager;
     private HWND windowHandle;
     private bool debugMode;
+    public HGLRC gameContext = null;
+    public HGLRC ourContext  = null;
 
     private this() {
         this.jagClient = new Client();
