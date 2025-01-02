@@ -11,6 +11,7 @@ import jagex.engine.functions;
 import slf4d;
 
 import util;
+import rdconstants;
 import jagex.constants;
 import jagex.clientobjs.clientobj;
 import jagex.sceneobjs;
@@ -22,7 +23,7 @@ class SceneManager : ClientObj {
 
     this(Address clientPtr) {
         // In this case we want client]0x19988]0x58]0x0]0x10130
-        super(clientPtr, 0x19988);
+        super(clientPtr, OF_SCENE_MANAGER);
         this.update();
         // TODO: Temp, remove me.
         this.predicateServerIdx = 0;

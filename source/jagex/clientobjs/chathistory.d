@@ -7,6 +7,7 @@ import std.array;
 import slf4d;
 
 import util;
+import rdconstants;
 import jagex.clientobjs.clientobj;
 import jagex.sceneobjs.entity;
 import jagex.hooks;
@@ -18,7 +19,7 @@ class ChatHistory : ClientObj {
     private ChatMessage[] messages;
 
     this(Address clientPtr) {
-        super(clientPtr, 0x19848);
+        super(clientPtr, OF_CHAT_HISTORY);
         super.logPtr();
         this.messages = [];
     }
@@ -74,7 +75,6 @@ class ChatMessage {
         string _message;
         byte checkAuthor;
 
-        // Really not sure how accurate this will be.
         checkAuthor = read!byte(ptr + 0x3C);
         if (checkAuthor != 0) {
             _author = "GAME";
@@ -85,7 +85,6 @@ class ChatMessage {
                 _author = "GAME";
             }
         }
-        // -
 
         _message = read!JagString(ptr + 0x90).read();
         return new ChatMessage(_author, _message);

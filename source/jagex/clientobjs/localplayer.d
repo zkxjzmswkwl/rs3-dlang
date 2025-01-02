@@ -3,12 +3,13 @@ module jagex.clientobjs.localplayer;
 import slf4d;
 
 import util;
+import rdconstants;
 import jagex.clientobjs.clientobj;
 import jagex.sceneobjs.entity;
 
 class LocalPlayer : ClientObj {
     this(Address clientPtr) {
-        super(clientPtr, 0x19F50);
+        super(clientPtr, OF_LOGGED_IN_PLAYER);
         super.logPtr();
 
         infoF!"Logged in as %s"(this.getName());

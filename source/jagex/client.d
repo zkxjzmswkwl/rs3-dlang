@@ -10,6 +10,7 @@ import util;
 import context;
 
 import rd.eventbus;
+import rdconstants;
 import jagex.globals;
 import jagex.constants;
 import jagex.clientobjs;
@@ -30,7 +31,7 @@ public class Client : Observer {
     }
 
     public void refresh() {
-        auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + 0xD89758;
+        auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + CLIENT_PTR;
         this.clientPtr = read!Address(tmp);
         this.localPlayer = new LocalPlayer(this.clientPtr);
         this.inventory = new Inventory(this.clientPtr);
@@ -58,7 +59,7 @@ public class Client : Observer {
     // NOTE: See https://github.com/zkxjzmswkwl/rs3-dlang/issues/1
     //------------------------------------------------------------------------------------------------ 
     public void unhookMouseHook() {
-        HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + 0xD7E078);
+        HHOOK mouseHook = *cast(HHOOK*)(cast(ulong) GetModuleHandle(NULL) + MOUSE_HOOK);
         if (UnhookWindowsHookEx(mouseHook)) {
             infoF!"Mouse hook unhooked."();
         } else {
@@ -67,7 +68,7 @@ public class Client : Observer {
     }
 
     public ClientState getState() {
-        return cast(ClientState)read!int(this.clientPtr + 0x19F48);
+        return cast(ClientState)read!int(this.clientPtr + OF_CLIENT_STATE);
     }
 
     public LocalPlayer getLocalPlayer() {

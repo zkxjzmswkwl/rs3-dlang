@@ -2,6 +2,7 @@ module jagex.engine.interfacemanager;
 
 import slf4d;
 import util;
+import rdconstants;
 import context;
 
 extern(C++)
@@ -12,5 +13,5 @@ class InterfaceManager {
 }
 
 ulong getInterfaceManager() {
-    return read!Address(Context.get().client().getPtr() + 0x198C8);
+    return read!Address(Context.get().client().getPtr() + OF_INTERFACE);
 }
