@@ -40,6 +40,11 @@ class Hook {
         this.name = name;
     }
 
+    @property
+    public bool enabled() {
+        return isEnabled;
+    }
+
     extern(Windows)
     public void enable(void* ourFunction, void** trampolinePtr) {
         if (isEnabled)

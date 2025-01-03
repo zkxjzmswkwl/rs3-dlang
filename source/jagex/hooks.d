@@ -35,6 +35,8 @@ __gshared Address runClientScriptTrampoline;
 __gshared Address highlightTrampoline;
 __gshared Address addEntryInnerTrampoline;
 __gshared Address setClientStateTrampoline;
+__gshared Address setFocusTrampoline;
+__gshared Address setForegroundWindowTrampoline;
 
 extern (Windows) void hookAddChat(
     void* a1,
@@ -117,106 +119,105 @@ void hookSwapBuffers(HDC hDc) {
         wglShareLists(ctx.gameContext, ctx.ourContext);
     }
 
-    if (!wglMakeCurrent(hDc, ctx.ourContext)) {
-        return;
-    }
+    // if (!wglMakeCurrent(hDc, ctx.ourContext)) {
+    //     return;
+    // }
 
-    // store gl state
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    // // store gl state
+    // glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
+    // glMatrixMode(GL_PROJECTION);
+    // glPushMatrix();
+    // glLoadIdentity();
 
-    // yoink current viewport
-    GLint[4] viewport;
-    glGetIntegerv(GL_VIEWPORT, viewport.ptr);
-    GLint viewportWidth = viewport[2];
-    GLint viewportHeight = viewport[3];
+    // // yoink current viewport
+    // GLint[4] viewport;
+    // glGetIntegerv(GL_VIEWPORT, viewport.ptr);
+    // GLint viewportWidth = viewport[2];
+    // GLint viewportHeight = viewport[3];
 
-    glOrtho(0.0, cast(double)viewportWidth, cast(double)viewportHeight, 0.0, -1.0, 1.0);
+    // glOrtho(0.0, cast(double)viewportWidth, cast(double)viewportHeight, 0.0, -1.0, 1.0);
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
+    // glMatrixMode(GL_MODELVIEW);
+    // glPushMatrix();
+    // glLoadIdentity();
 
-    glViewport(0, 0, viewportWidth, viewportHeight);
+    // glViewport(0, 0, viewportWidth, viewportHeight);
 
-    // Actual ui
+    // // Actual ui
 
-    // colors
-    double[3] windowBodyColor = [0.75, 0.75, 0.75];
-    double[3] titleBarColor = [0.49, 0.49, 0.49];
-    double[3] borderColorTopLeft = [0.6, 0.6, 0.6];
-    double[3] borderColorBottomRight = [0.3, 0.3, 0.3];
+    // // colors
+    // double[3] windowBodyColor = [0.75, 0.75, 0.75];
+    // double[3] titleBarColor = [0.49, 0.49, 0.49];
+    // double[3] borderColorTopLeft = [0.6, 0.6, 0.6];
+    // double[3] borderColorBottomRight = [0.3, 0.3, 0.3];
 
-    // window sizing
-    double windowX = 10.0;
-    double windowY = 10.0;
-    double windowWidth = 400.0;
-    double windowHeight = 400.0;
+    // // window sizing
+    // double windowX = 10.0;
+    // double windowY = 10.0;
+    // double windowWidth = 400.0;
+    // double windowHeight = 400.0;
 
-    // window body
-    glColor3d(windowBodyColor[0], windowBodyColor[1], windowBodyColor[2]);
-    glBegin(GL_QUADS);
-        glVertex2d(windowX, windowY);
-        glVertex2d(windowX + windowWidth, windowY);
-        glVertex2d(windowX + windowWidth, windowY + windowHeight);
-        glVertex2d(windowX, windowY + windowHeight);
-    glEnd();
+    // // window body
+    // glColor3d(windowBodyColor[0], windowBodyColor[1], windowBodyColor[2]);
+    // glBegin(GL_QUADS);
+    //     glVertex2d(windowX, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY + windowHeight);
+    //     glVertex2d(windowX, windowY + windowHeight);
+    // glEnd();
 
-    // title
-    double titleBarHeight = 30.0;
-    glColor3d(titleBarColor[0], titleBarColor[1], titleBarColor[2]);
-    glBegin(GL_QUADS);
-        glVertex2d(windowX, windowY);
-        glVertex2d(windowX + windowWidth, windowY);
-        glVertex2d(windowX + windowWidth, windowY + titleBarHeight);
-        glVertex2d(windowX, windowY + titleBarHeight);
-    glEnd();
+    // // title
+    // double titleBarHeight = 30.0;
+    // glColor3d(titleBarColor[0], titleBarColor[1], titleBarColor[2]);
+    // glBegin(GL_QUADS);
+    //     glVertex2d(windowX, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY + titleBarHeight);
+    //     glVertex2d(windowX, windowY + titleBarHeight);
+    // glEnd();
 
-    // top
-    glColor3d(borderColorTopLeft[0], borderColorTopLeft[1], borderColorTopLeft[2]);
-    glBegin(GL_LINES);
-        glVertex2d(windowX, windowY);
-        glVertex2d(windowX + windowWidth, windowY);
-    glEnd();
+    // // top
+    // glColor3d(borderColorTopLeft[0], borderColorTopLeft[1], borderColorTopLeft[2]);
+    // glBegin(GL_LINES);
+    //     glVertex2d(windowX, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY);
+    // glEnd();
 
-    // left 
-    glBegin(GL_LINES);
-        glVertex2d(windowX, windowY);
-        glVertex2d(windowX, windowY + windowHeight);
-    glEnd();
+    // // left 
+    // glBegin(GL_LINES);
+    //     glVertex2d(windowX, windowY);
+    //     glVertex2d(windowX, windowY + windowHeight);
+    // glEnd();
 
-    // bottom
-    glColor3d(borderColorBottomRight[0], borderColorBottomRight[1], borderColorBottomRight[2]);
-    glBegin(GL_LINES);
-        glVertex2d(windowX, windowY + windowHeight);
-        glVertex2d(windowX + windowWidth, windowY + windowHeight);
-    glEnd();
+    // // bottom
+    // glColor3d(borderColorBottomRight[0], borderColorBottomRight[1], borderColorBottomRight[2]);
+    // glBegin(GL_LINES);
+    //     glVertex2d(windowX, windowY + windowHeight);
+    //     glVertex2d(windowX + windowWidth, windowY + windowHeight);
+    // glEnd();
 
-    // right
-    glBegin(GL_LINES);
-        glVertex2d(windowX + windowWidth, windowY);
-        glVertex2d(windowX + windowWidth, windowY + windowHeight);
-    glEnd();
+    // // right
+    // glBegin(GL_LINES);
+    //     glVertex2d(windowX + windowWidth, windowY);
+    //     glVertex2d(windowX + windowWidth, windowY + windowHeight);
+    // glEnd();
 
 
-    // cleanup
-    glFlush();
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    // restore gl state
-    glPopAttrib();
+    // // cleanup
+    // glFlush();
+    // glPopMatrix();
+    // glMatrixMode(GL_PROJECTION);
+    // glPopMatrix();
+    // // restore gl state
+    // glPopAttrib();
 
-    // pass context back to original
-    wglMakeCurrent(hDc, ctx.gameContext);
+    // // pass context back to original
+    // wglMakeCurrent(hDc, ctx.gameContext);
 
     // return control flow
     fnCall(swapBuffersTrampoline, hDc);
 }
-
 
 extern(Windows)
 void hookRenderMenuEntry(Address* thisptr, ulong index, ulong what) {
@@ -259,4 +260,15 @@ extern(Windows)
 void hookSetClientState(ulong* client, int newState) {
     ZGetBus().notify(Event.CLIENT_STATE_CHANGE, Variant(cast(ClientState)newState));
     fnCall(setClientStateTrampoline, client, newState);
+}
+
+extern(C)
+void hookSetFocus(HWND hWnd) {
+    fnCall(setFocusTrampoline, hWnd);
+}
+
+extern(Windows)
+BOOL hookSetForegroundWindow(HWND hWnd) {
+    writeln("SetForegroundWindow called.");
+    return 0;
 }

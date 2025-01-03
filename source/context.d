@@ -16,6 +16,7 @@ import util;
 import tracker.trackermanager;
 import jagex.client;
 import jagex.engine.varbit;
+import jagex.jaghooks;
 import comms.server;
 import std.concurrency;
 
@@ -34,11 +35,13 @@ class Context  {
     private PacketManager _packetManager;
     private HWND windowHandle;
     private bool debugMode;
+    private JagexHooks jagexHooks;
     public HGLRC gameContext = null;
     public HGLRC ourContext  = null;
 
     private this() {
         this.jagClient = new Client();
+        this.jagexHooks = JagexHooks.bootstrap();
         this.eventBus = new EventBus();
         this.eventBus.attach(this.jagClient);
         this._packetManager = new PacketManager();
@@ -68,6 +71,10 @@ class Context  {
 
     public EventBus getBus() {
         return this.eventBus;
+    }
+    
+    public JagexHooks getJagexHooks() {
+        return this.jagexHooks;
     }
 
     public PacketManager packetManager() {

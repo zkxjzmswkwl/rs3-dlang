@@ -16,6 +16,10 @@ LocalPlayer ZGetLocalPlayer() {
     return Context.get().client().getLocalPlayer();
 }
 
+JagexHooks ZGetHooks() {
+    return Context.get().getJagexHooks();
+}
+
 Render ZGetRender() {
     return Context.get().client().getRender();
 }

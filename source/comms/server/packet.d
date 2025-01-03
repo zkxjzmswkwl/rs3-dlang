@@ -8,6 +8,7 @@ import jagex.sceneobjs;
 import jagex;
 import tracker;
 import plugins;
+import jagex.globals;
 
 enum PacketType {
     REQUEST,
@@ -161,6 +162,24 @@ class PacketRespHideEntities : Packet {
     }
 }
 
+class PacketRespForegroundHook : Packet {
+    this() {
+        super(PacketType.RESPONSE);
+    }
+
+    public override string getBuffer(string[] args = []) {
+        auto fgHook = ZGetHooks().getForegroundHook();
+        if (fgHook.enabled) {
+            fgHook.disable();
+            return "resp:foregroundhook:disabled";
+        } else {
+            // UGLY. BAD. NO GOOD. Why did I not store these in the object itself???
+            fgHook.enable(&hookSetForegroundWindow, cast(void**)&setForegroundWindowTrampoline);
+            return "resp:foregroundhook:enabled";
+        }
+    }
+}
+
 /// Unsure if I want to do this or not. We'll see.
 class PacketManager {
     // I don't know if this is passed by value or reference.
@@ -170,13 +189,14 @@ class PacketManager {
     private Packet[string] packets;
 
     this() {
-        this.packets["prayer"]       = new PacketRespPrayer();
-        this.packets["health"]       = new PacketRespHealth();
-        this.packets["rsn"]          = new PacketRespRsn();
-        this.packets["sceneobjects"] = new PacketRespSceneObjects();
-        this.packets["metrics"]      = new PacketRespMetrics();
-        this.packets["nodes"]        = new PacketRespNodes();
-        this.packets["hideentities"] = new PacketRespHideEntities();
+        this.packets["prayer"]         = new PacketRespPrayer();
+        this.packets["health"]         = new PacketRespHealth();
+        this.packets["rsn"]            = new PacketRespRsn();
+        this.packets["sceneobjects"]   = new PacketRespSceneObjects();
+        this.packets["metrics"]        = new PacketRespMetrics();
+        this.packets["nodes"]          = new PacketRespNodes();
+        this.packets["hideentities"]   = new PacketRespHideEntities();
+        this.packets["foregroundhook"] = new PacketRespForegroundHook();
     }
 
     @property Packet[string] packetMap() {

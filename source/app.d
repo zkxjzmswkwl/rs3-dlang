@@ -26,7 +26,6 @@ import jagex.engine.functions;
 import jagex.globals;
 
 TrackerManager gTrackerManager;
-JagexHooks     gJagexHooks;
 Server         gICPServer;
 
 void registerPlugins() {
@@ -49,8 +48,6 @@ void prelude() {
     infoF!"Client ptr: %016X"(ZGetClient().getPtr());
     // Horrible, this shouldn't even be the module's job to begin with.
     gTrackerManager = Context.get().tManager;
-    // Create instance of `JagexHooks`, call `enableAll`, return instance.
-    gJagexHooks = JagexHooks.bootstrap();
     // Apply whatever byte patches I currently (and likely falsely) assume to not cause crashes.
     applyPatches();
     // This, again, should not be the job of the module. Goal post for v1.0.0?
