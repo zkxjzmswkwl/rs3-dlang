@@ -8,10 +8,8 @@ import jagex.item;
 import jagex.clientobjs.clientobj;
 import std.logger.core;
 
-class Inventory : ClientObj
-{
-    this(Address clientPtr)
-    {
+class Inventory : ClientObj {
+    this(Address clientPtr) {
         // In this case, we want client]0x19980]0x8]0x18
         super(clientPtr, OF_INVENTORY);
         super.logPtr();
@@ -20,13 +18,11 @@ class Inventory : ClientObj
         super.logPtr();
     }
 
-    public ItemStack[] getItems()
-    {
+    public ItemStack[] getItems() {
         ItemStack[] items = new ItemStack[28];
         uint cursor = 0x0;
         
-        while (cursor < 0xDC)
-        {
+        while (cursor < 0xDC) {
             auto id = read!uint(this.obj + cursor);
             auto amount = read!uint(this.obj + cursor + 0x4);
 

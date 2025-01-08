@@ -4,7 +4,6 @@ import slf4d;
 
 import util;
 
-
 class ClientObj {
     ///
     /// Offset from jag::Client at which a pointer to a given obj is located.

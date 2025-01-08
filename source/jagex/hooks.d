@@ -37,6 +37,8 @@ __gshared Address addEntryInnerTrampoline;
 __gshared Address setClientStateTrampoline;
 __gshared Address setFocusTrampoline;
 __gshared Address setForegroundWindowTrampoline;
+__gshared Address showWindowTrampoline;
+
 
 extern (Windows) void hookAddChat(
     void* a1,
@@ -270,5 +272,11 @@ void hookSetFocus(HWND hWnd) {
 extern(Windows)
 BOOL hookSetForegroundWindow(HWND hWnd) {
     writeln("SetForegroundWindow called.");
+    return 0;
+}
+
+extern(Windows)
+BOOL hookShowWindow(HWND hWnd, int nCmdShow) {
+    writeln("ShowWindow called.");
     return 0;
 }

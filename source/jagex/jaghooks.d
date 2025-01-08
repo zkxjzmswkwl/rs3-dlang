@@ -27,6 +27,7 @@ class JagexHooks {
     private Hook addEntryInner;
     private Hook setClientState;
     private Hook setForegroundWindow;
+    private Hook showWindow;
 
     this() {
         this.addChatMessage  = new Hook(FN_ADD_CHAT,         "addChat");
@@ -46,6 +47,8 @@ class JagexHooks {
         auto user32ModuleHandle = GetModuleHandle("user32.dll");
         auto setForegroundWindowAddr = cast(Address)GetProcAddress(user32ModuleHandle, "SetForegroundWindow");
         this.setForegroundWindow = new Hook(setForegroundWindowAddr, "setForegroundWindow", false);
+        this.showWindow = new Hook(cast(Address)GetProcAddress(user32ModuleHandle, "ShowWindow"), "showWindow", false);
+
     }
 
     public JagexHooks enableAll() {
@@ -55,7 +58,8 @@ class JagexHooks {
         this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
         this.addChatMessage.enable(&hookAddChat, cast(void**)&chatTrampoline);
         this.setClientState.enable(&hookSetClientState, cast(void**)&setClientStateTrampoline);
-        this.setForegroundWindow.enable(&hookSetForegroundWindow, cast(void**)&setForegroundWindowTrampoline);
+        // this.setForegroundWindow.enable(&hookSetForegroundWindow, cast(void**)&setForegroundWindowTrampoline);
+        // this.showWindow.enable(&hookShowWindow, cast(void**)&showWindowTrampoline);
 
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
@@ -79,7 +83,7 @@ class JagexHooks {
         return this.setForegroundWindow;
     }
 
-    /**************************
+    /*
      * Instantiates `JagexHooks`, enables all hooks and returns the instance.
      */
     public static JagexHooks bootstrap() {

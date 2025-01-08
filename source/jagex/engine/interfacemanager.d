@@ -4,6 +4,7 @@ import slf4d;
 import util;
 import rdconstants;
 import context;
+import jagex.globals;
 
 extern(C++)
 class InterfaceManager {
@@ -13,5 +14,5 @@ class InterfaceManager {
 }
 
 ulong getInterfaceManager() {
-    return read!Address(Context.get().client().getPtr() + OF_INTERFACE);
+    return read!Address(ZGetClient().getPtr() + OF_INTERFACE);
 }

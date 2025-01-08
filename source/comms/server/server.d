@@ -19,6 +19,7 @@ import core.sync.mutex;
 
 
 class Server : Thread {
+    private TcpSocket tcpSocket;
     private string host;
     private ushort port;
     private PacketManager packetManager;
@@ -154,19 +155,29 @@ class Server : Thread {
 		}
     }
 
+    /** 
+     * Binds [tcpSocket] to [host] and [port].
+     * If [TcpSocket.bind(host, port)] throws a [SocketException], increments [port] and tries again.
+     */
+    private void bind() {
+        try {
+            tcpSocket.bind(new InternetAddress(this.host, this.port));
+            info("Bound to " ~ this.host ~ ":" ~ this.port.to!string);
+        } catch (SocketException e) {
+            info(e.msg);
+            ++this.port;
+            bind();
+        }
+    }
+
     private void run() {
-        auto tcpSocket = new TcpSocket(AddressFamily.INET);
+        tcpSocket = new TcpSocket(AddressFamily.INET);
         tcpSocket.blocking = false;
         SocketSet readSet = new SocketSet();
         Socket[] clients;
 
-        try {
-            tcpSocket.setOption(SocketOptionLevel.SOCKET, SocketOption.TCP_NODELAY, 1);
-        } catch (Exception ex) {
-            info(ex.msg);
-        }
-
-        tcpSocket.bind(new InternetAddress(this.host, this.port));
+        tcpSocket.setOption(SocketOptionLevel.SOCKET, SocketOption.TCP_NODELAY, 1);
+        this.bind();
         tcpSocket.listen(30);
 
         info("[>] START | " ~ this.host ~ ":" ~ this.port.to!string);
