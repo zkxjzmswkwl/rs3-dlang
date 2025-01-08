@@ -85,9 +85,26 @@ __gshared ubyte[] SET_LOCAL_PLAYER_SILHOUETTE = [
 // Responsible for setting appropriate entity highlighting value
 // __gshared ubyte[] SET_ENTITY_HIGHLIGHT = [0x44, 0x89, 0x99, 0x00, 0x11, 0x00];
 
-struct _hglrc_
-{
-    int unused;
-}
-
+//
+// OpenGL qol
+//
+struct _hglrc_ { int unused; }
 alias HGLRC = _hglrc_*;
+
+//
+// For use with querying buff/debuff bars.
+//
+enum Sprite : uint {
+    BONFIRE                  = 10931,
+    ATTACK_POTION            = 25824,
+    STRENGTH_POTION          = 25825,
+    DEFENCE_POTION           = 25826,
+    MAGIC_POTION             = 25829,
+    LIFEPOINT_BOOST          = 25830,
+    NECROMANCY_POTION        = 30125,
+    PERFECT_JUJU_WOODCUTTING = 163829,
+    PERFECT_JUJU_MINING      = 163845,
+    PERFECT_JUJU_SMITHING    = 163853,
+    PERFECT_JUJU_FISHING     = 166811,
+    POWERBURST_ACCELERATION  = 180127,
+}
