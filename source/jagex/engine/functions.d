@@ -13,6 +13,7 @@ import jagex.item;
 import context;
 import jagex.hooks;
 import jagex.engine.interfacemanager;
+import jagex.globals;
 
 enum InventoryContainer {
     BACKPACK              = 93,
@@ -26,7 +27,7 @@ enum InventoryContainer {
 
 public ItemStack[] getItems(InventoryContainer container) {
     mixin fn!("getInventory", 0x2D7280, ulong*, int, bool);
-    Address* inventoryManager = read!(Address*)(Context.get().client().getPtr() + 0x19980);
+    Address* inventoryManager = read!(Address*)(ZGetClient().getPtr() + 0x19980);
     Address inventory = getInventory(inventoryManager, cast(int)container, false);
     writefln("Inventory %d: %016X", cast(int)container, inventory);
 

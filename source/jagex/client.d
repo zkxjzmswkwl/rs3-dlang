@@ -32,13 +32,14 @@ public class Client : Observer {
 
     public void refresh() {
         auto tmp = cast(Address) GetModuleHandle("rs2client.exe") + CLIENT_PTR;
-        this.clientPtr = read!Address(tmp);
-        this.localPlayer = new LocalPlayer(this.clientPtr);
-        this.inventory = new Inventory(this.clientPtr);
-        this.skills = new Skills(this.clientPtr);
+
+        this.clientPtr    = read!Address(tmp);
+        this.localPlayer  = new LocalPlayer(this.clientPtr);
+        this.inventory    = new Inventory(this.clientPtr);
+        this.skills       = new Skills(this.clientPtr);
         this.sceneManager = new SceneManager(this.clientPtr);
-        this.render = new Render(this.clientPtr);
-        this.chatHistory = new ChatHistory(this.clientPtr);
+        this.render       = new Render(this.clientPtr);
+        this.chatHistory  = new ChatHistory(this.clientPtr);
     }
 
     public void update(Event event, Variant data) {
