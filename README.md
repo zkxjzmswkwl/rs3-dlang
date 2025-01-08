@@ -8,6 +8,22 @@ In all seriousness, this project came to exist almost entirely because there is 
 
 Everything else is kind of auxiliary.
 
+The frontend is [here](https://github.com/zkxjzmswkwl/runedoc-tauri).
+
+# Screenshots of recent (very alpha) usage.
+
+### Silhouette control
+![silhouette](https://i.imgur.com/TFIe6zQ.png)
+
+### Scene querying
+![scene](https://i.imgur.com/Bt15N4z.png)
+
+### XP Graph
+![xp](https://i.imgur.com/RmhySOQ.png)
+
+### Very early AFKWarden
+![afk](https://i.imgur.com/L78FhJ4.png)
+
 # Building
 **Project should be built using [LDC2](https://github.com/ldc-developers/ldc) in `release`**.
 
