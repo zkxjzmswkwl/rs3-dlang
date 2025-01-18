@@ -9,7 +9,6 @@ import core.runtime;
 import core.sys.windows.windows;
 import std.conv;
 
-import rd.eventbus;
 import jagex;
 import context;
 import tracker;
@@ -17,14 +16,11 @@ import util;
 import rdconstants;
 import comms.server;
 import jagex.engine.patches;
-import jagex.clientobjs.chathistory : ChatMessage;
 import plugins;
 import plugins.highlighter;
 import plugins.chatexample.chatexample;
 import plugins.afkwarden.afkwarden;
-import jagex.engine.functions;
 import jagex.globals;
-import kronos.kronos;
 
 TrackerManager gTrackerManager;
 Server         gICPServer;
@@ -58,7 +54,6 @@ void prelude() {
 }
 
 uint run() {
-    // Runtime.initialize();
     try {
         prelude();
 
