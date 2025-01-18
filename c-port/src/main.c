@@ -26,7 +26,9 @@ BOOL initialize() {
 	HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
 	HANDLE hNtsit = GetProcAddress(hNtdll, "NtSetInformationThread");
 	pNtSetInformationThread NtSetInformationThread = (pNtSetInformationThread)hNtsit;
-	NtSetInformationThread(GetCurrentThread(), 0x11, NULL, 0);
+	NtSetInformationThread(GetCurrentThread(), THREAD_HIDE_FROM_DEBUGGER, NULL, 0);
+	mbox_error("crash now");
+	asm("int3");
 #endif
 
 	return TRUE;
