@@ -28,6 +28,7 @@ public class Client : Observer {
 
     this() {
         this.refresh();
+        this.unhookMouseHook();
     }
 
     public void refresh() {

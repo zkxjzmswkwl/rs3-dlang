@@ -17,6 +17,7 @@ import rdconstants;
 // Hook fn bodies are in hooks.d, this class only manages the Hook instances.
 //------------------------------------------------------------------------------ 
 class JagexHooks {
+    private Hook[] hooks;
     private Hook addChatMessage;
     private Hook updateStat;
     private Hook highlightEntity;
@@ -26,8 +27,6 @@ class JagexHooks {
     private Hook highlight;
     private Hook addEntryInner;
     private Hook setClientState;
-    private Hook setForegroundWindow;
-    private Hook showWindow;
 
     this() {
         this.addChatMessage  = new Hook(FN_ADD_CHAT,         "addChat");
@@ -42,24 +41,25 @@ class JagexHooks {
 
         auto oglModuleHandle = GetModuleHandle("opengl32.dll");
         auto swapBuffersAddr = cast(Address)GetProcAddress(oglModuleHandle, "wglSwapBuffers");
-        this.swapBuffers = new Hook(swapBuffersAddr, "swapBuffers", false);
+        // this.swapBuffers = new Hook(swapBuffersAddr, "swapBuffers", false);
 
-        auto user32ModuleHandle = GetModuleHandle("user32.dll");
-        auto setForegroundWindowAddr = cast(Address)GetProcAddress(user32ModuleHandle, "SetForegroundWindow");
-        this.setForegroundWindow = new Hook(setForegroundWindowAddr, "setForegroundWindow", false);
-        this.showWindow = new Hook(cast(Address)GetProcAddress(user32ModuleHandle, "ShowWindow"), "showWindow", false);
-
+        this.hooks = [
+            this.addChatMessage,
+            this.updateStat,
+            this.highlightEntity,
+            this.highlight,
+            this.setClientState,
+            // this.swapBuffers,
+        ];
     }
 
     public JagexHooks enableAll() {
         this.updateStat.enable(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.enable(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
         this.highlight.enable(&hookHighlight, cast(void**)&highlightTrampoline);
-        this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
+        // this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
         this.addChatMessage.enable(&hookAddChat, cast(void**)&chatTrampoline);
         this.setClientState.enable(&hookSetClientState, cast(void**)&setClientStateTrampoline);
-        // this.setForegroundWindow.enable(&hookSetForegroundWindow, cast(void**)&setForegroundWindowTrampoline);
-        // this.showWindow.enable(&hookShowWindow, cast(void**)&showWindowTrampoline);
 
         // this.renderMenuEntry.place(&hookRenderMenuEntry, cast(void**)&renderMenuEntryTrampoline);
         // this.runClientScript.place(&hookRunClientScript, cast(void**)&runClientScriptTrampoline);
@@ -69,18 +69,16 @@ class JagexHooks {
     }
 
     public void disableAll() {
+        // this.swapBuffers.disable();
         this.addChatMessage.disable();
         this.updateStat.disable();
         this.highlightEntity.disable();
-        this.swapBuffers.disable();
-        this.renderMenuEntry.disable();
-        this.runClientScript.disable();
         this.highlight.disable();
-        this.addEntryInner.disable();
+        this.setClientState.disable();
     }
 
-    public Hook getForegroundHook() {
-        return this.setForegroundWindow;
+    public Hook getSwapBuffers() {
+        return this.swapBuffers;
     }
 
     /*
@@ -90,5 +88,9 @@ class JagexHooks {
         auto instance = new JagexHooks();
         instance.enableAll();
         return instance;
+    }
+
+    public Hook[] toList() {
+        return this.hooks;
     }
 }

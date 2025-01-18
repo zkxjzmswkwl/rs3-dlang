@@ -1,5 +1,7 @@
 module context;
 
+import core.sync.mutex;
+
 import core.stdc.stdlib;
 import core.sys.windows.windows;
 import std.conv;

@@ -24,6 +24,7 @@ import plugins.chatexample.chatexample;
 import plugins.afkwarden.afkwarden;
 import jagex.engine.functions;
 import jagex.globals;
+import kronos.kronos;
 
 TrackerManager gTrackerManager;
 Server         gICPServer;
@@ -56,13 +57,19 @@ void prelude() {
     gICPServer = Server.bootstrap();
 }
 
-void run() {
+uint run() {
+    // Runtime.initialize();
     try {
         prelude();
 
         for (;;) {
             gTrackerManager.checkActivity();
             Thread.sleep(dur!"msecs"(300));
+
+			if (GetAsyncKeyState(VK_F1) & 1) {
+                ZGetHooks().disableAll();
+				break;
+			}
         }
 
         // Any cleanup here.
@@ -71,16 +78,43 @@ void run() {
     } catch (Exception ex) {
         writeln(ex.msg ~ " " ~ ex.file ~ " " ~ ex.line.to!string);
     }
+
+    // Clean up running threads
+	gTrackerManager.stopAll();
+	Server.killSelf();
+
+    // Free both Capstone and ourselves.
+    auto capstoneHandle = GetModuleHandleA("capstone.dll");
+	auto selfHandle = GetModuleHandleA("DeOppressoLiber.dll");
+	FreeLibrary(capstoneHandle);
+    // This results DLL_PROCESS_DETACH being called, which is great.
+	FreeLibrary(selfHandle);
+	return 0;
 }
 
-extern (Windows) BOOL DllMain(HMODULE module_, uint reason, void*) { // @suppress(dscanner.style.phobos_naming_convention) {
-    if (reason == DLL_PROCESS_ATTACH) {
-        Runtime.initialize();
-        new Thread({ run(); }).start();
+extern(Windows)
+BOOL DllMain(HINSTANCE hInstance, DWORD ulReason, LPVOID reserved)
+{
+    import core.sys.windows.winnt;
+    import core.sys.windows.dll :
+        dll_process_attach, dll_process_detach,
+        dll_thread_attach, dll_thread_detach;
+    switch (ulReason)
+    {
+        default: assert(0);
+        case DLL_PROCESS_ATTACH:
+            dll_process_attach( hInstance, true );
+            new Thread({ run(); }).start();
+            return true;
+
+        case DLL_PROCESS_DETACH:
+            dll_process_detach( hInstance, true );
+            return true;
+
+        case DLL_THREAD_ATTACH:
+            return dll_thread_attach( true, true, hInstance );
+
+        case DLL_THREAD_DETACH:
+            return dll_thread_detach( true, true, hInstance );
     }
-    else if (reason == DLL_PROCESS_DETACH) {
-        Runtime.terminate();
-        FreeLibrary(module_);
-    }
-    return TRUE;
 }

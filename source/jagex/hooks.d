@@ -40,6 +40,7 @@ __gshared Address setForegroundWindowTrampoline;
 __gshared Address showWindowTrampoline;
 
 
+
 extern (Windows) void hookAddChat(
     void* a1,
     int messageType,
@@ -105,10 +106,10 @@ void hookHighlightEntity(Address entityPtr, uint highlightVal, char a3, float co
 // SwapBuffers is responsible for turning the frame.
 // `extern(C)` is used to tell the compiler that this function should 
 // have the calling convention __stdcall.
-extern (C)
+extern(C)
 void hookSwapBuffers(HDC hDc) {
     auto ctx = ZGetContext();
-    
+
     if (ctx.getWindowHandle() is null) {
         auto window = WindowFromDC(hDc);
         ctx.setWindowHandle(window);

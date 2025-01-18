@@ -1,5 +1,17 @@
 module kronos.hook;
 
+/** 
+ * Feature: Disabling/Enabling - Not done
+ * Need to suspend all threads then enumerate them.
+ * Compare current RIP of that thread to check if within boundaries of any of the relay pages we allocated.
+ * If it is, we need to replace RIP with the location of the target function.
+ * If we don't do this, and the body of one of our hooks is running, the RIP will take that thread back to the relay page.
+ * Which doesn't exist anymore because we're exiting. So we get fucked. Hard.
+ * I didn't account for any of this when I initially (drunkenly) wrote this class.
+ *
+ * - Got away with not doing this for now. But it's likely to cause crashes here and there.
+ */
+
 import core.stdc.stdint;
 import core.sys.windows.windows;
 import std.stdio;
@@ -29,7 +41,9 @@ class Hook {
     private Capstone cs;
     private ubyte[] originalBytes;
     private uint originalSize;
+    private ulong allocatedPage;
     private bool isEnabled = false;
+    private uint trampolineSize;
 
     this(Address location, string name, bool sameModule = true) {
         if (sameModule)
@@ -52,10 +66,20 @@ class Hook {
         try {
             DWORD previousProtection;
             VirtualProtect(cast(void*)location, 1024, PAGE_EXECUTE_READWRITE, &previousProtection);
-            void* relayPage = this.writeRelayPage();
-            uint trampolineSize = buildTrampoline(cast(void*)location, relayPage);
-            *trampolinePtr = relayPage;
+
+            // debug
+            // Because we sometimes need to relocate >5 bytes, in the case of relative instructions, calls, etc,
+            // let's just copy 20 fkn bytes. We're never writing anywhere near 20 bytes.
+            // So this should absolutely cover every case when we disable hooks.
+            // Elegant? No. Fuck you.
+            originalSize = 20;
+            originalBytes = readBytes(location, originalSize);
+
+            void* relayPage       = this.writeRelayPage();
+            trampolineSize        = buildTrampoline(cast(void*)location, relayPage);
+            *trampolinePtr        = relayPage;
             void* relayFuncMemory = cast(char*)relayPage + trampolineSize;
+
             this.writeJmp(relayFuncMemory, ourFunction);
             ubyte[] jmpIsns32 = [0xE9, 0x0, 0x0, 0x0, 0x0];
             /*
@@ -79,15 +103,8 @@ class Hook {
             */
             int32_t relativeAddress = cast(int32_t)(cast(uintptr_t)relayFuncMemory - (cast(uintptr_t)location + 5));
             memcpy(&jmpIsns32[1], &relativeAddress, 4);
-            // Only replacing the amount of bytes needed for 32-bit jump, which is always 5.
-            originalSize = 5;
-            // Store those bytes before we replace them.
-            originalBytes = readBytes(location, originalSize);
-            // Replace them.
             memcpy(cast(void*)location, &jmpIsns32[0], 5);
-            // Restore prot
             VirtualProtect(cast(void*)location, 1024, previousProtection, null);
-
             isEnabled = true;
             infoF!"Hook(%s) enabled at %016X"(this.name, location);
         } catch (Exception ex) {
@@ -101,16 +118,21 @@ class Hook {
             return;
         try {
             DWORD previousProtection;
-            VirtualProtect(cast(void*)location, 1024, PAGE_EXECUTE_READWRITE, &previousProtection);
-            memcpy(cast(void*)location, originalBytes.ptr, originalSize);
-            VirtualProtect(cast(void*)location, 1024, previousProtection, null);
+            VirtualProtect(cast(void*)location, 20, PAGE_EXECUTE_READWRITE, &previousProtection);
+            memcpy(cast(void*)location, &originalBytes[0], 20);
+            VirtualProtect(cast(void*)location, 20, previousProtection, &previousProtection);
+
             isEnabled = false;
-            infoF!"Hook(%s) disabled at %016X"(this.name, location);
         } catch (Exception ex) {
             writeln(ex.msg);
         }
     }
 
+    /// Writes a 32-bit relative jmp to location in newly-written relay page.
+    /// Params:
+    ///   func = location to place initial trampoline jmp
+    ///   trampDest = destination of that jmp
+    /// Returns: Size of trampoline
     private uint buildTrampoline(void* func, void* trampDest) {
         Instructions stolenIsns = this.stealBytes(func);
         ubyte* stolenByteMem = cast(ubyte*)trampDest;
@@ -173,6 +195,10 @@ class Hook {
         }
     }
 
+    /// Steals the first 14 bytes (sizeof(64-bit abs jmp))
+    /// Params:
+    ///   func = Location to steal bytes from
+    /// Returns: Stolen bytes contained in instance of `Instructions`
     private Instructions stealBytes(void* func) {
         this.cs.detail = true;
 
@@ -226,6 +252,10 @@ class Hook {
         return callAsmBytes.sizeof + jmpBytes.sizeof;
     }
 
+    /// Writes 64-bit absolute jmp
+    /// Params:
+    ///   jmpMem = Location to place jmp
+    ///   jmpLoc = Location to jmp to
     private void writeJmp(void* jmpMem, void* jmpLoc) {
         ubyte[] jmpIsns = [
             0x49, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -237,6 +267,8 @@ class Hook {
         memcpy(jmpMem, &jmpIsns[0], jmpIsns.sizeof);
     }
 
+    /// TODO: Keep track of the pages we write?
+    /// Returns: The location of the relay page.
     private void* writeRelayPage() {
         SYSTEM_INFO si;
         GetSystemInfo(&si);
@@ -259,6 +291,7 @@ class Hook {
             if (high < maximum) {
                 void* outLoc = VirtualAlloc(cast(void*)high, PAGE_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
                 if (outLoc != null) {
+                    this.allocatedPage = cast(ulong)outLoc;
                     return outLoc;
                 }
             }
@@ -266,6 +299,7 @@ class Hook {
             if (low > minimum) {
                 void* outLoc = VirtualAlloc(cast(void*)low, PAGE_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
                 if (outLoc != null) {
+                    this.allocatedPage = cast(ulong)outLoc;
                     return outLoc;
                 }
             }
@@ -280,7 +314,7 @@ class Hook {
 
     private ubyte[] readBytes(T)(T address, size_t size) {
         ubyte* bufferLoc = cast(ubyte*)address;
-        auto ret = bufferLoc[0 .. size];
+        auto ret = bufferLoc[0 .. size].dup;
         return ret;
     }
 
@@ -347,4 +381,18 @@ class Hook {
                 break;
         }
     }
+
+    // Accessors
+    public ulong getAllocatedPage() {
+        return this.allocatedPage;
+    }
+
+    public string getName() {
+        return this.name;
+    }
+
+    public uint getTrampolineSize() {
+        return this.trampolineSize;
+    }
 }
+

@@ -96,7 +96,7 @@ class Server : Thread {
 
     private bool processPacket(Socket client, string packet) {
         if (packet == "KILLSELF") {
-            info("Server killing itself.");
+            // info("Server killing itself.");
             this.shouldRun = false;
             return false;
         }
@@ -239,7 +239,8 @@ class Server : Thread {
             socket.send("KILLSELF");
             socket.close();
         } catch (SocketException e) {
-            writeln("Socket error: ", e.msg);
+            // writeln("Socket error: ", e.msg);
+            asm { int 3; }
         } finally {
             if (socket.isAlive) {
                 socket.close();
