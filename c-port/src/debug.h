@@ -2,6 +2,6 @@
 #define DEBUG_H
 
 #define PRINT_POINTER_TRAVERSAL
-/* #define DEBUG_LOG */
+#define DEBUG_LOG
 
 #endif

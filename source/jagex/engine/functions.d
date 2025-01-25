@@ -26,7 +26,7 @@ enum InventoryContainer {
 }
 
 public ItemStack[] getItems(InventoryContainer container) {
-    mixin fn!("getInventory", 0x2D7280, ulong*, int, bool);
+    mixin fn!("getInventory", 0x2D76C0, ulong*, int, bool);
     Address* inventoryManager = read!(Address*)(ZGetClient().getPtr() + 0x19980);
     Address inventory = getInventory(inventoryManager, cast(int)container, false);
     writefln("Inventory %d: %016X", cast(int)container, inventory);
@@ -76,7 +76,7 @@ class RuneTek {
     }
 
     public static ulong getComponent(int id) {
-        mixin fn!("getById", 0x2DFCA0, ulong*, int, char);
+        mixin fn!("getById", 0x2E00E0, ulong*, int, char);
         auto im = getInterfaceManager();
         auto result = getById(cast(ulong*)(im + 0x20), id, 0);
         return resolvePtrChain(result, [0x8, 0x8, 0x28]);

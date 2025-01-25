@@ -2,8 +2,8 @@
 #define REVISION_H
 #include "common.h"
 
-static uint64_t CLIENT_PTR           = 0xD89758;
-static uint64_t MOUSE_HOOK           = 0xD7E078;
+static uint64_t CLIENT_PTR           = 0xD84A48;
+static uint64_t MOUSE_HOOK           = 0xD7F078;
 // Wouldn't rely on this sig.
 // 48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 56 41 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 4C 63 79
 static uint64_t FN_ADD_CHAT          = 0xCE8A0;

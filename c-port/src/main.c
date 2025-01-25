@@ -27,8 +27,6 @@ BOOL initialize() {
 	HANDLE hNtsit = GetProcAddress(hNtdll, "NtSetInformationThread");
 	pNtSetInformationThread NtSetInformationThread = (pNtSetInformationThread)hNtsit;
 	NtSetInformationThread(GetCurrentThread(), THREAD_HIDE_FROM_DEBUGGER, NULL, 0);
-	mbox_error("crash now");
-	asm("int3");
 #endif
 
 	return TRUE;
@@ -47,6 +45,8 @@ uint64_t entry(HMODULE hModule) {
 		mbox_error("Failed to initialize. Exiting. Client might crash.");
 		uninitialize(hModule);
 	}
+
+	mbox_error("Hello world");
 
 	uninitialize(hModule);
 	return 0;

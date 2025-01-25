@@ -69,10 +69,10 @@ __gshared const uint[] XP_TABLE = [
 ];
 
 // 48 85 FF 0F 84 ? ? ? ? 48 8B 01 FF 90 ? ? ? ? 84 C0 0F 85
-__gshared ulong CALL_RENDER_ENTITIES = 0x317EE0;
-__gshared ulong CALL_RENDER_NPCS     = 0x3553E3;
-__gshared ulong RESET_SILHOUETTE     = 0x111FB0;
-__gshared ulong SET_SILHOUETTE       = 0x1246AB;
+__gshared ulong CALL_RENDER_ENTITIES = 0x3183D0;
+__gshared ulong CALL_RENDER_NPCS     = 0x3557F3;
+__gshared ulong RESET_SILHOUETTE     = 0x112250;
+__gshared ulong SET_SILHOUETTE       = 0x1248AB;
 // __gshared ulong MOV_ENTITY_HIGHLIGHT = 0x3552B4;
 
 __gshared ubyte[] RENDER_ENTITIES_BYTES = [0xFF, 0x90, 0x20, 0x01, 0x00, 0x00];

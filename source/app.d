@@ -76,7 +76,7 @@ uint run() {
 
     // Clean up running threads
 	gTrackerManager.stopAll();
-	Server.killSelf();
+	gICPServer.killSelf();
 
     // Free both Capstone and ourselves.
     auto capstoneHandle = GetModuleHandleA("capstone.dll");

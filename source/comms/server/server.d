@@ -232,14 +232,15 @@ class Server : Thread {
         }
     }
 
-    public static void killSelf() {
+    public void killSelf() {
         auto socket = new TcpSocket();
         try {
-            socket.connect(new InternetAddress("127.0.0.1", 6969));
+            socket.connect(new InternetAddress("127.0.0.1", this.port));
             socket.send("KILLSELF");
             socket.close();
+            writeln("Server killed.");
         } catch (SocketException e) {
-            // writeln("Socket error: ", e.msg);
+            writeln("Socket error: ", e.msg);
             asm { int 3; }
         } finally {
             if (socket.isAlive) {

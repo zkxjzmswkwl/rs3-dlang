@@ -108,7 +108,7 @@ class Hook {
             isEnabled = true;
             infoF!"Hook(%s) enabled at %016X"(this.name, location);
         } catch (Exception ex) {
-            writeln(ex.msg);
+            writeln("[" ~ this.name ~ "] " ~ ex.msg);
         }
     }
 
@@ -124,7 +124,7 @@ class Hook {
 
             isEnabled = false;
         } catch (Exception ex) {
-            writeln(ex.msg);
+            writeln("[" ~ this.name ~ "] " ~ ex.msg);
         }
     }
 
