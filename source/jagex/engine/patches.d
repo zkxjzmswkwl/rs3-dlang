@@ -20,7 +20,11 @@ static void nopEntityRendering(Address renderCall, ubyte[] originalBytes) {
     rvaAlterPageAccess(renderCall, 6, oldProtect);
 }
 
-// Early returns the function that resets silhouette while doing anything except afking
+/// Jagex resets and recalculates the silhouette every single frame.
+/// Sometimes, you do need to recalc, because the scene has changed.
+/// What's confusing is that they they have one procedure for resetting the silhouette when the scene is unchanged,
+/// and a completely separate routine for resetting the silhouette when the scene has changed.
+/// This patches the procedure for the non-changed-scene to return immediately.
 static void nopSetSilhouette() {
     auto oldProtect = rvaAlterPageAccess(RESET_SILHOUETTE, 1, PAGE_EXECUTE_READWRITE);
     rvaFillBuffer(RESET_SILHOUETTE, [0xC3]);
@@ -29,12 +33,13 @@ static void nopSetSilhouette() {
 
 static void nopSetLocalSilhouette() {
     auto oldProtect = rvaAlterPageAccess(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE.length, PAGE_EXECUTE_READWRITE);
-    auto firstByte = rvaRead!ubyte(SET_SILHOUETTE);
+    // If the first (or any of the other 60 bytes) is not 0x90 we know it's not patched.
+    auto isAlreadyPatched = rvaRead!ubyte(SET_SILHOUETTE) != SET_LOCAL_PLAYER_SILHOUETTE[0];
 
-    if (firstByte == SET_LOCAL_PLAYER_SILHOUETTE[0]) {
-        rvaMemset(SET_SILHOUETTE, 0x90, SET_LOCAL_PLAYER_SILHOUETTE.length);
-    } else {
+    if (isAlreadyPatched) {
         rvaFillBuffer(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE);
+    } else {
+        rvaMemset(SET_SILHOUETTE, 0x90, SET_LOCAL_PLAYER_SILHOUETTE.length);
     }
     
     rvaAlterPageAccess(SET_SILHOUETTE, SET_LOCAL_PLAYER_SILHOUETTE.length, oldProtect);
