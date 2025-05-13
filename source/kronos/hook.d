@@ -6,8 +6,8 @@ module kronos.hook;
  * Compare current RIP of that thread to check if within boundaries of any of the relay pages we allocated.
  * If it is, we need to replace RIP with the location of the target function.
  * If we don't do this, and the body of one of our hooks is running, the RIP will take that thread back to the relay page.
- * Which doesn't exist anymore because we're exiting. So we get fucked. Hard.
- * I didn't account for any of this when I initially (drunkenly) wrote this class.
+ * Which doesn't exist anymore because we're exiting.
+ * I didn't account for any of this when I initially wrote this class.
  *
  * - Got away with not doing this for now. But it's likely to cause crashes here and there.
  */
@@ -69,9 +69,9 @@ class Hook {
 
             // debug
             // Because we sometimes need to relocate >5 bytes, in the case of relative instructions, calls, etc,
-            // let's just copy 20 fkn bytes. We're never writing anywhere near 20 bytes.
+            // let's just copy 20 bytes. We're never writing anywhere near 20 bytes.
             // So this should absolutely cover every case when we disable hooks.
-            // Elegant? No. Fuck you.
+            // Elegant? No. Does it work? Yes.
             originalSize = 20;
             originalBytes = readBytes(location, originalSize);
 
