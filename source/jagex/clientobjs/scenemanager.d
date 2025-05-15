@@ -22,7 +22,7 @@ class SceneManager : ClientObj {
     private SceneObj[] lastQuery;
 
     this(Address clientPtr) {
-        // In this case we want client]0x19988]0x58]0x0]0x10130
+        // In this case we want client]0x19990]0x58]0x0]0x10130
         super(clientPtr, OF_SCENE_MANAGER);
         this.update();
         // TODO: Temp, remove me.

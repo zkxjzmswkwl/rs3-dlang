@@ -1,5 +1,5 @@
 # Project status
-Game sucks. If you'd like to maintain this project (and are capable of doing so) open an issue.
+It looks like I'm getting old. I don't spend much time playing games anymore, and when I do, it's not RuneScape. I'll keep the project up-to-date with engine revisions when they happen, but I don't have any current plans to see this project through. At least not to what I had envisioned when starting it. It'd be nice if someone else were to take the torch on this one.
 
 # What is this?
 It's a side-side-side project. The idea is that RuneMetrics being paid is in direct violation of the [Geneva Convention](https://en.wikipedia.org/wiki/Geneva_Conventions). In addition to *some* xp tracking capabilities, things like filtering/logging chat messages are also currently supported.
