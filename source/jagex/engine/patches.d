@@ -46,7 +46,7 @@ static void nopSetLocalSilhouette() {
 }
 
 public static void applyPatches() {
-    nopSetSilhouette();
-    nopSetLocalSilhouette();
+    // nopSetSilhouette();
+    // nopSetLocalSilhouette();
     info("Patches applied.");
 }

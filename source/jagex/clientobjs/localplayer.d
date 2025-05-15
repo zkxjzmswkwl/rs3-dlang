@@ -35,7 +35,7 @@ class LocalPlayer : ClientObj {
 
     private Address resolvePathingEntity() {
         auto index = read!uint(this.obj + 0x48);
-        auto playerList = read!Address(this.clientPtr + 0x19918);
+        auto playerList = read!Address(this.clientPtr + OF_PLAYER_LIST);
         return resolvePtrChain(playerList, [0x10, index * 0x8, 0x38]);
     }
 }

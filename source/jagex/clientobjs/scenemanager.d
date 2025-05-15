@@ -44,11 +44,11 @@ class SceneManager : ClientObj {
             predicate = this.obj;
         }
 
-        auto head = read!Address(predicate + 0x168);
-        auto end = read!Address(predicate + 0x170);
+        auto head = read!Address(predicate + 0x138);
+        auto end = read!Address(predicate + 0x140);
 
         if (head == end) {
-            auto sceneObject = read!Address(predicate + 0x1D0);
+            auto sceneObject = read!Address(predicate + 0x1A0);
 
             if (sceneObject != 0) {
                 const ObjectType sceneObjectType = read!ObjectType(sceneObject + 0x10);
