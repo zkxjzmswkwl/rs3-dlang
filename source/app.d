@@ -81,6 +81,10 @@ uint run() {
     // Free both Capstone and ourselves.
     auto capstoneHandle = GetModuleHandleA("capstone.dll");
 	auto selfHandle = GetModuleHandleA("DeOppressoLiber.dll");
+
+    // Give other threads ample time to finish any of their IO operations *knocks on wood*.
+    Thread.sleep(dur!"msecs"(2000));
+    // here we go.
 	FreeLibrary(capstoneHandle);
     // This results DLL_PROCESS_DETACH being called, which is great.
 	FreeLibrary(selfHandle);

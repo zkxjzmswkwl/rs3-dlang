@@ -235,12 +235,16 @@ class Server : Thread {
     public void killSelf() {
         auto socket = new TcpSocket();
         try {
+            // --------------------------------------------------
+            // IMPORTANT
+            // > Any writes to stdout/stderr from this scope will
+            // > result in guaranteed crashes on ejection of the module.
+            // --------------------------------------------------
             socket.connect(new InternetAddress("127.0.0.1", this.port));
             socket.send("KILLSELF");
             socket.close();
-            writeln("Server killed.");
         } catch (SocketException e) {
-            writeln("Socket error: ", e.msg);
+            // writeln("Socket error: ", e.msg);
             asm { int 3; }
         } finally {
             if (socket.isAlive) {
