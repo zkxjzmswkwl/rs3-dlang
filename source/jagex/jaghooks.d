@@ -56,7 +56,7 @@ class JagexHooks {
     public JagexHooks enableAll() {
         this.updateStat.enable(&hookUpdateStat, cast(void**)&updateStatTrampoline);
         this.highlightEntity.enable(&hookHighlightEntity, cast(void**)&highlightEntityTrampoline);
-        this.highlight.enable(&hookHighlight, cast(void**)&highlightTrampoline);
+        // this.highlight.enable(&hookHighlight, cast(void**)&highlightTrampoline);
         // this.swapBuffers.enable(&hookSwapBuffers, cast(void**)&swapBuffersTrampoline);
         this.addChatMessage.enable(&hookAddChat, cast(void**)&chatTrampoline);
         this.setClientState.enable(&hookSetClientState, cast(void**)&setClientStateTrampoline);
@@ -73,7 +73,7 @@ class JagexHooks {
         this.addChatMessage.disable();
         this.updateStat.disable();
         this.highlightEntity.disable();
-        this.highlight.disable();
+        // this.highlight.disable();
         this.setClientState.disable();
     }
 

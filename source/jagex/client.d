@@ -39,7 +39,7 @@ public class Client : Observer {
         this.inventory    = new Inventory(this.clientPtr);
         this.skills       = new Skills(this.clientPtr);
         this.sceneManager = new SceneManager(this.clientPtr);
-        this.render       = new Render(this.clientPtr);
+        // this.render       = new Render(this.clientPtr);
         this.chatHistory  = new ChatHistory(this.clientPtr);
     }
 

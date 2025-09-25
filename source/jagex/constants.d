@@ -69,8 +69,8 @@ __gshared const uint[] XP_TABLE = [
 ];
 
 // 48 85 FF 0F 84 ? ? ? ? 48 8B 01 FF 90 ? ? ? ? 84 C0 0F 85
-__gshared ulong CALL_RENDER_ENTITIES = 0x3183D0;
-__gshared ulong CALL_RENDER_NPCS     = 0x3557F3;
+__gshared ulong CALL_RENDER_ENTITIES = 0x311370;
+__gshared ulong CALL_RENDER_NPCS     = 0x31A260;
 __gshared ulong RESET_SILHOUETTE     = 0x112250;
 __gshared ulong SET_SILHOUETTE       = 0x1248AB;
 // __gshared ulong MOV_ENTITY_HIGHLIGHT = 0x3552B4;
@@ -93,6 +93,7 @@ alias HGLRC = _hglrc_*;
 
 //
 // For use with querying buff/debuff bars.
+// https://gist.github.com/zkxjzmswkwl/703ec084f1e39ccac377b7f5ab71db82
 //
 enum Sprite : uint {
     BONFIRE                  = 10931,

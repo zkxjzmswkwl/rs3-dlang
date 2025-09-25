@@ -21,16 +21,16 @@ class Entity : SceneObj {
 
     public uint getCombatLevel() {
         if (this.type == ObjectType.PLAYER)
-            return read!uint(this.obj + 0x10AC);
+            return read!uint(this.obj + 0x10BC);
 
-        return read!uint(this.obj + 0x1160);
+        return read!uint(this.obj + 0x1178);
     }
 
     public uint getTotalLevel() {
         if (this.type == ObjectType.NPC)
             return 0;
         
-        return read!uint(this.obj + 0x10B8);
+        return read!uint(this.obj + 0x10C8);
     }
 
     public int getAnimation() {
