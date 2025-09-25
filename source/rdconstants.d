@@ -32,11 +32,11 @@ const ulong MOUSE_HOOK           = 0xDDE150;
 // XREF Signature #3 @ 97EB1: E8 ? ? ? ? 48 8B D0 48 8B CE E8 ? ? ? ? 0F B6 44 24
 // XREF Signature #4 @ E9F5F: E8 ? ? ? ? 48 8B D0 48 8B CF E8 ? ? ? ? 0F B6 84 24
 // XREF Signature #5 @ E8F53: E8 ? ? ? ? 48 8B D0 48 8B CB E8 ? ? ? ? 0F B6 45 ? 48 8D 1D
-const ulong FN_ADD_CHAT          = 0x1367A0;
+const ulong FN_ADD_CHAT          = 0x13E4E0;
 // 48 89 5C 24 ? 0F B6 41 ? 4C 8B C9
-const ulong FN_UPDATE_STAT       = 0x33F0C0;
+const ulong FN_UPDATE_STAT       = 0x365140;
 // 48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 83 79 ? ? 41 0F B6 F0 8B FA
-const ulong FN_HIGHLIGHT_ENTITY  = 0x393A80;
+const ulong FN_HIGHLIGHT_ENTITY  = 0x3112c0;
 // 40 57 48 83 EC ? 48 8B 79 ? 4C 8B D9
 const ulong FN_HIGHLIGHT         = 0x1256A0;
 // 40 53 48 81 EC ? ? ? ? 48 8B 41 ? 45 8B D9 44 8B 94 24
